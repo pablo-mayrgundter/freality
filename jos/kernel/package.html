@@ -1,0 +1,55 @@
+<html>
+  <body>
+    <h1>Kernel</h1>
+
+    <p>Java requires a host operating system to provide a kernel and
+    major sub-system interfaces at the level of linkable libraries.
+    But typically, the host operating system is no optimized for this
+    purpose.  For instance, a core system of perhaps tens of megabytes
+    could suffice for a Java server application.  And for a GUI, all
+    that is needed from the system is a frame-buffer and interface
+    device support.</p>
+
+    <p>The software below is a fledgling attemp to build a minimal
+    Java host-OS.  This JOS Kernel uses a minimal Linux 2.6.11.7
+    kernel with the following options turned on (built-in, no
+    modules):</p>
+
+    <ul>
+      <li>P4 - SMP</li>
+      <li>EXT3 on SATA disk</li>
+      <li>DHCP netboot over TCP/IP on Intel Gigabit Ethernet</li>
+      <li>Serial AT Keyboard & PS/2 Mouse - No USB; frame-buffer</li>
+      <li>NFS 3 client</li>
+    </ul>
+
+    <p>The kernel is nice and lite at 1.5MB.</p>
+
+    <p>The filesystem is derived from Fedora Core 3 and includes the
+    basics in /lib, /bin, /sbin and /etc needed in a server
+    environment.  The boot proceeds like this:</p>
+
+    <ul>
+      <li>PXE network boot</li>
+      <li>Kernel transfered and loaded</li>
+      <li>Init ramdisk transfered and loaded</li>
+      <li>Local disk, input devices and frame-buffer activated</li>
+      <li>NFS activated, /usr and /home mounted.</li>
+      <li>Local hard-disk configured for use as /var.</li>
+    </ul>
+
+    <p>This filesystem is also very small at about 20MB or 10MB
+    compressed.</p>
+
+    <p>The near-term goal for this distribution is to provide coverage
+    for most common server facilities used by simple Java server
+    applications while reducing the distribution size as much as
+    possible.  The long-term goal is to incrementally replace these
+    system services with Java &quot;ports&quot; or re-writes.  These
+    replacements will become sub-packages of this package.  Ideally,
+    the entire kernel could be implemented in Java.</p>
+
+    <p><a href="/~pablo/code/jos/kernel/fs-image.gz">Kernel Disk Image</a>.</p>
+
+  </body>
+</html>
