@@ -1,11 +1,11 @@
 package ai;
 
-class Environment {
-  double state = 0;
-  double get() {
+public class Environment<T> {
+  protected T state;
+  public T get() {
     return state;
   }
-  void set(final double val) {
+  public void set(final T val) {
     state = val;
   }
 }

@@ -1,14 +1,14 @@
-package ai;
+package ai.automata;
 
 import math.automata.Wolfram;
 import util.Bits;
 import java.util.ArrayList;
 import java.util.List;
 
-abstract class PatternMatcher {
+public abstract class PatternMatcher {
 
+  public final List<Bits> mMem;
   final int mWidth;
-  final List<Bits> mMem;
   final List<byte []> mOps;
   int mCapacity;
   int mDepth;
@@ -24,9 +24,9 @@ abstract class PatternMatcher {
     grow();
   }
 
-  abstract void setupInput ();
+  public abstract void setupInput ();
 
-  abstract boolean testOutput (final int outRow);
+  public abstract boolean testOutput (final int outRow);
 
   void grow () {
     mMem.add(new Bits(mWidth));

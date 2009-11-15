@@ -1,10 +1,10 @@
-package ai;
+package ai.automata;
 
 import util.Bits;
 
-class LeftRightMatcher extends PatternMatcher {
+public class LeftRightMatcher extends PatternMatcher {
 
-  LeftRightMatcher (final int width) {
+  public LeftRightMatcher (final int width) {
     super(width);
   }
 

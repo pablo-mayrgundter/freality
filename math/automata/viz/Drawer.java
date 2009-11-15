@@ -19,7 +19,7 @@ public final class Drawer {
     System.out.print(VT100.BG_BLACK);
   }
 
-  public String drawBits (final Bits b) {
+  public static String drawBits (final Bits b) {
     String s = "";
     for (int j = 0, n = b.getLength(); j < n; j++)
       s += ((b.get(j) == 1 ? VT100.BG_WHITE : VT100.BG_BLACK) + " ");
