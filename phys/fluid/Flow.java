@@ -1,6 +1,6 @@
-package physics.fluid;
+package phys.fluid;
 
-import physics.Space2D;
+import phys.Space2D;
 
 /**
  * Wolfram models a fluid as particle interactions on a hexagonal
