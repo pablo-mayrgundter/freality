@@ -48,12 +48,20 @@ class Flow {
   /**
    * Encode states as a 4-bit number.  Mask each bit with following
    * masks to determine if it is inwards (0) or outwards (1).
-   * 0011 3
-   * 0101 5
-   * 0110 6
-   * 1001 9
-   * 1010 10
-   * 1100 12
+   *
+   * Masks:
+   * 0001 1  |
+   * 0010 2  -
+   * 0100 4  |
+   * 1000 8  -
+   *
+   * States:
+   * 0011 3  /
+   * 0101 5  -
+   * 0110 6  \
+   * 1001 9  \
+   * 1010 10 |
+   * 1100 12 /
    */
   static final int UP = 1, RIGHT = 2, DOWN = 4, LEFT = 8;
   static final int [] STATES = {3, 5, 6, 9, 10, 12};
@@ -111,10 +119,12 @@ class Flow {
   }
 
   public static void main (final String [] args) {
-    final Flow f = new Flow(40, 20);
+    final int width = Integer.parseInt(System.getProperty("width", "80"));
+    final int height = Integer.parseInt(System.getProperty("height", "40"));
+    final Flow f = new Flow(width, height);
     while (true) {
       f.run();
-      try { Thread.sleep(500); } catch (InterruptedException e) { break; }
+      //      try { Thread.sleep(500); } catch (InterruptedException e) { break; }
     }
   }
 }
