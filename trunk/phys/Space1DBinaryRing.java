@@ -1,4 +1,4 @@
-package physics;
+package phys;
 
 import util.Bits;
 
@@ -9,18 +9,18 @@ import util.Bits;
  */
 public class Space1DBinaryRing {
 
-    Bits mStateSpace;
+  Bits mStateSpace;
 
-    public Space1DBinaryRing (final int extent) {
-        mStateSpace = new Bits(extent);
-    }
+  public Space1DBinaryRing (final int extent) {
+    mStateSpace = new Bits(extent);
+  }
 
-    public final int get (final int ndx) {
-        return mStateSpace.get(ndx);
-    }
+  public final int get (final int ndx) {
+    return mStateSpace.get(ndx);
+  }
 
-    public final int getExtent () {
-        return mStateSpace.getLength();
-    }
+  public final int getExtent () {
+    return mStateSpace.getLength();
+  }
 }
 

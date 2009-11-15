@@ -1,4 +1,4 @@
-package physics;
+package phys;
 
 import util.Bits;
 
@@ -11,22 +11,22 @@ import util.Bits;
  */
 public class TimeSpace1DBinaryRing extends Space1DBinaryRing {
 
-    Bits mNextStateSpace;
+  Bits mNextStateSpace;
 
-    public TimeSpace1DBinaryRing (final int extent) {
-        super(extent);
-        mNextStateSpace = new Bits(extent);
-    }
+  public TimeSpace1DBinaryRing (final int extent) {
+    super(extent);
+    mNextStateSpace = new Bits(extent);
+  }
 
-    public final void setNext (final int ndx, final int val) {
-        mNextStateSpace.set(ndx, val);
-    }
+  public final void setNext (final int ndx, final int val) {
+    mNextStateSpace.set(ndx, val);
+  }
 
-    public final void nextTime () {
-        Bits tmp = mStateSpace;
-        mStateSpace = mNextStateSpace;
-        mNextStateSpace = tmp;
-        mNextStateSpace.clear();
-    }
+  public final void nextTime () {
+    Bits tmp = mStateSpace;
+    mStateSpace = mNextStateSpace;
+    mNextStateSpace = tmp;
+    mNextStateSpace.clear();
+  }
 }
 
