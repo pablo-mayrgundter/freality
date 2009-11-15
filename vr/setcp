@@ -1,0 +1,9 @@
+. /Users/pmy/Fun/setcp
+BASE=/Users/pmy/Fun
+addcp $BASE/vr/jogl/jogl.jar
+addcp $BASE/xith/libs/xith3d.jar
+addcp $BASE/xith/libs/xith-tk.jar
+addcp $BASE/third-party/math/openmali.jar
+addcp $BASE/third-party/hial/hial.jar
+
+export LD_LIBRARY_PATH=$BASE/third-party/jogl/macosx-universal
