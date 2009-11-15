@@ -1,8 +1,10 @@
 package ai.spatial;
 
-class SineEnvironment extends Environment {
+import ai.Environment;
+
+class SineEnvironment extends Environment<Double> {
   @Override
-  public void set(final double output) {
+  public void set(final Double output) {
     state = 2.0 * Math.sin(state);
   }
 }

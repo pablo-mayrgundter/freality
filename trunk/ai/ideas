@@ -151,3 +151,38 @@ class LanguageLearner {
     }
 }
 </pre>
+/**
+ * Hypothesis: this is the function of adaptive learning:
+ *
+ *   stimulus(response(stimulus,goal),environment)
+ *
+ *     where stimulus is divergent if |stimulus-response| is < 1,
+ *     divergent otherwise.
+ *
+ * meaning that stimulus is a function of response changing the
+ * environment, and response is selected to converge towards a goal,
+ * To converge towards a goal within a complex environment, stimulus
+ * and response may be complex.
+ *
+ * So it must necessarily create convergent feedback when the goal is
+ * approached, and divergent feedback when not:
+ *
+ *   Eq2: s1=f(e,b,s2,g), |g| < 1 ? f is convergent : f is divergent
+ *
+ * A (simple?) program to demonstrate this is to create a genetic
+ * iterated function system that recombines on success and mutates on
+ * failure.  The macro converge/diverge behavior of the function is
+ * expected to be Chomsky/Wolfram Universal/Type-4, and it is also
+ * expected that practical solutions will find the the local structure
+ * be modularly reused (e.g. chromosomally) to fit the time complexity
+ * of adapted complexity permutations seen in nature.
+ */
+class L {
+
+  void stimulus (int [] env) {
+  }
+
+  public static void main(String [] args) {
+    new L();
+  }
+}
