@@ -1,0 +1,136 @@
+<html>
+  <head>
+    <title>DHTML Browser Widget</title>
+    <style type="text/css">
+    a {
+      color: black;
+      text-decoration: none;
+    }
+    img {
+      border: none;
+    }
+    #dock {
+      position: absolute;
+      left: 100px; // Overridden below.
+      top: 100px;
+    }
+    .hider {
+      position: absolute;
+      z-index: 1;
+      background: white;
+      top: 70px;
+      height: 200px;
+      width: 1px;
+    }
+
+    #dockLeftHider, #dockRightHider {
+      width: 220px;
+      left: 0px;
+    }
+    #dockLeftHider1 { left: 220px; opacity: 0.75;}
+    #dockLeftHider2 { left: 221px; opacity: 0.5;}
+    #dockLeftHider3 { left: 222px; width: 3px; opacity: 0.1;}
+
+    #dockRightHider {
+      left: 602px;
+      width: 400px;
+    }
+    #dockRightHider3 { left: 597px; width: 3px; opacity: 0.1; }
+    #dockRightHider2 { left: 600px; opacity: 0.5; }
+    #dockRightHider1 { left: 601px; opacity: 0.75; }
+
+    table, tr, td {
+      margin: 0px;
+      padding: 0px;
+    }
+    td {
+      width: 100px;
+      padding: 10px;
+      text-align: center;
+      opacity: 0.45;
+    }
+    #log {
+      display: none;
+      position: absolute;
+      top: 400px;
+      left: 400px;
+    }
+    p:first-letter {
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+    </style>
+    <script type="text/javascript">
+    var descs = new Array("Measuring 13-1/2 by 12 by 8-1/2 inches, the coffee maker is shaped like a curved cylinder with a round base. Two pod holders are included: a shallow holder that holds one coffee pod for one cup, and a deeper filter that holds two pods for two cups (or one 8-ounce mug). After filling the removable reservoir with fresh water to the max line, the pods are inserted and the lid locked into place. A simple push of the on/off button and either of the one or two cup buttons starts the brewing process. Up to five 4-ounce cups can be brewed on one reservoir of water. Cups are not included, but almost any 4-ounce cup or 8-ounce mug will do the trick. All the removable parts--the pod holders, reservoir, coffee spout, plastic drip tray, and metal cup tray--are dishwasher-safe. A variety of coffee pods are available separately. This coffee machine is unusable at altitudes over 6800 feet. The Senseo coffee maker is covered by a two-year warranty against defects and measures 13-1/2 by 12 by 8-1/2 inches.",
+                          "By offering three brewing-cycle options, this coffeemaker makes it possible to brew up to three 5-ounce cups of full-flavored coffee, or up to 12 cups of medium-strength or strong coffee. Choosing one of the options is easy thanks to an electronic control panel with a LCD display. Other buttons on the panel permit the 60-ounce carafe to be prewarmed, the warming plate to be set at six different temperatures or shut off automatically, and the 24-hour clock/timer to be set for brewing wake-up coffee. For extracting optimum coffee flavor, the coffeemaker is equipped with Krups' Deep-Brew system, which pulses hot water through the grounds at precisely timed intervals. For convenience (no messy paper filters), the machine has a permanent gold tone filter. For removing chlorine from tap water, there's a vegetable-based filter. (Replacement filters can be ordered separately.)",
+                          "Some of the other reviews are apparently for the 453, which appears to be identical to the 452 except for the controls. This model has only two switches. One switch is the power switch, and the other switch selects either 1-3 cups or 4-12 cups. There are no other controls on this model. This does make the coffee maker very easy to use!",
+                          " Sleek and contemporary, this gleaming percolator brews from four to eight cups of coffee on the stovetop for full, old-fashioned flavor. A permanent filter basket (no messy paper filters needed) provides modern efficiency. The handle is synthetic (to stay cool) and slightly textured, a combination ensuring safe, comfortable pouring. Because the percolator is made of highly polished 18/10 stainless steel, the beauty of its gleaming mirror finish is long-lasting. To fully maintain the finish, the percolator should be hand washed, although the filter basket and glass cap can go into the dishwasher. The percolator stands 8-1/2 inches high on a 6-1/4-inch-diameter base.",
+                          "Winner of the American Culinary Institute's Best of Show Award for Excellence.7 grind settings,24-hour programmable timer,Measures 12 by 12 by 18 inches; 1-year warranty");
+    var dock = null;
+    center = 3;
+    var style = null;
+    function moveTo(x) {
+      style.left = x;
+    }
+    function move(ndx) {
+      if (ndx == center) return;
+      var direction = ndx < center ? 1 : -1;
+      if (dock == null) {
+        dock = document.getElementById("dock");
+        style = dock.style;
+      }
+      var left = parseInt(dock.style.left.substring(0, 3));
+      var pos;
+      var i = 0;
+      var dist = 120;
+      var time;
+      while (i <= dist) {
+        pos = left + i * direction;
+        time = i * (5 + (Math.cos((i / dist) * (Math.PI * 1.0))));
+        setTimeout("moveTo(" + pos + ")", time);
+        i += 4;
+      }
+      var item = document.getElementById("item" + center); 
+      item.style.border = "dashed 1px #fff";
+      item.style.opacity = "0.25";
+      center = ndx;
+      var item = document.getElementById("item" + ndx); 
+      item.style.opacity = "1.0";
+      setTimeout("selectItem('item" + ndx + "', " + ndx +")", time);
+    }
+    function selectItem(itemName, ndx) {
+      var item = document.getElementById(itemName);
+      item.style.border = "dashed 1px #3f3";
+      var desc = document.getElementById("desc");
+      desc.innerHTML = descs[ndx - 1];
+    }
+    </script>
+  </head>
+  <body>
+  <div style="position: absolute; top: 20px; text-align: center; left: 300px; display: none">
+    <h1 style="margin: 10px">Coffee Makers</h1>
+  </div>
+  <div class="hider" id="dockLeftHider">&nbsp;</div>
+  <div class="hider" id="dockLeftHider1"></div>
+  <div class="hider" id="dockLeftHider2"></div>
+  <div class="hider" id="dockLeftHider3"></div>
+  <div id="dock" style="top: 130px; left: 100px">
+    <table>
+      <tr>
+        <td id="item1"><a href="javascript:move(1)"><img src="img1.jpg"><br>Senseo</a></td>
+        <td id="item2"><a href="javascript:move(2)"><img src="img2.jpg"><br>Krups</a></td>
+        <td id="item3" style="border: dashed 1px #3f3; opacity: 1.0"><a href="javascript:move(3)"><img src="img3.jpg"><br>Krups Pro</a></td>
+        <td id="item4"><a href="javascript:move(4)"><img src="img5.jpg"><br>Crystal</a></td>
+        <td id="item5"><a href="javascript:move(5)"><img src="img4.jpg"><br>Faberware</a></td>
+      </tr>
+    </table>
+  </div>
+  <div class="hider" id="dockRightHider3"></div>
+  <div class="hider" id="dockRightHider2"></div>
+  <div class="hider" id="dockRightHider1"></div>
+  <div class="hider" id="dockRightHider">&nbsp;</div>
+  <p id="desc" style="position: absolute; top: 270px; left: 215px; width: 40%; ">
+    Click the one you like!
+  </div>
+  </body>
+</html>
