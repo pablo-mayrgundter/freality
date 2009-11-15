@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <meta name="Author" lang="en" content="Pablo Mayrgundter">
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <meta name="keywords" content="">
+    <title></title>
+    <link rel="stylesheet" href="style.css" type="text/css" media="screen">
+    <link rel="shortcut icon" href="/icon.ico" type="image/x-icon">
+  </head>
+  <body>
+<h1>Cache Throughput</h1>
+
+<p>The following is a test of CPU cache data access performance.  The
+test was meant to detect the optimal space available in the cache for
+a dynamically allocated working set.  The hypothesis is that the
+optimal working set size is significantly less than the full size of
+the cache due to the extra overhead of the rest of the system's process
+and even by the test itself.  If this is the case, it might be good to
+have a rule-of-thumb for how much cache is available in a server
+setting, e.g. &quot;assume you get only half the L2 cache&quot;.</p>
+
+<h2>The CPUs</h2>
+
+<p>Two CPUs were tested.  The following specs are reported via Linux's /proc/cpuinfo:</p>
+
+<pre>
+CPU1, Machine 1
+---------------
+processor       : 0
+vendor_id       : GenuineIntel
+cpu family      : 15
+model           : 2
+model name      : Intel(R) Pentium(R) 4 CPU 2.40GHz
+stepping        : 7
+cpu MHz         : 2394.378
+cache size      : 512 KB
+fdiv_bug        : no
+hlt_bug         : no
+f00f_bug        : no
+coma_bug        : no
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 2
+wp              : yes
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe cid xtpr
+bogomips        : 4718.59
+
+CPU2, Machine 2
+---------------
+processor       : 0
+vendor_id       : GenuineIntel
+cpu family      : 15
+model           : 3
+model name      : Intel(R) Xeon(TM) CPU 3.00GHz
+stepping        : 4
+cpu MHz         : 3001.284
+cache size      : 1024 KB
+physical id     : 0
+siblings        : 2
+fdiv_bug        : no
+hlt_bug         : no
+f00f_bug        : no
+coma_bug        : no
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 5
+wp              : yes
+flags           : fpu vme de pse tsc msr pae mce cx8 apic mtrr pge mca cmov pat 
+pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe lm pni monitor ds_cpl cid
+bogomips        : 5914.62
+</pre>
+
+<h2>The Test</h2>
+
+<p>The test that was run is linked below.</p>
+
+<h2>Results</h2>
+
+<p>These graphs show the throughput of the cache in the two tests.
+Click on the graph for the data used to generate it.</p>
+
+<p>The first test was on <em>sequential access</em> of an array of 2^N
+bytes.  In this graph, the x-axis is N, the Y-axis is bytes/ms:
+<img src="/~pablo/code/bench/cpu/cache/bench.png"/>
+<a href="/~pablo/code/bench/cpu/cache/cpu1.txt">CPU1 data</a>
+<a href="/~pablo/code/bench/cpu/cache/cpu2.txt">CPU2 data</a>
+</p>
+
+<p>The second test was on <em>random access</em> of an array of 2^N
+bytes.  In this graph, the x-axis is N, the Y-axis is bytes/ms:
+<img src="/~pablo/code/bench/cpu/cache/bench-rand.png"/>
+<a href="/~pablo/code/bench/cpu/cache/cpu1-rand.txt">CPU1 data</a>
+<a href="/~pablo/code/bench/cpu/cache/cpu2-rand.txt">CPU2 data</a>
+</p>
+
+<p>NOTE: The CPU's cache sizes are is 2^19 bytes (512KB) and 2^20
+(1024KB) respectively.</p>
+
+<h2>Conclusion</h2>
+
+<p>Caches work just like they taught us in skool :)
+
+
+<p>It is interesting to note that the maximal throughput rate is
+achieved with a working set much smaller than the L2 cache size, (the
+peak in the first graph is at 512 bytes).  Presumably this is the
+effect of the smaller L1 data cache.</p>
+
+<p>As to the hypothesis being tested, note that performance degrades
+well in advance of the L2 cache size, most obviously in the random
+access situation.  Given these results, the rule of thumb for using
+the L2 cache with Java on Linux (while Gnome, Firefox, Gaim and Tomcat
+are running) might be &quot;assume you get only 1/4 - 1/2 of the L2
+cache&quot; :)</p>
+
+<p>Finally, it is interesting that the throughput of sequential access
+doesn't fail very badly as the working set approaches and exceeds the
+size of cache.</p>
+  </body>
+</html>

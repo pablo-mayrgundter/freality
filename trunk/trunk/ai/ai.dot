@@ -1,0 +1,12 @@
+digraph cluster_AI {
+  subgraph cluster_Learner {
+    label="Learner"
+    Sensor
+    Actor
+    Adapter -> Adapter
+    Sensor -> Adapter -> Actor
+  }
+  Environment[label="SineEnvironment\noutput = sin(input)"]
+  Actor -> Environment
+  Environment -> Sensor
+}

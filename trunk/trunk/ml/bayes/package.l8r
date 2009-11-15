@@ -1,0 +1,20 @@
+<html>
+  <body>
+
+    <p>What is the probability that the Sun will rise tomorrow?  Well, let's say you had only been alive one day, and so had only seen the sun rise once.  Without knowing anything else, you wouldn't feel like you had much basis for expecting it to rise or to not.  But then, let's say you have been living for ten-thousand days, and every single day, the sun rises.  Since it had risen for the previous ten-thousand days, you would feel relatively certain that it would also rise tomorrow.</p>
+
+    <p>Bayes' Theorem is a mathematical expression of this relationship between events.  When events are related to or affect each other, it expresses how the occurence of one event can affect another, or vice versa. For the Sun example, it basically says:
+    <blockquote>
+      "the probability that the sun will rise tomorrow given that it has risen for the past ten-thousand days<br>
+        equals<br>
+      the ratio of a) the likelihood of ten-thousand successive sunrises when, yes, it's true the sun will rise tomorrow weighted according to how likely that is in generalto b)."
+    </blockquote>
+    Well, that's a mouthfull, which is why we have mathematics!  Bayes' Theorem is:</p>
+    <pre>
+    P(h|D) = P(D|h) P(h) / P(D)
+    </pre>
+    </p>
+P(cancer|+) = P(+|cancer) * P(cancer) / P(+)<br>
+P(sun will rise tomorrow|sun has risen 10k times) = P(sun has risen 10k times|sun will rise tomorrow) * P(sun will rise tomorrow) / P(sun has risen 10k times)
+  </body>
+</html>
