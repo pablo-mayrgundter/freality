@@ -1,20 +1,20 @@
-/CLI.java/1.1.1.1/Sat Aug  6 20:00:12 2005//
-/OrbitInterpolator.java/1.2/Sun Sep  9 21:53:39 2007//
-/Scene.java/1.2/Mon Sep 10 05:03:53 2007//
-/SpaceShipNavigator.java/1.3/Sun Sep  9 21:53:39 2007//
-/data.jar/1.2/Fri Jul  7 05:04:52 2006//
-/fmc-0.1.jar/1.1.1.1/Sat Aug  6 20:00:23 2005//
-/fmc-0.2.jar/1.1.1.1/Sat Aug  6 20:00:23 2005//
-/fmc-0.3.jar/1.1.1.1/Sat Aug  6 20:00:23 2005//
-/fmc-0.4.jar/1.1.1.1/Sat Aug  6 20:00:24 2005//
-/fmc-0.5.jar/1.1/Fri Jul  7 05:00:30 2006/-kb/
-/package.html/1.1/Sat Sep 10 21:16:47 2005//
-/ss.jpg/1.1.1.1/Sat Aug  6 20:00:31 2005//
-/ss.png/1.1.1.1/Sat Aug  6 20:00:31 2005//
-/ss_thumb.png/1.1.1.1/Sat Aug  6 20:00:31 2005//
-/textures.jar/1.2/Fri Jul  7 05:04:52 2006//
 D/data////
 D/gallery////
 D/model////
 D/sceneobject////
 D/textures////
+/CLI.java/1.1.1.1/Sun Nov 15 03:05:41 2009//
+/OrbitInterpolator.java/1.2/Sun Nov 15 03:05:41 2009//
+/Scene.java/1.2/Sun Nov 15 03:05:41 2009//
+/SpaceShipNavigator.java/1.3/Sun Nov 15 03:05:41 2009//
+/data.jar/1.2/Sun Nov 15 03:05:41 2009//
+/fmc-0.1.jar/1.1.1.1/Sun Nov 15 03:05:41 2009//
+/fmc-0.2.jar/1.1.1.1/Sun Nov 15 03:05:41 2009//
+/fmc-0.3.jar/1.1.1.1/Sun Nov 15 03:05:41 2009//
+/fmc-0.4.jar/1.1.1.1/Sun Nov 15 03:05:41 2009//
+/fmc-0.5.jar/1.1/Sun Nov 15 03:05:41 2009/-kb/
+/package.html/1.1/Sun Nov 15 03:05:41 2009//
+/ss.jpg/1.1.1.1/Sun Nov 15 03:05:41 2009//
+/ss.png/1.1.1.1/Sun Nov 15 03:05:41 2009//
+/ss_thumb.png/1.1.1.1/Sun Nov 15 03:05:41 2009//
+/textures.jar/1.2/Sun Nov 15 03:05:41 2009//
