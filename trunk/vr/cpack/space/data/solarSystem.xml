@@ -1,0 +1,646 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <!DOCTYPE universe SYSTEM "java:/solarBodies.dtd"> -->
+<system type="universe" name="Our Universe" version="1.1">
+  <system type="galaxy" name="Andromeda"/>
+  <system type="galaxy" name="Milky Way">
+
+    <system type="star" name="Sol">
+
+      <physicalParameters>
+        <apparentMagnitude value="-26.8"/>
+        <mass value="1989100E24kg"/>
+        <density value="1.410"/><!-- (g/cm^3) -->
+        <meanRadius value="694248.95km"/>
+        <siderealRotationPeriod value="2160000s"/><!-- At equator -->
+        <escapeVelocity value="618.02"/><!-- (km s^-1) -->
+      </physicalParameters>
+
+      <system type="planet" name="Mercury">
+        <orbitalElements>
+          <eccentricity value="0.20563069"/>
+          <inclination value="7.00487"/>
+          <longitudeOfAscendingNode value="48.33167"/>
+          <longitudeOfPerihelion value="77.45645"/>
+          <meanLongitude value="252.25084"/>
+          <semiMajorAxis value="57910000km"/>
+          <siderealOrbitPeriod value="7595341.5312s"/>
+        </orbitalElements>
+        <physicalParameters>
+          <meanRadius value="2440km"/><!-- (km) -->
+          <mass value="3.302Mg"/><!-- HACK, was x10^23 kg .. what unit is that? -->
+          <density value="5.427"/><!-- (g cm-3) Sidereal -->
+          <apparentMagnitude value="-0.42"/><!-- (mag.) -->
+          <albedo value="0.106"/><!-- "Geometric" Albedo --> 
+          <equatorialGravity value="3.701"/><!-- (m s^-2) -->
+          <escapeVelocity value="4.435"/><!-- (km s^-1) -->
+          <siderealRotationPeriod value="5067032.4s"/>
+          <axialInclination value="0.0"/><!-- Degrees -->
+        </physicalParameters>
+      </system>
+
+      <system type="planet" name="Venus">
+        <orbitalElements>
+          <eccentricity value="0.00677323"/>
+          <inclination value="3.39471"/>
+          <longitudeOfAscendingNode value="76.68069"/>
+          <longitudeOfPerihelion value="131.53298"/>
+          <meanLongitude value="181.97973"/>
+          <semiMajorAxis value="108210000km"/>
+          <siderealOrbitPeriod value="19400860.79136s"/>
+        </orbitalElements>
+        <physicalParameters>
+          <meanRadius value="6051.84km"/>
+          <mass value="48.685Mg"/>
+          <density value="5.204"/>
+          <apparentMagnitude value="-4.4"/>
+          <albedo value="0.65"/>
+          <equatorialGravity value="8.87"/>
+          <escapeVelocity value="10.361"/>
+          <siderealRotationPeriod value="20996798.400s"/>
+          <axialInclination value="177.4"/>
+        </physicalParameters>
+      </system>
+
+      <system type="planet" name="Earth">
+        <orbitalElements>
+          <eccentricity value="0.01671022"/>
+          <inclination value="0.00005"/>
+          <longitudeOfAscendingNode value="-11.26064"/>
+          <longitudeOfPerihelion value="102.94719"/>
+          <meanLongitude value="100.46435"/>
+          <semiMajorAxis value="149597900km"/>
+          <siderealOrbitPeriod value="31536000s"/>
+        </orbitalElements>
+        <physicalParameters>
+          <meanRadius value="6371.01km"/>
+          <mass value="59.736Mg"/>
+          <density value="5.515"/>
+          <apparentMagnitude value="-3.86"/>
+          <albedo value="0.367"/>
+          <equatorialGravity value="9.780327"/>
+          <escapeVelocity value="11.186"/>
+          <siderealRotationPeriod value="86163.084s"/>
+          <axialInclination value="23.45"/>
+        </physicalParameters>
+
+        <system type="planet" name="Moon">
+          <orbitalElements>
+            <eccentricity value="0.0554"/>
+            <inclination value="90"/><!-- 23 -->
+            <longitudeOfAscendingNode value="125.08"/>
+            <longitudeOfPerihelion value="0"/>
+            <meanLongitude value="0"/>
+            <semiMajorAxis value="384467km"/>
+            <siderealOrbitPeriod value="2548108.8s"/>
+          </orbitalElements>
+          <physicalParameters>
+            <meanRadius value="1738.1km"/>
+            <mass value="0.7347Mg"/>
+            <density value="3.344"/>
+            <apparentMagnitude value="-12.74"/>
+            <albedo value="0.12"/>
+            <equatorialGravity value="1.622"/>
+            <escapeVelocity value="2.38"/>
+            <siderealRotationPeriod value="31449525.66s"/>
+            <axialInclination value="5"/>
+          </physicalParameters>
+
+        </system>
+
+      </system>
+
+      <system type="planet" name="Mars">
+        <orbitalElements>
+          <eccentricity value="0.09341233"/>
+          <inclination value="1.85061"/>
+          <longitudeOfAscendingNode value="49.57854"/>
+          <longitudeOfPerihelion value="336.04084"/>
+          <meanLongitude value="355.45332"/>
+          <semiMajorAxis value="227920000km"/>
+          <siderealOrbitPeriod value="59314409.9136s"/>
+        </orbitalElements>
+        <physicalParameters>
+          <meanRadius value="3389.92km"/>
+          <mass value="6.4185Mg"/>
+          <density value="3.9335"/>
+          <apparentMagnitude value="-1.52"/>
+          <albedo value="0.15"/>
+          <equatorialGravity value="3.69"/>
+          <escapeVelocity value="5.027"/>
+          <siderealRotationPeriod value="88642.6632s"/>
+          <axialInclination value="23.98"/>
+        </physicalParameters>
+
+        <system type="planet" name="Phobos">
+
+          <physicalParameters>
+            <density value="1.750"/>
+            <meanRadius value="13.4km"/>
+            <mass value="1.08E16kg"/>
+            <siderealRotationPeriod value="27648s"/>
+          </physicalParameters>
+
+          <orbitalElements>
+            <eccentricity value="0.015"/>
+            <inclination value="1.08"/>
+            <semiMajorAxis value="9378km"/>
+            <siderealOrbitPeriod value="27553.94928s"/>
+          </orbitalElements>
+
+        </system>
+
+        <system type="planet" name="Deimos">
+
+          <physicalParameters>
+            <mass value="1.8E15kg"/>
+            <meanRadius value="7.5km"/>
+            <siderealRotationPeriod value="108864s"/>
+            <albedo value="0.07"/>
+          </physicalParameters>
+
+          <orbitalElements>
+            <eccentricity value="0"/>
+            <inclination value="1.79"/>
+            <semiMajorAxis value="23459km"/>
+            <siderealOrbitPeriod value="109074.82464s"/>
+          </orbitalElements>
+
+        </system>
+      </system>
+
+      <system type="planet" name="Jupiter">
+
+        <orbitalElements>
+          <eccentricity value="0.04839266"/>
+          <inclination value="1.30530"/>
+          <longitudeOfAscendingNode value="100.55615"/>
+          <longitudeOfPerihelion value="14.75385"/>
+          <meanLongitude value="34.40438"/>
+          <semiMajorAxis value="778570000km"/>
+          <siderealOrbitPeriod value="374099426.64s"/>
+        </orbitalElements>
+
+        <physicalParameters>
+          <meanRadius value="69911km"/>
+          <mass value="18986Mg"/>
+          <density value="1.326"/>
+          <apparentMagnitude value="-9.4"/>
+          <albedo value="0.52"/>
+          <equatorialGravity value="23.12"/>
+          <escapeVelocity value="59.5"/>
+          <siderealRotationPeriod value="35727.3s"/>
+          <axialInclination value="3.08"/>
+        </physicalParameters>
+
+        <!-- Moons -->
+        <system type="planet" name="Io">
+
+          <description href="http://en.wikipedia.org/wiki/Io_%28moon%29"/>
+
+          <physicalParameters>
+            <mass value="8.94E22kg"/>
+            <meanRadius value="1821km"/>
+            <density value="3.57"/>
+            <inclination value="0.04"/>
+            <siderealRotationPeriod value="152928s"/>
+            <albedo value="0.61"/>
+          </physicalParameters>
+
+          <orbitalElements>
+            <eccentricity value="0.041"/>
+            <semiMajorAxis value="421600km"/>
+            <siderealOrbitPeriod value="152853.509808s"/>
+          </orbitalElements>
+
+        </system>
+
+        <system type="planet" name="Europa">
+
+          <description href="http://en.wikipedia.org/wiki/Europa_%28moon%29"/>
+
+          <physicalParameters>
+            <mass value="4.8E22kg"/>
+            <meanRadius value="1565km"/>
+            <density value="3.018"/>
+            <siderealRotationPeriod value="306720s"/>
+            <inclination value="0.47"/>
+            <albedo value="0.64"/>
+          </physicalParameters>
+
+          <orbitalElements>
+            <eccentricity value="0.101"/>
+            <semiMajorAxis value="670900km"/>
+            <siderealOrbitPeriod value="306822.037968s"/>
+          </orbitalElements>
+
+        </system>
+
+        <system type="planet" name="Ganymede">
+
+          <description href="http://en.wikipedia.org/wiki/Ganymede_%28moon%29"/>
+
+          <physicalParameters>
+            <mass value="1.48E23kg"/>
+            <meanRadius value="2634km"/>
+            <density value="1.936"/>
+            <siderealRotationPeriod value="617760s"/>
+            <inclination value="0.2"/>
+            <albedo value="0.42"/>
+          </physicalParameters>
+
+          <orbitalElements>
+            <eccentricity value="0.002"/>
+            <semiMajorAxis value="1070000km"/>
+            <siderealOrbitPeriod value="618153.53472s"/>
+          </orbitalElements>
+
+        </system>
+
+        <system type="planet" name="Callisto">
+
+          <description href="http://en.wikipedia.org/wiki/Callisto_%28moon%29"/>
+
+          <physicalParameters>
+            <mass value="1.08E23kg"/>
+            <meanRadius value="2403km"/>
+            <density value="1.936"/>
+            <siderealRotationPeriod value="1442016s"/>
+            <inclination value="0.28"/>
+            <albedo value="0.2"/>
+          </physicalParameters>
+
+          <orbitalElements>
+            <eccentricity value="0.007"/>
+            <semiMajorAxis value="1883000km"/>
+            <siderealOrbitPeriod value="1441931.25024s"/>
+          </orbitalElements>
+
+        </system>
+
+      </system>
+
+      <system type="planet" name="Saturn">
+
+        <physicalParameters>
+          <meanRadius value="58232km"/>
+          <mass value="5684.6Mg"/>
+          <density value="0.6873"/>
+          <apparentMagnitude value="-8.88"/>
+          <albedo value="0.47"/>
+          <equatorialGravity value="8.96"/>
+          <escapeVelocity value="35.5"/>
+          <siderealRotationPeriod value="38362.392s"/>
+          <axialInclination value="26.73"/>
+        </physicalParameters>
+
+        <orbitalElements>
+          <eccentricity value="0.05415060"/>
+          <inclination value="2.48446"/>
+          <longitudeOfAscendingNode value="113.71504"/>
+          <longitudeOfPerihelion value="92.43194"/>
+          <meanLongitude value="49.94432"/>
+          <semiMajorAxis value="1433530000km"/>
+          <siderealOrbitPeriod value="928656296.928s"/>
+        </orbitalElements>
+
+        <system type="rings" name="Saturn's Rings">
+          <innerSemiMajorAxis value="64562km"/>
+          <outerSemiMajorAxis value="120700km"/>
+          <eccentricity value="0"/>
+        </system>
+
+        <system type="planet" name="Titan">
+
+          <description href="http://en.wikipedia.org/wiki/Titan_%28moon%29"/>
+
+          <physicalParameters>
+            <mass value="1.35E23kg"/>
+            <meanRadius value="2575km"/>
+            <siderealRotationPeriod value="1838592s"/>
+            <axialInclination value="0.33"/>
+            <albedo value="0.21"/>
+          </physicalParameters>
+
+          <orbitalElements>
+            <eccentricity value="0.030"/>
+            <semiMajorAxis value="1221830km"/>
+            <siderealOrbitPeriod value="1377684.37656s"/>
+          </orbitalElements>
+
+        </system>
+
+        <system type="planet" name="Rhea">
+
+          <description href="http://en.wikipedia.org/wiki/Rhea_%28moon%29"/>
+
+          <physicalParameters>
+            <mass value="2.3166E21kg"/>
+            <meanRadius value="1528km"/>
+            <density value="1.24"/>
+            <siderealRotationPeriod value="390312s"/>
+            <axialInclination value="0.35"/>
+            <albedo value="0.65"/>
+          </physicalParameters>
+
+          <orbitalElements>
+            <eccentricity value="0.001"/>
+            <semiMajorAxis value="527040km"/>
+            <siderealOrbitPeriod value="390312s"/>
+          </orbitalElements>
+
+        </system>
+
+        <system type="planet" name="Dione">
+
+          <description href="http://en.wikipedia.org/wiki/Dione_%28moon%29"/>
+
+          <physicalParameters>
+            <mass value="1.096E21kg"/>
+            <meanRadius value="559km"/>
+            <density value="1.24"/>
+            <siderealRotationPeriod value="236465s"/>
+            <axialInclination value="0.006"/>
+            <albedo value="0.55"/>
+          </physicalParameters>
+
+          <orbitalElements>
+            <eccentricity value="0.0022"/>
+            <semiMajorAxis value="377400km"/>
+            <siderealOrbitPeriod value="236465s"/>
+          </orbitalElements>
+
+        </system>
+
+        <system type="planet" name="Tethys">
+
+          <description href="http://en.wikipedia.org/wiki/Tethys_%28moon%29"/>
+
+          <physicalParameters>
+            <mass value="6.176E20kg"/>
+            <meanRadius value="529.9km"/>
+            <density value="0.99"/>
+            <siderealRotationPeriod value="163106s"/>
+            <axialInclination value="1.09"/>
+            <albedo value="0.8"/>
+          </physicalParameters>
+
+          <orbitalElements>
+            <eccentricity value="0"/>
+            <semiMajorAxis value="294660km"/>
+            <siderealOrbitPeriod value="163106s"/>
+          </orbitalElements>
+
+        </system>
+
+        <system type="planet" name="Iapetus">
+
+          <description href="http://en.wikipedia.org/wiki/Iapetus_%28moon%29"/>
+
+          <physicalParameters>
+            <mass value="1.88E21kg"/>
+            <meanRadius value="718km"/>
+            <density value="1.020"/>
+            <siderealRotationPeriod value="6854112s"/>
+            <axialInclination value="7.52"/>
+            <albedo value="0.2"/>
+          </physicalParameters>
+
+          <orbitalElements>
+            <eccentricity value="0.028"/>
+            <semiMajorAxis value="3561300km"/>
+            <siderealOrbitPeriod value="6854127.90192s"/>
+          </orbitalElements>
+
+        </system>
+
+        <system type="planet" name="Hyperion">
+
+          <description href="http://en.wikipedia.org/wiki/Hyperion_%28moon%29"/>
+
+          <physicalParameters>
+            <mass value="1.08E19kg"/>
+            <meanRadius value="133km"/>
+            <density value="1.1"/>
+            <siderealRotationPeriod value="0s"/>
+            <axialInclination value="0.568"/>
+            <albedo value="0.25"/>
+          </physicalParameters>
+
+          <orbitalElements>
+            <eccentricity value="0.0175"/>
+            <semiMajorAxis value="1464100km"/>
+            <siderealOrbitPeriod value="1838592s"/>
+          </orbitalElements>
+
+        </system>
+
+        <system type="planet" name="Janus">
+
+          <description href="http://en.wikipedia.org/wiki/Janus_%28moon%29"/>
+
+          <physicalParameters>
+            <mass value="1.98E18kg"/>
+            <meanRadius value="88.8km"/>
+            <density value="0.65"/>
+            <siderealRotationPeriod value="60000s"/>
+            <axialInclination value="0.14"/>
+            <albedo value="0.5"/>
+          </physicalParameters>
+
+          <orbitalElements>
+            <eccentricity value="0.007"/>
+            <semiMajorAxis value="151472km"/>
+            <siderealOrbitPeriod value="60000s"/>
+          </orbitalElements>
+
+        </system>
+
+      </system>
+
+      <system type="planet" name="Uranus">
+
+        <physicalParameters>
+          <meanRadius value="25362km"/>
+          <mass value="868.32Mg"/>
+          <density value="1.318"/>
+          <apparentMagnitude value="-7.19"/>
+          <albedo value="0.51"/>
+          <equatorialGravity value="8.69"/>
+          <escapeVelocity value="21.3"/>
+          <siderealRotationPeriod value="62064s"/>
+          <axialInclination value="97.92"/>
+        </physicalParameters>
+
+        <orbitalElements>
+          <eccentricity value="0.04716771"/>
+          <inclination value="0.76986"/>
+          <longitudeOfAscendingNode value="74.22988"/>
+          <longitudeOfPerihelion value="170.96424"/>
+          <meanLongitude value="313.23218"/>
+          <semiMajorAxis value="2872460000km"/>
+          <siderealOrbitPeriod value="2649555255.456s"/>
+        </orbitalElements>
+
+        <system type="planet" name="Titania">
+          <physicalParameters>
+            <mass value="3.49E21kg"/>
+            <meanRadius value="789km"/>
+            <density value="1.7"/>
+            <siderealRotationPeriod value="751680s"/>
+            <axialInclination value="0.1"/>
+            <albedo value="0.27"/>
+          </physicalParameters>
+          <orbitalElements>
+            <eccentricity value="0.002"/>
+            <semiMajorAxis value="435910km"/>
+            <siderealOrbitPeriod value="752187.2112s"/>
+          </orbitalElements>
+        </system>
+
+        <system type="planet" name="Oberon">
+          <physicalParameters>
+            <mass value="3.03E21kg"/>
+            <meanRadius value="761km"/>
+            <density value="1.64"/>
+            <siderealRotationPeriod value="1162944s"/>
+            <axialInclination value="0.10"/>
+            <albedo value="0.24"/>
+          </physicalParameters>
+          <orbitalElements>
+            <eccentricity value="0"/>
+            <semiMajorAxis value="583520km"/>
+            <siderealOrbitPeriod value="1163223.840096s"/>
+          </orbitalElements>
+        </system>
+
+      </system>
+
+      <system type="planet" name="Neptune">
+        <orbitalElements>
+          <eccentricity value="0.00858587"/>
+          <inclination value="1.76917"/>
+          <longitudeOfAscendingNode value="131.72169"/>
+          <longitudeOfPerihelion value="44.97135"/>
+          <meanLongitude value="304.88003"/>
+          <semiMajorAxis value="4495060000km"/>
+          <siderealOrbitPeriod value="5196859067.52s"/>
+        </orbitalElements>
+        <physicalParameters>
+          <meanRadius value="24624km"/>
+          <mass value="1024.3Mg"/>
+          <density value="1.638"/>
+          <apparentMagnitude value="-6.87"/>
+          <albedo value="0.41"/>
+          <equatorialGravity value="11.00"/>
+          <escapeVelocity value="23.5"/>
+          <siderealRotationPeriod value="57996s"/>
+          <axialInclination value="28.8"/>
+        </physicalParameters>
+
+        <system type="planet" name="Triton">
+
+          <description href="http://en.wikipedia.org/wiki/Triton_%28moon%29"/>
+
+          <physicalParameters>
+            <mass value="2.14E22kg"/>
+            <meanRadius value="1353km"/>
+            <density value="2.054"/>
+            <siderealRotationPeriod value="508032s"/><!-- retrograde -->
+            <axialInclination value="156.83"/>
+            <albedo value="0.7"/>
+          </physicalParameters>
+
+          <orbitalElements>
+            <eccentricity value="0"/>
+            <semiMajorAxis value="354760km"/>
+            <siderealOrbitPeriod value="507760.18992s"/><!-- retrograde? -->
+          </orbitalElements>
+
+        </system>
+
+        <system type="planet" name="Proteus">
+
+          <description href="http://en.wikipedia.org/wiki/Proteus_%28moon%29"/>
+
+          <physicalParameters>
+            <mass value="5.0E19kg"/>
+            <meanRadius value="420km"/>
+            <density value="1.3"/>
+            <siderealRotationPeriod value="0s"/>
+            <axialInclination value="0.026"/>
+            <albedo value="0.06"/>
+          </physicalParameters>
+
+          <orbitalElements>
+            <eccentricity value="0"/>
+            <semiMajorAxis value="117647km"/>
+            <siderealOrbitPeriod value="96940.8s"/>
+          </orbitalElements>
+
+        </system>
+
+      </system>
+
+      <system type="planet" name="Pluto">
+
+        <physicalParameters>
+          <meanRadius value="1151km"/>
+          <mass value="0.15Mg"/>
+          <density value="1.1"/>
+          <apparentMagnitude value="-1.0"/>
+          <albedo value="0.3"/>
+          <equatorialGravity value="0.655"/>
+          <escapeVelocity value="1.3"/>
+          <siderealRotationPeriod value="551808s"/>
+          <axialInclination value="122.0"/>
+        </physicalParameters>
+
+        <orbitalElements>
+          <eccentricity value="0.24880766"/>
+          <!--<inclination value="17.14175"/>-->
+          <inclination value="11.88"/>
+          <longitudeOfAscendingNode value="110.30347"/>
+          <longitudeOfPerihelion value="224.06676"/>
+          <meanLongitude value="238.92881"/>
+          <semiMajorAxis value="5869660000km"/>
+          <siderealOrbitPeriod value="7818425618.4s"/>
+        </orbitalElements>
+
+        <system type="planet" name="Charon">
+          <physicalParameters>
+            <mass value="1.77E21kg"/>
+            <meanRadius value="586km"/>
+            <density value="1.8"/>
+            <siderealRotationPeriod value="552096s"/>
+            <axialInclination value="96.56"/>
+            <albedo value="0.5"/>
+          </physicalParameters>
+          <orbitalElements>
+            <eccentricity value="0"/>
+            <semiMajorAxis value="19405km"/>
+            <siderealOrbitPeriod value="552096s"/>
+          </orbitalElements>
+        </system>
+
+      </system>
+    </system>
+  </system>
+</system>
+
+<!--
+        <system type="planet" name="">
+          <physicalParameters>
+            <mass value=""/>
+            <meanRadius value=""/>
+            <density value=""/>
+            <siderealRotationPeriod value=""/>
+            <axialInclination value=""/>
+            <albedo value=""/>
+          </physicalParameters>
+          <orbitalElements>
+            <eccentricity value=""/>
+            <semiMajorAxis value=""/>
+            <siderealOrbitPeriod value=""/>
+          </orbitalElements>
+        </system>
+-->

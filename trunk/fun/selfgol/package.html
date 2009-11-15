@@ -1,0 +1,29 @@
+<html>
+  <body>
+    <p>This little program is the crowning achievement of my
+    programming career.</p>
+
+    <p>It is the result of a bet with some friends.  We were having
+    our typical language war.. Java vs. Ruby or Perl or whatever, and
+    the example of a self-printing game of life was brought up.  Some
+    guy had written one in Perl in 1KB of source.  I said that was
+    pretty impressive, but I bet I could do it in Java too.  They said
+    there was no way.  By the time we ironed out the details, I said I
+    figured I could do it in 1.5KB, as Java would definitely be a bit
+    more verbose than Perl.  I had 2 weeks to do it.</p>
+
+    <p>I mailed them this solution (1 byte less than 1.5KB ;) after a
+    few hours of work the next morning.  It starts with a splash
+    screen with my username at work, and then runs a <a
+    href="http://en.wikipedia.org/wiki/Conway's_Game_of_Life">Game of
+    Life</a> simulation with the splash as input.  It goes for a while
+    and then ends up in a final repeating pattern.</p>
+
+    <pre>
+      > javac G.java && java G 2> G.out
+      ... watch the show, Ctrl-C to exit ...
+      > diff G.java G.out
+      >
+    </pre>
+  </body>
+</html>
