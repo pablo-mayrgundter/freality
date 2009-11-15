@@ -1,0 +1,6 @@
+export JOS_BASE=$PWD
+export CLASSPATH=`find $JOS_BASE/lib -name "*.jar" -print | tr '\n' ':'`:$JOS_BASE
+export JIKESPATH=/usr/java/java/jre/lib/rt.jar:$CLASSPATH
+export LD_LIBRARY_PATH=export LD_LIBRARY_PATH=/usr/java/java/JMF-2.1.1e/lib:/usr/java/java/jre/lib/i386/xawt
+
+# Not sure what the equivalent commands are for windows
