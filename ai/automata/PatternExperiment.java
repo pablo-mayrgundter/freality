@@ -1,4 +1,4 @@
-package ai;
+package ai.automata;
 
 import java.util.ArrayList;
 import java.util.List;

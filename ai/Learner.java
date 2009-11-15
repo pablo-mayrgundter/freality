@@ -31,26 +31,21 @@ package ai;
  *
  * @author Pablo Mayrgundter
  */
-public abstract class Learner {
+public abstract class Learner<T> {
 
   /**
    * Risk is unknowable a priori and should be inversely proportional
    * to success/fecundity.
    */
-  double risk, goal;
+  public double risk;
+  public T goal;
 
-  Environment env;
+  public Environment<T> env;
 
   public Learner() {}
 
   /** Perceptual Control Feedback inner-loop. */
-  protected abstract void learn ();
+  public abstract void learn ();
 
-  /**
-   * Init method used instead of constructor to avoid redundant
-   * constructor chaining.
-   */
-  double distFromGoal (final double stimulus) {
-    return (stimulus - (goal = Math.max(goal, stimulus * risk)));
-  }
+  public abstract int compareToGoal (final T stimulus);
 }
