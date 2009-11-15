@@ -1,4 +1,4 @@
-package physics;
+package phys;
 
 public class Space2D {
 

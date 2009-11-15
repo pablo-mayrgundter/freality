@@ -1,4 +1,4 @@
-package physics.fire;
+package phys.fire;
 
 import java.awt.Canvas;
 import java.awt.Color;
@@ -51,7 +51,7 @@ class Fire extends JFrame implements Runnable {
     c.setSize(width, height);
     c.setBackground(Color.BLACK);
     getContentPane().add(c);
-    show();
+    setVisible(true);
 
     final int imgHeight = 100;
     final Graphics g = c.getGraphics();
