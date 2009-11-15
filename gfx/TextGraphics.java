@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import util.BitBuffer;
 
 /**
  * The TextGraphics class extends Java's Graphics2D class to display
@@ -105,13 +104,6 @@ public final class TextGraphics extends Graphics2D {
 
     public void drawLine (final int line, final String s) {
         p(VT100.cursorForce(line, 0) + s);
-    }
-
-    public void draw (final BitBuffer buf, final boolean scroll) {
-        for (int i = buf.position(), n = buf.limit(); i < n; i++)
-            System.out.print(buf.get(i) == 0 ? VT100.BG_BLACK+" " : VT100.BG_WHITE+" ");
-        if (scroll)
-            scroll();
     }
 
     public void scroll () {
