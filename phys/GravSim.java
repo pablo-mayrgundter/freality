@@ -1,37 +1,20 @@
 package phys;
 
-import gfx.FullScreenableFrame;
-import java.awt.image.BufferStrategy;
-import java.awt.Color;
 import java.awt.Graphics2D;
 
-final class GravSim implements Runnable {
+final class GravSim implements Runnable, Display.Renderer {
 
-  static final int NUM = Integer.parseInt(System.getProperty("num", "3"));
-  static final float GRAV = Integer.parseInt(System.getProperty("grav", "20"));
-  static final float SIZE = Float.parseFloat(System.getProperty("size", "1"));
+  static final int BLOBS = Integer.parseInt(System.getProperty("num", "100"));
 
+  final Display display;
   final ColoredBlob [] blobs;
-  final BufferStrategy strategy;
-  Graphics2D g;
-  int width, height;
-  float scale;
+  final int width, height;
 
-  final class ColoredBlob extends Blob {
-    Color color = null;
-    void setMass(final float mass) {
-      this.mass = mass;
-      final float shade = 1f - (float) (mass / (GRAV + Math.random() * 10.0));
-      color = new Color(shade, shade, shade);
-      radius = (int) (mass * SIZE);
-    }
-  }
-
-  GravSim(final int width, final int height, final int num, final BufferStrategy strategy) {
-    this.width = width;
-    this.height = height;
-    this.strategy = strategy;
-    blobs = new ColoredBlob[num];
+  GravSim() {
+    this.display = new Display(this);
+    this.width = display.width;
+    this.height = display.height;
+    blobs = new ColoredBlob[BLOBS];
     for (int i = 0; i < blobs.length; i++)
       blobs[i] = new ColoredBlob();
 
@@ -44,8 +27,8 @@ final class GravSim implements Runnable {
       grid(blobs);
       rendered = true;
     }
-    if (Boolean.getBoolean("orbital")) {
-      orbitals(blobs);
+    if (Boolean.getBoolean("orbits")) {
+      orbits(blobs);
       rendered = true;
     }
     if (!rendered)
@@ -61,7 +44,7 @@ final class GravSim implements Runnable {
     for (final ColoredBlob b : blobs) {
       b.coord.x = x;
       b.coord.y = y;
-      b.setMass(GRAV);
+      b.setMass(Blob.MAXMASS);
       x += xspacing;
       if (x > width) {
         x = 0;
@@ -76,25 +59,44 @@ final class GravSim implements Runnable {
       b.coord.y = (int) (height * Math.random());
       b.velocity.x = (float)(Math.random() - 0.5);
       b.velocity.y = (float)(Math.random() - 0.5);
-      b.setMass((float)(GRAV * Math.random()));
+      b.setMass((float)(Blob.MAXMASS * Math.random()));
     }
   }
 
-  static final float RADIUS = Float.parseFloat(System.getProperty("radius", "1"));
-  void orbitals(final ColoredBlob [] blobs) {
+  static final float RADIUS = Float.parseFloat(System.getProperty("radius", "100"));
+  static final int RINGS = Integer.parseInt(System.getProperty("rings", "10"));
+  static final int RINGSEP = Integer.parseInt(System.getProperty("ringsep", "10"));
+  void orbits(final ColoredBlob [] blobs) {
+    final float blobsPerRing = BLOBS / RINGS;
+    int step = 0;
+    float theta = 0, radius = RADIUS, xOff = width/2f, yOff = height/2f;
     for (int i = 0; i < blobs.length; i++) {
       final ColoredBlob b = blobs[i];
-      b.coord.x = RADIUS * (float)Math.sin((float)(Math.random() - 0.5f)) + width/2f;
-      b.coord.y = RADIUS * (float)Math.cos((float)(Math.random() - 0.5f)) + height/2f;
-      b.velocity.x = (float)Math.random();
-      b.velocity.y = (float)Math.random();
-      b.setMass(GRAV);
+      if (i % blobsPerRing == 0) {
+        step = 0;
+        radius += RINGSEP;
+      }
+      theta = (float)step / blobsPerRing * (float)Math.PI * 2f;
+      b.coord.x = xOff + radius * (float)Math.sin(theta);
+      b.coord.y = yOff + radius * (float)Math.cos(theta);
+      b.velocity.x = 0;
+      b.velocity.y = 0;
+      b.setMass(Blob.MAXMASS);
+      step++;
     }
   }
 
-  void draw(final boolean erase) {
-    g.setColor(Color.WHITE);
-    g.fillRect(0, 0, width, height);
+  static final int SLEEP = Integer.parseInt(System.getProperty("sleep", "0"));
+  public void run() {
+    while (true) {
+      display.draw();
+      Phys.doMotion(blobs);
+      Grav.doGrav(blobs);
+      try { Thread.sleep(SLEEP); } catch(InterruptedException e) { break; }
+    }
+  }
+
+  public void draw(final Graphics2D g) {
     int halfWidth = width/2;
     int halfHeight = height/2;
     for (ColoredBlob b : blobs) {
@@ -104,27 +106,7 @@ final class GravSim implements Runnable {
     }
   }
 
-  public void run() {
-    new Thread(new Runnable() {
-        public void run() {
-    while (true) {
-      g = (Graphics2D)strategy.getDrawGraphics();
-      draw(false);
-      g.dispose();
-      strategy.show();
-    }
-        }
-      }).start();
-          while (true) {
-            Phys.doMotion(blobs);
-            Grav.doGrav(blobs);
-          }
-  }
-
   public static void main(final String [] args) {
-    final FullScreenableFrame f = new FullScreenableFrame();
-    f.createBufferStrategy(2);
-    final BufferStrategy strategy = f.getBufferStrategy();
-    new Thread(new GravSim(f.getWidth(), f.getHeight(), NUM, strategy)).start();
+    new GravSim().run();
   }
 }
