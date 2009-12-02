@@ -189,7 +189,7 @@ class Scene extends TransformGroup {
     for (int i = 0; i < orbitCoords.length; i++)
       orbitCoords[i] = new Point3f();
     castDownRef.getPositions(orbitCoords);
-    //        planetTG.addChild(new Orbit3D(orbitCoords));
+    planetTG.addChild(new Orbit3D(orbitCoords));
 
     // Now add orbit interp. Everything below here will move along
     // the orbital path along with the planet.
