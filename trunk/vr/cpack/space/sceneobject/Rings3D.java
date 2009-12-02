@@ -1,18 +1,28 @@
 package vr.cpack.space.sceneobject;
 
 import java.net.URL;
-import org.xith3d.scenegraph.*;
+import javax.media.j3d.Appearance;
+import javax.media.j3d.ColoringAttributes;
+import javax.media.j3d.GeometryStripArray;
+import javax.media.j3d.IndexedQuadArray;
+import javax.media.j3d.LineAttributes;
+import javax.media.j3d.Material;
+import javax.media.j3d.Shape3D;
+import javax.media.j3d.TextureAttributes;
+import javax.media.j3d.Texture;
+import javax.media.j3d.TriangleStripArray;
+import javax.media.j3d.TransparencyAttributes;
 import javax.vecmath.Color3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.TexCoord2f;
 import org.freality.gui.three.Colors;
-import org.freality.gui.three.AppearanceUtil;
+import org.freality.gui.three.Textures;
 
 /**
  * Visualization of planetery rings.
  *
  * @author <a href="mailto:pablo@freality.com">Pablo Mayrgundter</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.1.1.1 $
  */
 public class Rings3D extends Shape3D {
 
@@ -110,15 +120,27 @@ public class Rings3D extends Shape3D {
     }
 
     static final Appearance makeApp() {
-        final Appearance appearance = AppearanceUtil.makeAppearance("rings.png");
+        final Appearance appearance = new Appearance();
+        material.setLightingEnable(true);
 
         appearance.setLineAttributes(new LineAttributes(1f, LineAttributes.PATTERN_SOLID, true));
-        final PolygonAttributes pa = new PolygonAttributes();
-        pa.setPolygonMode(PolygonAttributes.POLYGON_LINE);
+        final javax.media.j3d.PolygonAttributes pa = new javax.media.j3d.PolygonAttributes();
+        //        pa.setPolygonMode(javax.media.j3d.PolygonAttributes.POLYGON_LINE);
         pa.setBackFaceNormalFlip(true);
-        pa.setCullFace(org.xith3d.scenegraph.PolygonAttributes.CULL_NONE);
+        pa.setCullFace(javax.media.j3d.PolygonAttributes.CULL_NONE);
         appearance.setPolygonAttributes(pa);
 
+        org.freality.io.loader.java.Handler.register();
+        URL ringURL = null;
+        try {
+            ringURL = new URL(TEXTURE_BASE_URL + "/rings.png");
+        } catch (Exception e) {
+            System.err.println("couldn't load ring url: " + e);
+            return null;
+        }
+
+        Textures.addAlphaTransparentTexture(appearance, ringURL);
+        
         return appearance;
     }
 }

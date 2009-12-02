@@ -1,11 +1,11 @@
 package vr.cpack.space.sceneobject;
 
+import vr.cpack.space.SceneScaling;
 import vr.cpack.space.data.HYGLoader;
 import vr.cpack.space.model.CelestialBody;
 import vr.cpack.space.model.Color;
 import vr.cpack.space.model.Coordinate;
 import vr.cpack.space.model.Star;
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,14 +13,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
-
+import javax.media.j3d.Appearance;
+import javax.media.j3d.ColoringAttributes;
+import javax.media.j3d.Material;
+import javax.media.j3d.PointArray;
+import javax.media.j3d.PointAttributes;
+import javax.media.j3d.Shape3D;
+import javax.media.j3d.TransformGroup;
 import javax.vecmath.Color3f;
-
 import org.freality.gui.three.Colors;
-import org.freality.gui.three.SceneScaling;
 import org.freality.util.Measure;
-
-import org.xith3d.scenegraph.*;
 
 /**
  * This is a short-term solution to integrating stars into the
@@ -33,12 +35,12 @@ import org.xith3d.scenegraph.*;
  */
 public class Stars3D extends TransformGroup {
 
-    static final double MIN_MAGNITUDE = 50;
+    static final int MIN_MAGNITUDE = 0;
 
-    public Stars3D (final SceneScaling scaling) {
+    public Stars3D(SceneScaling scaling) {
 
         //        Map<String, ? extends CelestialBody> stars = null;
-        Map<String, Star> stars = null;
+        Map stars = null;
 
         try {
             //            final String starURL = System.getProperty("stars", "http://freality.org/library/data/vr.cpack/space/data/hygfull.csv.gz");
@@ -51,37 +53,49 @@ public class Stars3D extends TransformGroup {
             return;
         }
 
-        double maxMagnitude = MIN_MAGNITUDE;
+        double maxMagnitude = 1000f;
         // Group stars by magnitudes.
-        final Map<MagColor, List<RenderedStar>> starListsByMagAndColor = new HashMap<MagColor, List<RenderedStar>>();
-        for (final String starName : stars.keySet()) {
+        //        final Map<MagColor, List<RenderedStar>> starListsByMagAndColor = new HashMap<MagColor, List<RenderedStar>>();
+        final Map starListsByMagAndColor = new HashMap();
+        final Iterator starNameItr = stars.keySet().iterator();
+        //        for (String starName : stars.keySet()) {
+        while (starNameItr.hasNext()) {
+            final String starName = (String) starNameItr.next();
             final Star s = (Star) stars.get(starName);
             final RenderedStar star = new RenderedStar(s);
             if (star.magColor.magnitude > MIN_MAGNITUDE)
                 continue;
-            if (star.magColor.magnitude > maxMagnitude)
+            if (star.magColor.magnitude < maxMagnitude)
                 maxMagnitude = star.magColor.magnitude;
-            List<RenderedStar> singleMagList = starListsByMagAndColor.get(star.magColor);
+            //            List<RenderedStar> singleMagList = starListsByMagAndColor.get(star.magColor);
+            List singleMagList = (List) starListsByMagAndColor.get(star.magColor);
             if (singleMagList == null)
-                starListsByMagAndColor.put(star.magColor, singleMagList = new ArrayList<RenderedStar>());
+                starListsByMagAndColor.put(star.magColor, singleMagList = new ArrayList());
+            //                starListsByMagAndColor.put(star.magColor, singleMagList = new ArrayList<RenderedStar>());
             singleMagList.add(star);
         }
 
         // Construct point arrays for each magnitude group, with
         // appropriate appearance.
-        System.out.println("# star rendering groups: "+ starListsByMagAndColor.keySet().size());
-        for (final MagColor magColor : starListsByMagAndColor.keySet()) {
-            final List<RenderedStar> singleMagList = starListsByMagAndColor.get(magColor);
+        final Iterator magColorItr = starListsByMagAndColor.keySet().iterator();
+        //        for (MagColor magColor : starListsByMagAndColor.keySet()) {
+        while (magColorItr.hasNext()) {
+            final MagColor magColor = (MagColor) magColorItr.next();
+            //            final List<RenderedStar> singleMagList = starListsByMagAndColor.get(magColor);
+            final List singleMagList = (List) starListsByMagAndColor.get(magColor);
             final PointArray points = new PointArray(singleMagList.size(), PointArray.COORDINATES);
-            final float [] c = new float[3];
+            final double [] c = new double[3];
             int count = 0;
-            for (final RenderedStar star : singleMagList) {
+            //            for (RenderedStar star : singleMagList) {
+            final Iterator starItr = singleMagList.iterator();
+            while (starItr.hasNext()) {
+                final RenderedStar star = (RenderedStar) starItr.next();
                 final double ra  = Math.toRadians((star.c.ra / 24.0) * 360.0);
                 final double dec = Math.toRadians(-star.c.dec + 90.0); // -90 -> 180, 0 -> 90, 90 -> 0, y=-x + 90
                 final double distance = scaling.scale(star.c.distance).scalar;
-                c[0] = (float) (distance * Math.sin(ra) * Math.sin(dec));
-                c[1] = (float) (distance * Math.cos(dec));
-                c[2] = (float) (distance * Math.cos(ra) * Math.sin(dec));
+                c[0] = distance * Math.sin(ra) * Math.sin(dec);
+                c[1] = distance * Math.cos(dec);
+                c[2] = distance * Math.cos(ra) * Math.sin(dec);
                 points.setCoordinate(count++, c);
                 //                System.out.printf("%s: %.2f, %.2f, %.2f, %.2f, %.2f\n", star.name, ra, dec, c[0], c[1], c[2]);
             }
@@ -97,13 +111,13 @@ public class Stars3D extends TransformGroup {
             this.colorIndex = colorIndex;
         }
         int magBucket() {
-            return (int) (magnitude / 100f);
+            return (int) magnitude;
         }
         int colorBucket() {
             return (int) (colorIndex * 10f);
         }
         public int hashCode() {
-            return (int)((float) magBucket()) + colorBucket();
+            return (int)((float) magBucket() * 1000f) + colorBucket();
         }
         public boolean equals(Object o) {
             return ((MagColor)o).hashCode() == hashCode();
@@ -134,7 +148,7 @@ public class Stars3D extends TransformGroup {
      * according to this quote "Color index is now defined as the B
      * magnitude minus the V magnitude. A pure white star has a B-V of
      * about 0.2, our yellow Sun is 0.63, orange-red Betelgeuse is
-     * 1.85, and the bluest star believed possible is -0.4  pale
+     * 1.85, and the bluest star believed possible is -0.4 â pale
      * blue-white."
      * (http://cobalt.golden.net/~kwastro/Stellar%20Magnitude%20System.htm).
      */
@@ -148,7 +162,7 @@ public class Stars3D extends TransformGroup {
         final float delta = max - mag;
         final PointAttributes pa = new PointAttributes(delta * 0.5f, true);
         appearance.setPointAttributes(pa);
-        final float brightnessReduction = (4f * mag) / max;
+        final float brightnessReduction = (2f * mag) / max;
         final ColoringAttributes ca = new ColoringAttributes(new Color3f(c.red * brightnessReduction,
                                                                          c.green * brightnessReduction,
                                                                          c.blue * brightnessReduction),
