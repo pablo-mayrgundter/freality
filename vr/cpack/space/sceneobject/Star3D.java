@@ -1,66 +1,69 @@
 package vr.cpack.space.sceneobject;
 
-import org.freality.gui.three.AppearanceUtil;
-import org.freality.gui.three.Colors;
-import org.xith3d.behaviors.TransformationDirectives;
-import org.xith3d.behaviors.impl.RotatableGroup;
-import org.xith3d.render.loop.scheduler.Animator;
-import org.xith3d.scenegraph.Group;
-import org.xith3d.scenegraph.Node;
-import org.xith3d.scenegraph.Shape3D;
-import org.xith3d.scenegraph.Transform3D;
-import org.xith3d.scenegraph.TransformGroup;
+import com.sun.j3d.utils.geometry.Sphere;
 
-    /*
-    tilt
-      |
-     rot
-      |
-    Shape
-    */
+import vr.cpack.space.SceneScaling;
+import vr.cpack.space.model.CelestialBody;
+import vr.cpack.space.model.Star;
+
+import java.net.URL;
+
+import javax.media.j3d.Appearance;
+import javax.media.j3d.Group;
+import javax.media.j3d.Material;
+import javax.media.j3d.Shape3D;
+import javax.media.j3d.Texture;
+import javax.media.j3d.Texture2D;
+import javax.media.j3d.TextureAttributes;
+import javax.vecmath.Color3f;
+
+import org.freality.gui.three.Colors;
+import org.freality.gui.three.Textures;
+
 public class Star3D extends Group {
 
-    final Group mHeadTG;
+    static final int DEFAULT_RESOLUTION = 120;
 
-    public Star3D (final String name, final float radius,
-                   final float tiltDegrees, final float rotPeriod,
-                   final Animator animator) {
-        mHeadTG = new TransformGroup();
-        mHeadTG.addChild(createTexturedSphere(name, radius));
-        addChild(rotateOnTiltedAxis(mHeadTG, tiltDegrees, rotPeriod, animator));
+    final Star mCelestialBody;
+    final SceneScaling mScaling;
+
+    public Star3D(Star star, SceneScaling scaling, String textureURLBase) {
+        mCelestialBody = star;
+        mScaling = scaling;
+
+        URL url = null;
+        try {
+            url = new URL(textureURLBase + "/" + mCelestialBody.name + ".jpg");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (url == null)
+            addChild(makeSphere(makeAppearance()));
+        else
+            addChild(makeSphere(makeTexturedAppearance(url, TextureAttributes.DECAL)));
     }
 
-    protected Shape3D createTexturedSphere (final String textureBasename, final float radius) {
-        final Shape3D shape = AppearanceUtil.makeTexturedSphere(radius, textureBasename + ".jpg");
-        shape.getAppearance().getMaterial().setEmissiveColor(Colors.WHITE);
-        return shape;
+    Sphere makeSphere(Appearance app) {
+        return new Sphere((float) mScaling.scale(mCelestialBody.meanRadius).scalar,
+                          Sphere.GENERATE_NORMALS | Sphere.GENERATE_TEXTURE_COORDS,
+                          DEFAULT_RESOLUTION,
+                          app);
     }
 
-    TransformGroup rotateOnTiltedAxis (final Node node,
-                                       final float tiltDegrees,
-                                       final float rotPeriod,
-                                       final Animator animator) {
-
-        final RotatableGroup rotGroup = createRotatableGroup(rotPeriod, animator);
-        rotGroup.addChild(node);
-
-        final TransformGroup tg = wrap(rotGroup);
-        final Transform3D tilt = new Transform3D();
-        tilt.rotZ((float) Math.toRadians(tiltDegrees));
-        tg.setTransform(tilt);
-
-        return tg;
+    Appearance makeAppearance() {
+        final Appearance starApp = new Appearance();
+        final Material m = new Material(Colors.BLACK, Colors.BLACK, Colors.BLACK, Colors.WHITE, 0f);
+        m.setLightingEnable(false);
+        starApp.setMaterial(m);
+        return starApp;
     }
 
-    RotatableGroup createRotatableGroup (final float rotPeriod, final Animator animator) {
-        final RotatableGroup rotGroup = new RotatableGroup(new TransformationDirectives(0, rotPeriod, 0));
-        animator.addAnimatableObject(rotGroup);
-        return rotGroup;
-    }
-
-    protected TransformGroup wrap (final TransformGroup tg) {
-        final TransformGroup wrapper = new TransformGroup();
-        wrapper.addChild(tg);
-        return wrapper;
+    Appearance makeTexturedAppearance(URL textureURL, int texMode) {
+        final Appearance starApp = new Appearance();
+        final Material m = new Material(Colors.BLACK, Colors.BLACK, Colors.BLACK, Colors.WHITE, 0f);
+        m.setLightingEnable(false);
+        starApp.setMaterial(m);
+        Textures.addTexture(starApp, textureURL, texMode);
+        return starApp;
     }
 }

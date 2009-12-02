@@ -1,10 +1,10 @@
 package vr.cpack.space;
 
 import vr.cpack.space.model.Orbit;
-import org.xith3d.behaviors.Alpha;
-import org.xith3d.behaviors.impl.AlphaImpl;
-import org.xith3d.behaviors.impl.PositionPathInterpolatorImpl;
-import org.xith3d.scenegraph.*;
+import javax.media.j3d.Alpha;
+import javax.media.j3d.PositionPathInterpolator;
+import javax.media.j3d.Transform3D;
+import javax.media.j3d.TransformGroup;
 import javax.vecmath.Point3f;
 
 /**
@@ -15,9 +15,9 @@ import javax.vecmath.Point3f;
  * aphelion.
  *
  * @author <a href="mailto:pablo@freality.com">Pablo Mayrgundter</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.1.1.1 $
  */
-class OrbitInterpolator extends PositionPathInterpolatorImpl {
+class OrbitInterpolator extends PositionPathInterpolator {
 
     /**
      * Constructs an OrbitInterpolator of the given parameters.  The
@@ -49,7 +49,6 @@ class OrbitInterpolator extends PositionPathInterpolatorImpl {
         final Point3f [] points = new Point3f[resolution];
         final double increment = Math.PI * 2.0 / (float) resolution;
         final double a = scaling.scale(orbit.semiMajorAxis).scalar;
-        System.out.println("orbit a: "+ a);
         final double b = a * Math.sqrt(1.0 - Math.pow(orbit.eccentricity, 2.0));
         double x = 0f;
         for (int i = 0; i < resolution; i++) {

@@ -1,6 +1,12 @@
 package vr.cpack.space.sceneobject;
 
-import org.xith3d.scenegraph.*;
+import javax.media.j3d.Appearance;
+import javax.media.j3d.ColoringAttributes;
+import javax.media.j3d.Group;
+import javax.media.j3d.LineAttributes;
+import javax.media.j3d.LineStripArray;
+import javax.media.j3d.Material;
+import javax.media.j3d.Shape3D;
 import javax.vecmath.Color3f;
 import javax.vecmath.Point3f;
 
