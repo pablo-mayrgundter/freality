@@ -9,12 +9,12 @@ import javax.swing.JLabel;
  * @version $Revision: 1.1.1.1 $
  */
 class Clock extends JLabel implements Runnable {
-    public void run() {
-        while (true) {
-            setText(new java.util.Date().toString());
-            try {
-                Thread.currentThread().sleep(1000);
-            } catch(InterruptedException e) { break; }
-        }
+  public void run() {
+    while (true) {
+      setText(new java.util.Date().toString());
+      try {
+        Thread.currentThread().sleep(1000);
+      } catch(InterruptedException e) { break; }
     }
+  }
 }
