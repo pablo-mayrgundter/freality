@@ -16,42 +16,42 @@ import javax.swing.JMenu;
  */
 public abstract class Application extends JInternalFrame {
 
-    protected Application() {}
+  protected Application() {}
 
-    protected Application(String name) {
-        super(name,
-              true, // resizable
-              true, // closable
-              true, // maximizable
-              true); // iconifiable
-        setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
+  protected Application(String name) {
+    super(name,
+          true, // resizable
+          true, // closable
+          true, // maximizable
+          true); // iconifiable
+    setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
+  }
+
+  public static String CLASS;
+  public static void main(String [] args) {
+
+    Application app = null;
+    try {
+      app = (Application) Class.forName(CLASS).newInstance();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return;
     }
 
-    public static String CLASS;
-    public static void main(String [] args) {
+    Component [] components = app.getComponents();
+    LayoutManager layout = app.getLayout();
+    final JFrame frame = new JFrame();
+    frame.getContentPane().setLayout(layout);
 
-        Application app = null;
-        try {
-            app = (Application) Class.forName(CLASS).newInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
+    for (Component c : components)
+      frame.getContentPane().add(c);
 
-        Component [] components = app.getComponents();
-        LayoutManager layout = app.getLayout();
-        final JFrame frame = new JFrame();
-        frame.getContentPane().setLayout(layout);
-
-        for (Component c : components)
-            frame.getContentPane().add(c);
-
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
-        Insets appInsets = app.getInsets();
-        int width = app.getWidth() + appInsets.left + appInsets.right;
-        int height = app.getHeight() + appInsets.top + appInsets.bottom;
-        height += frame.getInsets().top;
-        frame.setSize(width, height);
-    }
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    frame.setVisible(true);
+    Insets appInsets = app.getInsets();
+    int width = app.getWidth() + appInsets.left + appInsets.right;
+    int height = app.getHeight() + appInsets.top + appInsets.bottom;
+    height += frame.getInsets().top;
+    frame.setSize(width, height);
+  }
 }
