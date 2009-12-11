@@ -1,11 +1,10 @@
 package org.freality.gui.three;
 
+import gfx.FullScreenableFrame;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.Toolkit;
-import java.awt.Window;
 import javax.media.j3d.Canvas3D;
-import javax.swing.JFrame;
-import javax.media.j3d.Bounds;
 import javax.media.j3d.BoundingSphere;
 import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Locale;
@@ -15,47 +14,57 @@ import javax.media.j3d.VirtualUniverse;
  *  VirtualUniverse -> Locale -> BranchGroups -> TransformGroup ->
  *  ViewPlatform <- View
  */
-class SceneTest {
+public class SceneTest {
 
-    static int width = 640, height = 480;
+  protected final BranchGroup scene;
+  protected final DefaultView view;
+  protected final ViewPlatformGroup vpg;
+  protected final VirtualUniverse universe;
+  protected final Locale locale;
+  final FullScreenableFrame frame;
 
-    public static void main(String [] args) {
+  public SceneTest(final BranchGroup scene) {
+    this.scene = scene;
 
-        final SimpleScene scene = new SimpleScene();
+    view = new DefaultView();
 
-        final DefaultView view = new DefaultView();
+    vpg = new ViewPlatformGroup(view, scene.getBounds());
+    view.attachViewPlatform(vpg.getViewPlatform());
 
-        final BranchGroup bg = scene.createSceneGraph();
+    universe = new VirtualUniverse();
+    locale = new Locale(universe);
 
-        final ViewPlatformGroup vpg = new ViewPlatformGroup(view, scene.getSceneBounds());
-        //    view.makeViewBehaviors(vpg, scene.sceneBounds);
-        view.attachViewPlatform(vpg.getViewPlatform());
+    scene.addChild(vpg);
+    frame = new FullScreenableFrame();
+  }
 
-        final VirtualUniverse universe = new VirtualUniverse();
-        final Locale locale = new Locale(universe);
+  public void makeLive() {
+    locale.addBranchGraph(scene);
+  }
 
-        bg.addChild(vpg);
+  public int getFrameWidth() {
+    return frame.getWidth();
+  }
 
-        // Make the scene live.
-        locale.addBranchGraph(bg);
+  public int getFrameHeight() {
+    return frame.getHeight();
+  }
 
-        final Canvas3D canvas = view.getCanvas3D();
-        final JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        final Dimension windowSize;
+  public void showScreenFrame() {
+    final Canvas3D canvas = view.getCanvas3D();
+    final Dimension windowSize;
 
-        if (args.length == 1 && args[0].equalsIgnoreCase("-fs")) {
-            final Toolkit tk = Toolkit.getDefaultToolkit();
-            windowSize = tk.getScreenSize();
-            final Window window = new Window(frame);
-            window.setSize(windowSize);
-            window.add(canvas);
-            window.setVisible(true);
-        } else {
-            windowSize = new Dimension(width, height);
-            frame.setSize(windowSize);
-            frame.getContentPane().add(canvas);
-            frame.setVisible(true);
-        }
-    }
+    frame.getContentPane().add(canvas);
+
+    final Toolkit tk = Toolkit.getDefaultToolkit();
+    frame.getContentPane().setCursor(tk.createCustomCursor(tk.createImage(new byte[]{}),
+                                                           new Point(0, 0), "Pointer"));
+    frame.setVisible(true);
+  }
+
+  public static void main(final String [] args) {
+    final SimpleScene scene = new SimpleScene();
+    final SceneTest t = new SceneTest(scene);
+    t.showScreenFrame();
+  }
 }

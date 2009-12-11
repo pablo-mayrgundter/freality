@@ -18,7 +18,7 @@ import org.freality.gui.three.ExponentialKeyNavigatorBehavior;
 /**
  * @author Pablo Mayrgundter
  */
-class SpaceShipNavigator {
+public class SpaceShipNavigator {
 
   final View view;
   final Bounds sceneBounds;
