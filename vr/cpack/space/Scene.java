@@ -17,6 +17,7 @@ import javax.media.j3d.Alpha;
 import javax.media.j3d.AmbientLight;
 import javax.media.j3d.Bounds;
 import javax.media.j3d.BoundingSphere;
+import javax.media.j3d.BranchGroup;
 import javax.media.j3d.DistanceLOD;
 import javax.media.j3d.Node;
 import javax.media.j3d.PointLight;
@@ -39,7 +40,7 @@ import org.freality.util.Measure;
  * @author <a href="mailto:pablo@freality.com">Pablo Mayrgundter</a>
  * @version $Revision: 1.1.1.1 $
  */
-class Scene extends TransformGroup {
+class Scene extends BranchGroup {
 
   static {
     org.freality.io.loader.java.Handler.register();
@@ -52,23 +53,19 @@ class Scene extends TransformGroup {
   static final String PLANETS_URL = System.getProperty("planets", "java:vr/cpack/space/data/solarSystem.xml");
   static final String TEXTURE_BASE_URL = System.getProperty("textures", "java:vr/cpack/space/textures");
 
-  //    final Map<String, ViewPlatform> viewPlatforms;
-  final Map viewPlatforms;
-  //    final Map<String, TransformGroup> systemTGMap;
-  final Map systemTGMap;
+  final Map<String, ViewPlatform> viewPlatforms;
+  final Map<String, TransformGroup> systemTGMap;
   final Node [] destinationNodes;
 
-  Scene(Bounds bounds) {
-    setBounds(bounds);
-    //        viewPlatforms = new HashMap<String, ViewPlatform>();
-    viewPlatforms = new HashMap();
+  Scene() {
     setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
     setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
     setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
     setCapability(TransformGroup.ALLOW_BOUNDS_READ);
-    //        systemTGMap = new HashMap<String, TransformGroup>();
-    systemTGMap = new HashMap();
+    viewPlatforms = new HashMap<String, ViewPlatform>();
+    systemTGMap = new HashMap<String, TransformGroup>();
     destinationNodes = new Node[10];
+    load();
   }
 
   SceneScaling scaling = null;
@@ -84,8 +81,7 @@ class Scene extends TransformGroup {
 
     // Read scene info and compute scaling.
     dae = SpaceHandler.parseToBodyMap(PLANETS_URL);
-    //        final Map<String, ? extends CelestialBody> bodyMap = dae.bodies;
-    final Map bodyMap = dae.bodies;
+    final Map<String, ? extends CelestialBody> bodyMap = dae.bodies;
     scaling = new SceneScaling(Measure.Magnitude.MEGA); // Scale everything *down* by 1000.
 
     // Sun.
