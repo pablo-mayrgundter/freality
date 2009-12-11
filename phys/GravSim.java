@@ -1,19 +1,22 @@
 package phys;
 
 import java.awt.Graphics2D;
+import gfx.Display3D;
 
 final class GravSim implements Runnable, Display.Renderer {
 
   static final int BLOBS = Integer.parseInt(System.getProperty("num", "100"));
 
-  final Display display;
+  //  final Display display;
+  final Display3D display3d;
   final ColoredBlob [] blobs;
   final int width, height;
 
   GravSim() {
-    this.display = new Display(this);
-    this.width = display.width;
-    this.height = display.height;
+    //    this.display = new Display(this);
+    this.display3d = new Display3D();
+    this.width = display3d.getFrameWidth();
+    this.height = display3d.getFrameHeight();
     blobs = new ColoredBlob[BLOBS];
     for (int i = 0; i < blobs.length; i++)
       blobs[i] = new ColoredBlob();
@@ -35,30 +38,42 @@ final class GravSim implements Runnable, Display.Renderer {
       grid(blobs);
     if (Boolean.getBoolean("tracer"))
       blobs[blobs.length - 1].color = new java.awt.Color(0, 0, 1f);
+    for (int i = 0; i < blobs.length; i++) {
+      final Blob b = blobs[i];
+      display3d.addBall(i+"", b.coord.x, b.coord.y, b.coord.z);
+    }
+    display3d.setVisible();
   }
 
   void grid(final ColoredBlob [] blobs) {
-    int x = 0, y = 0,
-      xspacing = width / (int) Math.sqrt(blobs.length),
-      yspacing = height / (int) Math.sqrt(blobs.length);
-    for (final ColoredBlob b : blobs) {
-      b.coord.x = x;
-      b.coord.y = y;
+    float x = 0, y = 0, z = 0;
+    float cubeRoot = (float)Math.pow(blobs.length, 0.33);
+    float halfCubeRoot = cubeRoot / 2f;
+    for (int i = 0; i < blobs.length; i++) {
+      final Blob b = blobs[i];
+      b.coord.x = x - halfCubeRoot;
+      b.coord.y = y - halfCubeRoot;
+      b.coord.z = z - halfCubeRoot;
       b.setMass(Blob.MAXMASS);
-      x += xspacing;
-      if (x > width) {
+      x++;
+      if (x >= cubeRoot) {
         x = 0;
-        y += yspacing;
+        y++;
+        if (y >= cubeRoot) {
+          y = 0;
+          z++;
+        }
       }
     }
   }
 
   void randomize(final ColoredBlob [] blobs) {
     for (final ColoredBlob b : blobs) {
-      b.coord.x = (int) (width * Math.random());
-      b.coord.y = (int) (height * Math.random());
-      b.velocity.x = (float)(Math.random() - 0.5);
-      b.velocity.y = (float)(Math.random() - 0.5);
+      b.coord.x = 50f * (float)Math.random() - 25f;
+      b.coord.y = 50f * (float)Math.random() - 25f;
+      b.coord.z = 50f * (float)Math.random() - 25f;
+//      b.velocity.x = (float)(Math.random() - 0.5);
+//      b.velocity.y = (float)(Math.random() - 0.5);
       b.setMass((float)(Blob.MAXMASS * Math.random()));
     }
   }
@@ -89,7 +104,8 @@ final class GravSim implements Runnable, Display.Renderer {
   static final int SLEEP = Integer.parseInt(System.getProperty("sleep", "0"));
   public void run() {
     while (true) {
-      display.draw();
+      //draw();
+      move3d();
       Phys.doMotion(blobs);
       Grav.doGrav(blobs);
       try { Thread.sleep(SLEEP); } catch(InterruptedException e) { break; }
@@ -99,14 +115,22 @@ final class GravSim implements Runnable, Display.Renderer {
   public void draw(final Graphics2D g) {
     int halfWidth = width/2;
     int halfHeight = height/2;
-    for (ColoredBlob b : blobs) {
+    for (final ColoredBlob b : blobs) {
       g.setColor(b.color);
       int halfRadius = b.radius / 2;
       g.fillOval((int)b.coord.x - halfRadius, (int)b.coord.y - halfRadius, b.radius, b.radius);
     }
   }
 
+  public void move3d() {
+    for (int i = 0; i < blobs.length; i++) {
+      final Blob b = blobs[i];
+      display3d.setBall(i+"", b.coord.x, b.coord.y, b.coord.z);
+    }
+  }
+
   public static void main(final String [] args) {
-    new GravSim().run();
+    final GravSim g = new GravSim();
+    g.run();
   }
 }
