@@ -6,17 +6,14 @@
     <vendor>Google</vendor>
     <description>Gravity in 3d</description>
     <offline-allowed/> 
-    <shortcut online="false">
-      <desktop/>
-      <menu submenu=""/>
-    </shortcut>
+    <shortcut online="false"/>
   </information>
   <security>
    <all-permissions/>
   </security>
   <resources>
     <j2se version="1.6+"/>
-    <jar href="grav3d-signed.jar"/>
+    <jar href="Grav3d.jar"/>
     <property name="fs" value="false"/>
     <property name="sleep" value="0"/>
     <property name="num" value="512"/>
