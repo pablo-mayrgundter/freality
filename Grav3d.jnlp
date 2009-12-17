@@ -3,13 +3,13 @@
   <information>
     <title>Grav 3d</title>
     <homepage href="http://code.google.com/p/freality/source/browse/trunk/phys/GravSim.java"/>
-    <vendor>googlecode</vendor>
+    <vendor>freality.googlecode.com</vendor>
     <description>Gravity in 3d</description>
     <offline-allowed/> 
     <shortcut online="false"/>
   </information>
   <security>
-   <all-permissions/>
+    <all-permissions/>
   </security>
   <resources>
     <j2se version="1.6+"/>
