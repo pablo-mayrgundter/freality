@@ -1,7 +1,7 @@
 package phys;
 
 final class Grav {
-  static final float S1 = Float.parseFloat(System.getProperty("s1", "1"));
+  static final float S1 = Float.parseFloat(System.getProperty("s1", "0.00001"));
   static final float MINDIST = Float.parseFloat(System.getProperty("mindist", "1"));
   static void doGrav(final Blob [] blobs) {
     for (int i = 0; i < blobs.length; i++) {

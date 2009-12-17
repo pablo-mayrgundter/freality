@@ -35,7 +35,8 @@ public class Display3D extends SceneTest {
     final SpaceShipNavigator nav =
       new SpaceShipNavigator(vpg.getTransformGroup(), view, ((Scene)scene).bounds);
 
-    final PointLight light = new PointLight(Colors.WHITE, new Point3f(0,0,0), new Point3f(0,0.2f,0.01f));
+    final PointLight light = new PointLight(Colors.WHITE, new Point3f(0,2,0),
+                                            new Point3f(0,0.2f,0.01f));
     light.setInfluencingBounds(((Scene)scene).bounds);
     vpg.getTransformGroup().addChild(light);
   }
@@ -76,13 +77,7 @@ public class Display3D extends SceneTest {
       final Background bg = new Background(new Color3f(0.05f,0.05f,0.1f));
       addChild(bg);
       bg.setApplicationBounds(bounds);
-      //      addAmbientLight();
       addPointLights();
-    }
-    void addAmbientLight() {
-      final AmbientLight light = new AmbientLight();
-      light.setInfluencingBounds(bounds);
-      addChild(light);
     }
     void addPointLights() {
       Light light = new PointLight(Colors.BLUE, new Point3f(0,0,0), new Point3f(0.5f,0,0.01f));

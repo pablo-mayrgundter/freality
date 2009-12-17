@@ -3,7 +3,7 @@
   <information>
     <title>Grav 3d</title>
     <homepage href="http://code.google.com/p/freality/source/browse/trunk/phys/GravSim.java"/>
-    <vendor>Google</vendor>
+    <vendor>googlecode</vendor>
     <description>Gravity in 3d</description>
     <offline-allowed/> 
     <shortcut online="false"/>
@@ -14,9 +14,8 @@
   <resources>
     <j2se version="1.6+"/>
     <jar href="Grav3d.jar"/>
-    <property name="fs" value="false"/>
-    <property name="sleep" value="0"/>
-    <property name="num" value="512"/>
+    <property name="sleep" value="20"/>
+    <property name="num" value="128"/>
   </resources>
   <application-desc main-class="phys.GravSim"/>
 </jnlp>
