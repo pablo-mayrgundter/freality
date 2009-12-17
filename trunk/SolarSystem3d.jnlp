@@ -3,13 +3,13 @@
   <information>
     <title>Solar System 3d</title>
     <homepage href="http://code.google.com/p/freality/source/browse/trunk/vr/cpack/space/SimpleSolarSystem.java"/>
-    <vendor>googlecode</vendor>
+    <vendor>freality.googlecode.com</vendor>
     <description>Solar System in 3d</description>
     <offline-allowed/> 
     <shortcut online="false"/>
   </information>
   <security>
-   <all-permissions/>
+    <all-permissions/>
   </security>
   <resources>
     <j2se version="1.5+" max-heap-size="150m"/>
