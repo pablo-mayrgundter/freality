@@ -39,7 +39,7 @@ public class Desktop extends FullScreenableFrame implements ActionListener {
     setVisible(true);
     mDesktop = new JDesktopPane();
 
-    ImageIcon image = new ImageIcon("/Users/pmy/Pictures/Archaeology/31616229.JPG");
+    ImageIcon image = new ImageIcon("desktop.jpg");
     //        mDesktop.add(image, new Integer(0), 0);
     JLabel l = new JLabel(image);
     l.setBounds(0, 0, getWidth(), getHeight());
