@@ -1,22 +1,29 @@
 package phys;
 
 import java.awt.Graphics2D;
+import gfx.Display;
+import gfx.Display2D;
 import gfx.Display3D;
+import gfx.Graphics3D;
 
 final class GravSim implements Runnable, Display.Renderer {
 
   static final int BLOBS = Integer.parseInt(System.getProperty("num", "100"));
+  static final boolean THREE = Boolean.getBoolean("three");
 
-  //  final Display display;
-  final Display3D display3d;
+  final Display display;
   final ColoredBlob [] blobs;
-  final int width, height;
+  final int width, height, depth;
 
   GravSim() {
-    //    this.display = new Display(this);
-    this.display3d = new Display3D();
-    this.width = display3d.getFrameWidth();
-    this.height = display3d.getFrameHeight();
+    if (THREE) {
+      this.display = new Display3D(this);
+    } else {
+      this.display = new Display2D(this);
+    }
+    this.width = display.getFrameWidth();
+    this.height = display.getFrameHeight();
+    this.depth = Math.min(width,height);
     blobs = new ColoredBlob[BLOBS];
     for (int i = 0; i < blobs.length; i++)
       blobs[i] = new ColoredBlob();
@@ -38,11 +45,20 @@ final class GravSim implements Runnable, Display.Renderer {
       grid(blobs);
     if (Boolean.getBoolean("tracer"))
       blobs[blobs.length - 1].color = new java.awt.Color(0, 0, 1f);
-    for (int i = 0; i < blobs.length; i++) {
-      final Blob b = blobs[i];
-      display3d.addBall(i+"", b.coord.x, b.coord.y, b.coord.z);
+    if (THREE) {
+      final Graphics3D g = ((Display3D)display).getGraphics();
+      // dark blue.
+      g.setBackground(0.05f, 0.05f, 0.1f);
+      // blue exponential light at center.
+      g.addLight(0, 0, 0, // color
+                 0, 0, 0, // center
+                 0.5f, 0, 0.01f); // properties: a litle linear and some exponential.
+      for (int i = 0; i < blobs.length; i++) {
+        final Blob b = blobs[i];
+        g.addBall(i+"", b.coord.x, b.coord.y, b.coord.z);
+      }
     }
-    display3d.setVisible();
+    display.setVisible();
   }
 
   void grid(final ColoredBlob [] blobs) {
@@ -68,10 +84,16 @@ final class GravSim implements Runnable, Display.Renderer {
   }
 
   void randomize(final ColoredBlob [] blobs) {
+    float offsetX = 0, offsetY = 0, offsetZ = 0;
+    if (!THREE) {
+      offsetX = width/2f;
+      offsetY = height/2f;
+      offsetZ = depth/2f;
+    }
     for (final ColoredBlob b : blobs) {
-      b.coord.x = 50f * (float)Math.random() - 25f;
-      b.coord.y = 50f * (float)Math.random() - 25f;
-      b.coord.z = 50f * (float)Math.random() - 25f;
+      b.coord.x = offsetX + width * (float)Math.random() - offsetX;
+      b.coord.y = offsetY + height * (float)Math.random() - offsetY;
+      b.coord.z = offsetZ + depth * (float)Math.random() - offsetZ;
 //      b.velocity.x = (float)(Math.random() - 0.5);
 //      b.velocity.y = (float)(Math.random() - 0.5);
       b.setMass((float)(Blob.MAXMASS * Math.random()));
@@ -104,28 +126,28 @@ final class GravSim implements Runnable, Display.Renderer {
   static final int SLEEP = Integer.parseInt(System.getProperty("sleep", "0"));
   public void run() {
     while (true) {
-      //draw();
-      move3d();
+      display.render();
       Phys.doMotion(blobs);
       Grav.doGrav(blobs);
       try { Thread.sleep(SLEEP); } catch(InterruptedException e) { break; }
     }
   }
 
-  public void draw(final Graphics2D g) {
-    int halfWidth = width/2;
-    int halfHeight = height/2;
-    for (final ColoredBlob b : blobs) {
-      g.setColor(b.color);
-      int halfRadius = b.radius / 2;
-      g.fillOval((int)b.coord.x - halfRadius, (int)b.coord.y - halfRadius, b.radius, b.radius);
-    }
-  }
-
-  public void move3d() {
-    for (int i = 0; i < blobs.length; i++) {
-      final Blob b = blobs[i];
-      display3d.setBall(i+"", b.coord.x, b.coord.y, b.coord.z);
+  public void render(final Display d) {
+    if (THREE) {
+      for (int i = 0; i < blobs.length; i++) {
+        final Blob b = blobs[i];
+        ((Display3D)display).getGraphics().setBall(i+"", b.coord.x, b.coord.y, b.coord.z);
+      }
+    } else {
+      int halfWidth = width/2;
+      int halfHeight = height/2;
+      final Graphics2D g = ((Display2D)display).getGraphics();
+      for (final ColoredBlob b : blobs) {
+        g.setColor(b.color);
+        int halfRadius = b.radius / 2;
+        g.fillOval((int)b.coord.x - halfRadius, (int)b.coord.y - halfRadius, b.radius, b.radius);
+      }
     }
   }
 
