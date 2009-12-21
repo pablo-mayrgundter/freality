@@ -27,15 +27,15 @@ import java.util.regex.Pattern;
  */
 public class Measure {
 
-  public static class Unit {
+  public static enum Unit {
 
-    public static Unit LENGTH = new Unit("l", "m", "meter");
-    public static Unit MASS = new Unit("m", "g", "gram");
-    public static Unit TIME = new Unit("t", "s", "second");
-    public static Unit CURRENT = new Unit("I", "A", "Ampere");
-    public static Unit TEMPERATURE = new Unit("T", "K", "Kelvin");
-    public static Unit LUMINOUS_INTENSITY = new Unit("L", "cd", "candela");
-    public static Unit AMOUNT_OF_SUBSTANCE = new Unit("n", "mol", "mole");
+    LENGTH("l", "m", "meter"),
+    MASS("m", "g", "gram"),
+    TIME("t", "s", "second"),
+    CURRENT("I", "A", "Ampere"),
+    TEMPERATURE("T", "K", "Kelvin"),
+    LUMINOUS_INTENSITY("L", "cd", "candela"),
+    AMOUNT_OF_SUBSTANCE("n", "mol", "mole");
 
     final String symbol;
     final String unitAbbreviation;
@@ -49,7 +49,7 @@ public class Measure {
       UNIT_NAME_LOOKUP.put(unitName, this);
     }
 
-    static Unit lookup(String s) {
+    static Unit lookup(final String s) {
       Unit u = null;
       u = lookupByName(s);
       if (u != null)
@@ -59,37 +59,37 @@ public class Measure {
     }
 
     static Unit lookupByAbbreviation(String s) {
-      return (Unit) UNIT_ABBREVIATION_LOOKUP.get(s);
+      return UNIT_ABBREVIATION_LOOKUP.get(s);
     }
 
     static Unit lookupByName(String s) {
-      return (Unit) UNIT_NAME_LOOKUP.get(s);
+      return UNIT_NAME_LOOKUP.get(s);
     }
   }
 
-  public static class Magnitude {
+  public static enum Magnitude {
 
-    public static Magnitude YOTTA = new Magnitude(24, "yotta", "Y");
-    public static Magnitude ZETTA = new Magnitude(21, "zetta", "Z");
-    public static Magnitude EXA = new Magnitude(18, "exa", "E");
-    public static Magnitude PETA = new Magnitude(15, "peta", "P");
-    public static Magnitude TERA = new Magnitude(12, "tera", "T");
-    public static Magnitude GIGA = new Magnitude(9, "giga", "G");
-    public static Magnitude MEGA = new Magnitude(6, "mega", "M");
-    public static Magnitude KILO = new Magnitude(3, "kilo", "k");
-    public static Magnitude HECTO = new Magnitude(2, "hecto", "h");
-    public static Magnitude DECA = new Magnitude(1, "deca", "D");
-    public static Magnitude UNIT = new Magnitude(0, "", "");
-    public static Magnitude DECI = new Magnitude(-1, "deci", "d");
-    public static Magnitude CENTI = new Magnitude(-2, "centi", "c");
-    public static Magnitude MILLI = new Magnitude(-3, "milli", "m");
-    public static Magnitude MICRO = new Magnitude(-6, "micro", "\u03BC");
-    public static Magnitude NANO = new Magnitude(-9, "nano", "n");
-    public static Magnitude PICO = new Magnitude(-12, "pico", "p");
-    public static Magnitude FEMTO = new Magnitude(-15, "femto", "f");
-    public static Magnitude ATTO = new Magnitude(-18, "atto", "a");
-    public static Magnitude ZETO = new Magnitude(-21, "zepto", "z");
-    public static Magnitude YOCTO = new Magnitude(-24, "yocto", "y");
+    YOTTA(24, "yotta", "Y"),
+    ZETTA(21, "zetta", "Z"),
+    EXA(18, "exa", "E"),
+    PETA(15, "peta", "P"),
+    TERA(12, "tera", "T"),
+    GIGA(9, "giga", "G"),
+    MEGA(6, "mega", "M"),
+    KILO(3, "kilo", "k"),
+    HECTO(2, "hecto", "h"),
+    DECA(1, "deca", "D"),
+    UNIT(0, "", ""),
+    DECI(-1, "deci", "d"),
+    CENTI(-2, "centi", "c"),
+    MILLI(-3, "milli", "m"),
+    MICRO(-6, "micro", "\u03BC"),
+    NANO(-9, "nano", "n"),
+    PICO(-12, "pico", "p"),
+    FEMTO(-15, "femto", "f"),
+    ATTO(-18, "atto", "a"),
+    ZETO(-21, "zepto", "z"),
+    YOCTO(-24, "yocto", "y");
 
     public final int exponent;
     final String prefix;
@@ -121,21 +121,21 @@ public class Measure {
     }
 
     static Magnitude lookupByPrefix(String s) {
-      return (Magnitude) MAG_PREFIX_LOOKUP.get(s);
+      return MAG_PREFIX_LOOKUP.get(s);
     }
 
     static Magnitude lookupByAbbreviation(String s) {
-      return (Magnitude) MAG_ABBREVIATION_LOOKUP.get(s);
+      return MAG_ABBREVIATION_LOOKUP.get(s);
     }
   }
 
   static final Pattern MEASURE_PATTERN =
-    Pattern.compile("(-?\\d+(?:.\\d+)?(?:E\\d+)?)\\s*([khdnmgtpfaezy\u03BC]|(?:yotta|zetta|exa|peta|tera|giga|mega|kilo|hecto|deca|deci|centi|milli|micro|nano|pico|femto|atto|zepto|yocto))?\\s*([mgsAKLn]|(?:meter|gram|second|Ampere|Kelvin|candela|mole))", Pattern.CASE_INSENSITIVE); // HACK: case_insensitive.
+    Pattern.compile("(-?\\d+(?:.\\d+)?(?:E\\d+)?)\\s*([khdnmgtpfaezy\u03BC]|(?:yotta|zetta|exa|peta|tera|giga|mega|kilo|hecto|deca|deci|centi|milli|micro|nano|pico|femto|atto|zepto|yocto))?\\s*([mgsAKLn]|(?:meter|gram|second|Ampere|Kelvin|candela|mole))", Pattern.CASE_INSENSITIVE); // TODO(pablo): case_insensitive.
 
-  static final Map MAG_PREFIX_LOOKUP = new HashMap();
-  static final Map MAG_ABBREVIATION_LOOKUP = new HashMap();
-  static final Map UNIT_ABBREVIATION_LOOKUP = new HashMap();
-  static final Map UNIT_NAME_LOOKUP = new HashMap();
+  static final Map<String,Magnitude> MAG_PREFIX_LOOKUP = new HashMap<String,Magnitude>();
+  static final Map<String,Magnitude> MAG_ABBREVIATION_LOOKUP = new HashMap<String,Magnitude>();
+  static final Map<String,Unit> UNIT_ABBREVIATION_LOOKUP = new HashMap<String,Unit>();
+  static final Map<String,Unit> UNIT_NAME_LOOKUP = new HashMap<String,Unit>();
 
   public final double scalar;
   public final Unit unit;
