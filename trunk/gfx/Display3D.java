@@ -1,13 +1,8 @@
 package gfx;
 
 import gfx.FullScreenableFrame;
-import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Toolkit;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import javax.media.j3d.BoundingSphere;
 import javax.media.j3d.Bounds;
 import javax.media.j3d.BranchGroup;
@@ -30,7 +25,7 @@ public class Display3D extends Display {
 
   final BranchGroup scene;
   final DefaultView view;
-  final ViewPlatformGroup vpg;
+  public final ViewPlatformGroup vpg;
   final VirtualUniverse universe;
   final Locale locale;
   final Graphics3D graphics;
@@ -84,10 +79,5 @@ public class Display3D extends Display {
     frame.getContentPane().setCursor(tk.createCustomCursor(tk.createImage(new byte[]{}),
                                                            new Point(0, 0), "Pointer"));
     super.setVisible();
-    frame.addComponentListener(new ComponentAdapter() {
-        public void componentResized(final ComponentEvent evt) {
-          canvas.setSize(evt.getComponent().getSize());
-        }
-      });
   }
 }

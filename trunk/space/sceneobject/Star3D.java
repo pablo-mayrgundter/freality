@@ -30,43 +30,72 @@ public class Star3D extends Group {
   final Star mCelestialBody;
   final SceneScaling mScaling;
 
-  public Star3D(Star star, SceneScaling scaling, String textureURLBase) {
-    mCelestialBody = star;
-    mScaling = scaling;
+  /**
+   * Use lighting to light this object.  Default is false for stars,
+   * since they aren't lit by other light but instead emit light
+   * themselves.
+   */
+  final boolean lightingEnabled;
+  final float shinniness;
+  /** DECAL for star, MODULATE for planet and MODULATE for atmosphere. */
+  final int baseTexType;
+  final Color3f diffuseColor;
+  final Color3f specularColor;
 
-    URL url = null;
-    try {
-      url = new URL(textureURLBase + "/" + mCelestialBody.name + ".jpg");
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    if (url == null)
-      addChild(makeSphere(makeAppearance()));
-    else
-      addChild(makeSphere(makeTexturedAppearance(url, TextureAttributes.DECAL)));
+  public Star3D(final CelestialBody star, final SceneScaling scaling, final String textureURLBase) {
+    this(star, scaling, textureURLBase,
+         Colors.BLACK, Colors.WHITE, TextureAttributes.DECAL, 0, false);
   }
 
-  Sphere makeSphere(Appearance app) {
-    return new Sphere((float) mScaling.scale(mCelestialBody.meanRadius).scalar,
+  public Star3D(final CelestialBody star, final SceneScaling scaling, final String textureURLBase,
+                final Color3f diffuseColor, final Color3f specularColor, final int baseTexType,
+                final float shinniness, final boolean lightingEnabled) {
+    mCelestialBody = (Star)star;
+    mScaling = scaling;
+    this.diffuseColor = diffuseColor;
+    this.specularColor = specularColor;
+    this.baseTexType = baseTexType;
+    this.shinniness = shinniness;
+    this.lightingEnabled = lightingEnabled;
+
+    final URL baseTexURL = strToURL(textureURLBase + "/" + mCelestialBody.name + ".jpg");
+    if (baseTexURL == null)
+      addChild(makeSphere(makeAppearance(null)));
+    else
+      addChild(makeSphere(makeAppearance(baseTexURL)));
+  }
+
+  float getSceneRadius() {
+    return (float) mScaling.scale(mCelestialBody.meanRadius).scalar;
+  }
+
+  Sphere makeSphere(final Appearance app) {
+    return makeSphere(getSceneRadius(), app);
+  }
+
+  Sphere makeSphere(final float radius, final Appearance app) {
+    return new Sphere(radius,
                       Sphere.GENERATE_NORMALS | Sphere.GENERATE_TEXTURE_COORDS,
                       DEFAULT_RESOLUTION,
                       app);
   }
 
-  Appearance makeAppearance() {
-    final Appearance starApp = new Appearance();
-    final Material m = new Material(Colors.BLACK, Colors.BLACK, Colors.BLACK, Colors.WHITE, 0f);
-    m.setLightingEnable(false);
-    starApp.setMaterial(m);
-    return starApp;
+  Appearance makeAppearance(final URL textureURL) {
+    final Appearance app = new Appearance();
+    final Material m = new Material(Colors.BLACK, Colors.BLACK, diffuseColor, specularColor, shinniness);
+    m.setLightingEnable(lightingEnabled);
+    app.setMaterial(m);
+    if (textureURL != null)
+      Textures.addTexture(app, textureURL, baseTexType);
+    return app;
   }
 
-  Appearance makeTexturedAppearance(URL textureURL, int texMode) {
-    final Appearance starApp = new Appearance();
-    final Material m = new Material(Colors.BLACK, Colors.BLACK, Colors.BLACK, Colors.WHITE, 0f);
-    m.setLightingEnable(false);
-    starApp.setMaterial(m);
-    Textures.addTexture(starApp, textureURL, texMode);
-    return starApp;
+  static URL strToURL(final String url) {
+    try {
+      return new URL(url);
+    } catch (final java.net.MalformedURLException e) {
+      System.err.println("Couldn't load texture at: "+ url + ". "+ e);
+      return null;
+    }
   }
 }
