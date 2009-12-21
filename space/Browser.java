@@ -37,17 +37,17 @@ import org.freality.gui.three.FlyToBehavior;
 import org.freality.gui.three.ViewPlatformGroup;
 
 /**
- * The scene component that holds the visible scene elements, loaded
- * from a hard-coded XML datasource.
- *
- * @author <a href="mailto:pablo@freality.com">Pablo Mayrgundter</a>
- * @version $Revision: 1.1.1.1 $
+ * Testing a standalone browser.  Starting it as a scene-graph itself.
  */
 class Browser extends BranchGroup {
 
   public static void main(final String [] args) {
-    final Display3D d3d = new Display3D();
-    final Browser ss = new Browser(d3d.getScene(), d3d.getViewPlatformGroup());
+    final Browser scene = new Browser();
+    scene.load();
+    final Display3D d3d = new Display3D(scene);
+    final FlyToBehavior ftb =
+          new FlyToBehavior(d3d.vpg.getTransformGroup(), scene.destinationNodes, scene.getBounds());
+    scene.addChild(ftb);
     d3d.setVisible();
   }
 
@@ -63,8 +63,9 @@ class Browser extends BranchGroup {
   final Node [] destinationNodes;
   SceneScaling scaling = null;
   SpaceHandler.DataAndExtents dae = null;
+  Bounds bounds;
 
-  Browser(final BranchGroup scene, final ViewPlatformGroup vpg) {
+  Browser() {
     setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
     setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
     setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
@@ -72,11 +73,12 @@ class Browser extends BranchGroup {
     viewPlatforms = new HashMap<String, ViewPlatform>();
     systemTGMap = new HashMap<String, TransformGroup>();
     destinationNodes = new Node[10];
-    load();
-    scene.addChild(this);
-    final FlyToBehavior ftb =
-          new FlyToBehavior(vpg.getTransformGroup(), destinationNodes, scene.getBounds());
-    scene.addChild(ftb);
+    // setBounds(bounds);
+  }
+
+  public Bounds getBounds() {
+    // getBounds();
+    return bounds;
   }
 
   /**
@@ -85,11 +87,10 @@ class Browser extends BranchGroup {
    * planet and the sun is handled separately.  This should be
    * collapsed to a single handler of CelestialBody.
    */
-  void load(final Bounds bounds) {
+  void load() {
     dae = SpaceHandler.parseToBodyMap(SOLAR_SYSTEM_XML);
-    // Just a bit larger to make sure Pluto is lit.
-    setBounds(new BoundingSphere(new Point3d(0, 0, 0),
-                                 dae.largestOrbit * 1.01));
+    bounds = new BoundingSphere(new Point3d(0, 0, 0),
+                                dae.largestOrbit * 1.01);
 
     scaling = new SceneScaling(Measure.Magnitude.MEGA); // Scale everything *down* by 1000.
     int destinationID = 9;

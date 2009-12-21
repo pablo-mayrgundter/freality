@@ -36,12 +36,12 @@ import javax.vecmath.Vector3d;
 import org.freality.gui.three.Colors;
 import org.freality.gui.three.Textures;
 
-class Earth3D {
+class Earth3D extends BranchGroup {
 
   public static void main(final String [] args) {
-    final Earth3D t = new Earth3D();
-    final Display3D d3d = new Display3D();
-    t.load(d3d.getScene());
+    final Earth3D scene = new Earth3D();
+    scene.load();
+    final Display3D d3d = new Display3D(scene);
     d3d.setVisible();
   }
 
@@ -51,7 +51,7 @@ class Earth3D {
     sceneBounds = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 10000.0);
   }
 
-  public void load(final BranchGroup scene) {
+  public void load() {
     // Add sceneTg
     TransformGroup tg = new TransformGroup();
     tg.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
@@ -63,7 +63,7 @@ class Earth3D {
     final PointLight light = new PointLight(true, Colors.WHITE, new Point3f(0f, 0f, 0f), new Point3f(1f, 0f, 0f));
     light.setInfluencingBounds(sceneBounds);
     light.setPosition(20f, 20f, 20f);
-    scene.addChild(light);
+    addChild(light);
 
     final Light ambLight = new AmbientLight(true, Colors.WHITE);
     tg.addChild(ambLight);
@@ -71,7 +71,7 @@ class Earth3D {
     final Transform3D zAxis = new Transform3D();
     zAxis.lookAt(new Point3d(0,0,0), new Point3d(1,0,0), new Vector3d(0,1,0));
 
-    scene.addChild(tg);
+    addChild(tg);
   }
 
   TransformGroup earth(TransformGroup tg) {

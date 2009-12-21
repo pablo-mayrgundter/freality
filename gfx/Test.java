@@ -1,7 +1,5 @@
 package gfx;
 
-import com.sun.image.codec.jpeg.JPEGCodec;
-
 import com.sun.j3d.utils.behaviors.mouse.*;
 import com.sun.j3d.utils.behaviors.keyboard.*;
 import com.sun.j3d.utils.geometry.Sphere;
@@ -9,12 +7,10 @@ import com.sun.j3d.utils.universe.*;
 import vr.cpack.space.sceneobject.Rings3D;
 import org.freality.gui.three.Colors;
 import org.freality.gui.three.Textures;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
 
 import javax.swing.JFrame;
-import javax.media.j3d.AmbientLight;
 import javax.media.j3d.Alpha;
 import javax.media.j3d.Appearance;
 import javax.media.j3d.Bounds;
@@ -36,8 +32,17 @@ import javax.vecmath.Color3f;
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3d;
+import space.SceneScaling;
+import space.model.Planet;
+import space.sceneobject.Planet3D;
+import org.freality.util.Measure;
 
 class Test extends BranchGroup implements Display.Renderer {
+
+  static final String PLANET_NAME = System.getProperty("planet", "earth");
+  static {
+    org.freality.io.loader.java.Handler.register();
+  }
 
   public static void main(final String [] args) {
     final Test t = new Test();
@@ -66,7 +71,7 @@ class Test extends BranchGroup implements Display.Renderer {
     tg.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
     tg.setBounds(getBounds());
 
-    tg = earth(tg);
+    tg = planet(tg);
 
     g.addLight(1, 1, 1, // color: white
                20, 20, 20, // center
@@ -78,25 +83,17 @@ class Test extends BranchGroup implements Display.Renderer {
     addChild(tg);
   }
 
-  TransformGroup earth(TransformGroup tg) {
-    float sceneRadius = 10f;
-    org.freality.io.loader.java.Handler.register();
-    java.net.URL [] skinURLs = new URL[2];
-    try {
-      skinURLs[0] = new java.net.URL("java:vr/cpack/space/textures/earth.jpg");
-      skinURLs[1] = new java.net.URL("java:vr/cpack/space/textures/earth-atmos.jpg");
-    } catch (java.net.MalformedURLException e) {
-      e.printStackTrace();
-      return null;
-    }
-
-    final Appearance earthApp = new Appearance();
-    Textures.addTexture(earthApp, skinURLs[0], TextureAttributes.MODULATE);
-    tg.addChild(makeTexturedSphere(sceneRadius, earthApp));
-
-    final Appearance atmosApp = new Appearance();
-    Textures.addAlphaTransparentTexture(atmosApp, skinURLs[1]);
-    tg.addChild(makeTexturedSphere(sceneRadius, atmosApp));
+  TransformGroup planet(TransformGroup tg) {
+    final Planet p = new Planet(PLANET_NAME, "sol",
+                                1, new space.model.Color(1,1,1),
+                                null, 0,
+                                new Measure(10, Measure.Unit.LENGTH), null,
+                                0.12f * 128.0f, 0, // albedo, grav
+                                0, 0,
+                                null, null, true);
+    tg.addChild(new Planet3D(p,
+                             new SceneScaling(),
+                             "java:space/textures"));
 
     final Transform3D yAxis = new Transform3D();
 
@@ -115,78 +112,11 @@ class Test extends BranchGroup implements Display.Renderer {
     return wrap(tg);
   }
 
-  Appearance makeAppearance(Texture texture) {
-    final Appearance appearance = makeAppearance();
-    final TextureAttributes ta = new TextureAttributes();
-    appearance.setTexture(texture);
-    ta.setTextureMode(TextureAttributes.MODULATE);
-    appearance.setTextureAttributes(ta);
-    return appearance;
-  }
-
-  protected Appearance makeAppearance() {
-    final Appearance appearance = new Appearance();
-    final Material m = new Material(Colors.BLACK, Colors.BLACK, Colors.WHITE,
-                                    Colors.GREY2, 0.12f * 128.0f); // Earth's albedo.
-    m.setLightingEnable(true);
-    appearance.setMaterial(m);
-    return appearance;
-  }
-
-  BufferedImage getImage(URL sourceImage) {
-    BufferedImage bi = null;
-    InputStream is = null;
-    try {
-      is = sourceImage.openStream();
-      bi = JPEGCodec.createJPEGDecoder(is).decodeAsBufferedImage();
-    } catch(IOException e) {
-      return null;
-    } finally {
-      try {
-        if (is != null)
-          is.close();
-      } catch(IOException e) {
-        e.printStackTrace();
-      }
-    }
-    return bi;
-  }
-
-
-  static final int SPHERE_RESOLUTION = 120;
-
-  Sphere makeTexturedSphere(float radius, Appearance appearance) {
-    return makeTexturedSphere(radius, SPHERE_RESOLUTION, appearance);
-  }
-
-  Sphere makeTexturedSphere(float radius, int resolution, Appearance appearance) {
-    return new Sphere(radius, Sphere.GENERATE_NORMALS | Sphere.GENERATE_TEXTURE_COORDS, resolution, appearance);
-  }
-
   TransformGroup wrap(TransformGroup tg) {
     final TransformGroup tgWrapper = new TransformGroup();
     tgWrapper.addChild(tg);
     tgWrapper.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
     tgWrapper.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
     return tgWrapper;
-  }
-
-  // Not sure which params this needs.
-  protected void makeBasicPickingBehaviors(BranchGroup sceneBg, TransformGroup sceneTg, TransformGroup vpTg) {
-    //    PickZoomBehavior pickZoomBehavior = new PickZoomBehavior(this, sceneBg, vpTg);
-    //    pickZoomBehavior.setSchedulingBounds(getBounds());
-    //    sceneTg.addChild(pickZoomBehavior);
-  }
-
-  protected void makeSceneMouseBehaviors(TransformGroup tg) {
-    final MouseRotate rotBehavior = new MouseRotate();
-    rotBehavior.setTransformGroup(tg);
-    rotBehavior.setSchedulingBounds(getBounds());
-    tg.addChild(rotBehavior);
-
-    final MouseZoom zoomBehavior = new MouseZoom();
-    zoomBehavior.setTransformGroup(tg);
-    zoomBehavior.setSchedulingBounds(getBounds());
-    tg.addChild(zoomBehavior);
   }
 }

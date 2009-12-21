@@ -13,7 +13,7 @@ public class CelestialBody {
   public final String name;
   public final String parent;
 
-  CelestialBody(String name, String parent) {
+  public CelestialBody(String name, String parent) {
     this.name = name;
     this.parent = parent;
   }

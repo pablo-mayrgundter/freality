@@ -10,7 +10,10 @@ public class SceneScaling {
 
   final Measure.Magnitude distanceMagnitude;
 
-  SceneScaling(Measure.Magnitude distanceMagnitude) {
+  public SceneScaling() {
+    this(Measure.Magnitude.UNIT);
+  }
+  public SceneScaling(Measure.Magnitude distanceMagnitude) {
     this.distanceMagnitude = distanceMagnitude;
   }
 
