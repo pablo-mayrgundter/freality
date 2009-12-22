@@ -19,7 +19,6 @@ import javax.vecmath.Vector3d;
 public class ViewPlatformGroup extends BranchGroup {
 
   final View view;
-  final Bounds sceneBounds;
   final ViewPlatform vp;
 
   /**
@@ -34,7 +33,8 @@ public class ViewPlatformGroup extends BranchGroup {
 
   public ViewPlatformGroup(View view, Bounds sceneBounds, Transform3D t3d, float activationRadius) {
     this.view = view;
-    this.sceneBounds = sceneBounds;
+    setBoundsAutoCompute(false);
+    setBounds(sceneBounds);
     tg = new TransformGroup();
     tg.setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
     tg.setCapability(TransformGroup.ALLOW_CHILDREN_WRITE);
