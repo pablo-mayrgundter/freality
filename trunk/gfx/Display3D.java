@@ -23,39 +23,49 @@ import vr.cpack.space.SpaceShipNavigator;
 
 public class Display3D extends Display {
 
+  public final ViewPlatformGroup vpg;
   final BranchGroup scene;
   final DefaultView view;
-  public final ViewPlatformGroup vpg;
   final VirtualUniverse universe;
   final Locale locale;
   final Graphics3D graphics;
 
-  /** The default constructor is equivalent to Display(null). */
+  public Display3D() {
+    this(null);
+  }
+
   public Display3D(final BranchGroup scene) {
     this(scene, null);
   }
 
   public Display3D(final BranchGroup scene, final Renderer renderer) {
     super(renderer);
-
-    this.scene = scene;
-    view = new DefaultView();
-    vpg = new ViewPlatformGroup(view, scene.getBounds());
-    view.attachViewPlatform(vpg.getViewPlatform());
+    if (scene == null) {
+      this.scene = new BranchGroup();
+    } else {
+      this.scene = scene;
+    }
 
     universe = new VirtualUniverse();
     locale = new Locale(universe);
+    view = new DefaultView();
+    vpg = new ViewPlatformGroup(view, new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 100.0));
 
-    scene.addChild(vpg);
+    addHeadlight(vpg);
+    view.attachViewPlatform(vpg.getViewPlatform());
+    this.scene.addChild(vpg);
 
     final SpaceShipNavigator nav =
-      new SpaceShipNavigator(vpg.getTransformGroup(), view, scene.getBounds());
+      new SpaceShipNavigator(vpg.getTransformGroup(), view, vpg.getBounds());
 
+    graphics = new Graphics3D(this.scene);
+  }
+
+  void addHeadlight(final ViewPlatformGroup vpg) {
     final PointLight light = new PointLight(Colors.WHITE, new Point3f(0,2,0),
                                             new Point3f(0,0.2f,0.01f));
-    light.setInfluencingBounds(scene.getBounds());
+    light.setInfluencingBounds(vpg.getBounds());
     vpg.getTransformGroup().addChild(light);
-    graphics = new Graphics3D(scene);
   }
 
   // TODO(pablo): merge these?

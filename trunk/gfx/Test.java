@@ -71,7 +71,8 @@ class Test extends BranchGroup implements Display.Renderer {
     tg.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
     tg.setBounds(getBounds());
 
-    tg = planet(tg);
+    //    tg = planet(tg);
+    tg = planet2(g, tg);
 
     g.addLight(1, 1, 1, // color: white
                20, 20, 20, // center
@@ -83,6 +84,14 @@ class Test extends BranchGroup implements Display.Renderer {
     addChild(tg);
   }
 
+  static {
+    org.freality.io.loader.java.Handler.register();
+  }
+  TransformGroup planet2(final Graphics3D g, TransformGroup tg) {
+    g.addObject("earth", Graphics3D.makeSphere(10, Graphics3D.makeAppearance("java:space/textures/earth.jpg")), 0, 0, 0);
+    return tg;
+  }
+
   TransformGroup planet(TransformGroup tg) {
     final Planet p = new Planet(PLANET_NAME, "sol",
                                 1, new space.model.Color(1,1,1),
@@ -91,9 +100,7 @@ class Test extends BranchGroup implements Display.Renderer {
                                 0.12f * 128.0f, 0, // albedo, grav
                                 0, 0,
                                 null, null, true);
-    tg.addChild(new Planet3D(p,
-                             new SceneScaling(),
-                             "java:space/textures"));
+    tg.addChild(new Planet3D(p, new SceneScaling(), "java:space/textures"));
 
     final Transform3D yAxis = new Transform3D();
 

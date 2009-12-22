@@ -8,7 +8,7 @@ package org.freality.gui.three;
  * @author <a href="mailto:pablo@freality.com">Pablo Mayrgundter</a>
  * @version $Revision: 1.1.1.1 $
  */
-public class SimpleScene extends BranchGroup {
+public class SimpleScene {
 
 
 }

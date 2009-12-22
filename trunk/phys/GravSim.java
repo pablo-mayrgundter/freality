@@ -17,7 +17,7 @@ final class GravSim implements Runnable, Display.Renderer {
 
   GravSim() {
     if (THREE) {
-      this.display = new Display3D(this);
+      this.display = new Display3D(null, this);
     } else {
       this.display = new Display2D(this);
     }
@@ -49,13 +49,13 @@ final class GravSim implements Runnable, Display.Renderer {
       final Graphics3D g = ((Display3D)display).getGraphics();
       // dark blue.
       g.setBackground(0.05f, 0.05f, 0.1f);
-      // blue exponential light at center.
-      g.addLight(0, 0, 0, // color
+      // blue light at center.
+      g.addLight(0, 0, 1, // color
                  0, 0, 0, // center
-                 0.5f, 0, 0.01f); // properties: a litle linear and some exponential.
+                 0, 1, 0); // attenuation: constant.
       for (int i = 0; i < blobs.length; i++) {
         final Blob b = blobs[i];
-        g.addBall(i+"", b.coord.x, b.coord.y, b.coord.z);
+        g.addObject(i+"", b.coord.x, b.coord.y, b.coord.z);
       }
     }
     display.setVisible();
@@ -137,7 +137,7 @@ final class GravSim implements Runnable, Display.Renderer {
     if (THREE) {
       for (int i = 0; i < blobs.length; i++) {
         final Blob b = blobs[i];
-        ((Display3D)display).getGraphics().setBall(i+"", b.coord.x, b.coord.y, b.coord.z);
+        ((Display3D)display).getGraphics().moveObject(i+"", b.coord.x, b.coord.y, b.coord.z);
       }
     } else {
       int halfWidth = width/2;
