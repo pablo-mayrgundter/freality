@@ -17,7 +17,7 @@ public class SentenceIterator implements Iterator<String> {
   final Scanner sentenceScanner;
 
   public SentenceIterator(final InputStream in) {
-    sentenceScanner = new Scanner(in).useDelimiter("\\s*\\.\\s*");
+    sentenceScanner = new Scanner(in).useDelimiter("\\s*[.?!]\\s*");
   }
 
   public boolean hasNext() {
