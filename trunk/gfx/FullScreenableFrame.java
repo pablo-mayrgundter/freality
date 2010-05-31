@@ -1,5 +1,7 @@
 package gfx;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsConfiguration;
@@ -12,6 +14,7 @@ public class FullScreenableFrame extends JFrame {
   static final Boolean FULLSCREEN = Boolean.getBoolean("fs");
 
   int width, height;
+  Graphics2D drawGraphics;
 
   public FullScreenableFrame() {
     this(WIDTH, HEIGHT, FULLSCREEN);
@@ -33,6 +36,7 @@ public class FullScreenableFrame extends JFrame {
       setSize(width, height);
     }
     setVisible(true);
+    util.Sleep.sleep(100); // JRE Bug: graphics not ready immediately.
   }
 
   public int getWidth() {
@@ -41,5 +45,22 @@ public class FullScreenableFrame extends JFrame {
 
   public int getHeight() {
     return height;
+  }
+
+  public Graphics2D getDrawGraphics() {
+    return getDrawGraphics(Color.BLACK);
+  }
+
+  @SuppressWarnings(value="unchecked")
+  public Graphics2D getDrawGraphics(final Color bgColor) {
+    if (drawGraphics == null) {
+      drawGraphics = (Graphics2D) getContentPane().getGraphics();
+      final java.util.Map hints = new java.util.HashMap();
+      hints.put(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
+      drawGraphics.setRenderingHints(hints);
+      drawGraphics.setColor(bgColor);
+      drawGraphics.fillRect(0, 0, width, height);
+    }
+    return drawGraphics;
   }
 }
