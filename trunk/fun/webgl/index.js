@@ -1,7 +1,7 @@
-var regionWidth = 4.0;
-var regionHeight = 4.0;
+var regionWidth = 2.5;
+var regionHeight = 2.5;
 var regionXOffset = -2.0;
-var regionYOffset = -2.0;
+var regionYOffset = -1.25;
 var mouseX, mouseY, dX, dY;
 var width;
 var height;
@@ -19,8 +19,6 @@ function init() {
 
 function draw() {
   var itrMax = 1000;
-  var cSkew = 0.4;
-  var cOff = 255*cSkew;
   for (var h = 0; h < height; h++) {
     for (var w = 0; w < width; w++) {
       var z1 = c1 = ((w / width) * regionWidth) + regionXOffset;
@@ -37,7 +35,7 @@ function draw() {
           var r = 0;//Math.floor(Math.abs(itrVal * z1_2));
           var g = 0;//Math.floor(Math.abs(itrVal * z2_2));
           var b = Math.floor(itrVal);
-          gfx.fillStyle = 'rgb('+r+','+g+','+b+')';
+          gfx.fillStyle = 'rgb(0,0,'+b+')';
           gfx.fillRect(w, h, 1, 1);
           break;
         }
