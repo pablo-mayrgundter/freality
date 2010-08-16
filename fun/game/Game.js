@@ -1,7 +1,7 @@
 var canvasElt;
 var canvasWidth, canvasHeight;
 var c;
-var size = 20;
+var size = 20, cW, cH;
 var rows;
 var cols;
 var board = new Array();
@@ -18,22 +18,21 @@ function init() {
   cols = Math.floor(cW / size);
   //alert(rows+','+cols);
 
-  for (var r = 0; r < rows; r++) {
-    board[r] = new Array();
-    for (var c = 0; c < cols; c++) {
-      board[r][c] = {'set': 0};
+  for (var y = 0; y < rows; y++) {
+    board[y] = new Array();
+    for (var x = 0; x < cols; x++) {
+      board[y][x] = {'set': 0};
     }
   }
 
-  for (var r = 0; r < rows; r++) {
-    for (var c = 0; c < cols; c++) {
-      set(r, c, 'color', white);
+  for (var y = 0; y < rows; y++) {
+    for (var x = 0; x < cols; x++) {
+      set(x, y, 'color', white);
     }
   }
 
   addEvent(canvasElt, 'click', clickHandler);
-  addEvent(get('button'), 'click', stepHandler);
-  inited = 1;
+  addEvent(get('button'), 'click', buttonHandler);
 };
 
 function clickHandler(evt) {
@@ -48,17 +47,16 @@ function clickHandler(evt) {
   draw();
 }
 
-function isOn(r, c) {
-  return isSet(r, c, 'color') == black;
+function isOn(x, y) {
+  return isSet(x, y, 'color') == black;
 }
-function turnOn(r, c) {
-  set(r, c, 'newColor', black);
+function turnOn(x, y) {
+  set(x, y, 'newColor', black);
 }
-function turnOff(r, c) {
-  set(r, c, 'newColor', white);
+function turnOff(x, y) {
+  set(x, y, 'newColor', white);
 }
 
-var inited = 0;
 function set(x, y, name, value) {
   if (board[x][y]['newColor'])
     board[x][y]['newColor'] = undefined;
@@ -83,28 +81,19 @@ function isSet(x, y, name) {
   return board[x][y][name];
 };
 
-function stepHandler(evt) {
-  for (var r = 1; r < rows - 1; r++) {
-    for (var c = 1; c < cols - 1; c++) {
-      var count = 0;
-      for (var i = -1; i < 2; i++)
-        for (var j = -1; j < 2; j++)
-          if (isOn(r + i, c + j)) {
-            if (i == 0 && j == 0)
-              continue;
-            count++;
-          }
-      switch (count) {
-      case 0: ;
-      case 1: turnOff(r, c); break;
-      case 2: break;
-      case 3: if (!isOn(r, c)) turnOn(r, c); break;
-      case 4:;
-      case 5: turnOff(r, c);
-      }
-    }
-  }
+var running = false;
+
+function buttonHandler() {
+  running = !running;
+  animate();
+}
+
+function animate() {
+  runRules();
   draw();
+  if (running) {
+    setTimeout('animate()', 100);
+  }
 };
 
 function draw() {
@@ -118,10 +107,4 @@ function draw() {
       canvas.fillRect(size * x, size * y, size, size);
     }
   }
-};
-
-function onclick() {
-  var event = window.event;
-  set(event.x, event.y, 'color', 'rgb(0,0,0)');
-  draw();
 };
