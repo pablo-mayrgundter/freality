@@ -1,8 +1,8 @@
-var canvas, game;
+var canvas, game, board;
 
 function init() {
   var boardSize = 25;
-  var board = new Board(boardSize);
+  board = new Board(boardSize);
   canvas = new Canvas(board);
   game = new GOL(board);
   addEvent(canvas.canvasElt, 'click', func(canvas, canvas.clickHandler));
@@ -11,15 +11,22 @@ function init() {
 
 var running = false;
 
-function buttonHandler() {
+function buttonHandler(evt) {
+  if (evt) {
+    if (running)
+      evt.target.innerHTML = 'start';
+    else
+      evt.target.innerHTML = 'stop';
+  }
   running = !running;
   animate();
 };
 
 function animate() {
   game.runRules();
-  canvas.draw();
+  canvas.draw(true);
+  board.next();
   if (running) {
-    setTimeout('animate()', 100);
+    setTimeout('animate()', 500);
   }
 };
