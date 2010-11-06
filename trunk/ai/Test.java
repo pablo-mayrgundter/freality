@@ -3,7 +3,7 @@ package ai;
 public class Test {
 
   protected static final String ENV_CLASS = System.getProperty("env", "ai.spatial.SineEnvironment");
-  protected static final String LEARNER_CLASS = System.getProperty("learner", "ai.spatial.LinearLearner");
+  protected static final String LEARNER_CLASS = System.getProperty("learner", "ai.spatial.RandomLearner");
 
   /**
    * Infinite learning loop with new Learner(0.01, 0, 0, 0.5)

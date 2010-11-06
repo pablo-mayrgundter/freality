@@ -31,21 +31,11 @@ package ai;
  *
  * @author Pablo Mayrgundter
  */
-public abstract class Learner<T> {
+public abstract class Learner<G,E> {
 
-  /**
-   * Risk is unknowable a priori and should be inversely proportional
-   * to success/fecundity.
-   */
-  public double risk;
-  public T goal;
-
-  public Environment<T> env;
+  public G goal;
 
   public Learner() {}
 
-  /** Perceptual Control Feedback inner-loop. */
-  public abstract void learn ();
-
-  public abstract int compareToGoal (final T stimulus);
+  public abstract E transform(E input);
 }
