@@ -24,7 +24,7 @@ public class BreadthFirstIterator<T> implements Iterator<T> {
 
   public void setStart(final T start) {
     if (!graph.hasNode(start))
-      throw new IllegalArgumentException("Given node not in graph.");
+      throw new IllegalArgumentException("Given node not in graph: "+ start);
     setNext(start);
   }
 
