@@ -70,6 +70,13 @@ public class AdjacencyMapGraph<T> implements Graph<T> {
     return new BreadthFirstIterator<T>(this);
   }
 
+  public String toString() {
+    String s = "";
+    for (final T node : nodes())
+      s += node + ": " + getNeighbors(node) + "\n";
+    return s;
+  }
+
   /**
    * Test a String graph.
    */
@@ -83,8 +90,6 @@ public class AdjacencyMapGraph<T> implements Graph<T> {
       for (String neighbor : neighbors)
         g.addEdge(node, neighbor);
     }
-
-    for (String node : g.nodes())
-      System.out.println(node + ": " + g.getNeighbors(node));
+    System.out.println(g);
   }
 }
