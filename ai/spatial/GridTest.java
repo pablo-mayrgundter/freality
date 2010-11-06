@@ -4,43 +4,66 @@ import ai.*;
 import gfx.vt.VT100;
 
 final class GridTest extends Test {
+
   static class Coord implements Comparable {
-    final int x;
-    final int y;
-    Coord(final int x, final int y) {
-      this.x = x;
-      this.y = y;
+    final int col;
+    final int row;
+    Coord(final int col, final int row) {
+      this.col = col;
+      this.row = row;
     }
     public int compareTo(final Object o) {
       final Coord coord = (Coord)o;
-      return this.x - coord.x + this.y - coord.y;
+      return this.col - coord.col + this.row - coord.row;
     }
   }
-  static class SpatialRandomLearner extends RandomLearner<Coord> {
-    public void moveTowards() {
-      env.set(new Coord(env.get().x - 1, env.get().y - 1));
-    }
-    public void moveAway() {
-      env.set(new Coord(env.get().x + 1, env.get().y + 1));
-    }
-    public int compareToGoal(final Coord stimulus) {
-      return goal.x - stimulus.x + goal.y - stimulus.y;
+
+  static class TestLearner extends LinearLearner<Coord> {
+    public Coord transform(final Coord input) {
+      int dCols = 0;
+      int dRows = 0;
+      double d = 2.0;
+      if (goal.col > input.col)
+        dCols = 1;//(int)(d * Math.random());
+      else if (goal.row < input.row)
+        dCols = -1;//(int)(-d * Math.random());
+      if (goal.row > input.row)
+        dRows = 1;//(int)(d * Math.random());
+      else if (goal.row < input.row)
+        dRows = -1;//(int)(-d * Math.random());
+      return new Coord(input.col + dCols, input.row + dRows);
     }
   }
+
   public static void main (final String [] args) throws Exception {
-    final Environment<Coord> env = new Environment<Coord>();
-    final Learner<Coord> l = new SpatialRandomLearner();
-    l.risk = 0.01;
-    l.goal = new Coord(2,1);
-    l.env = env;
-    env.set(l.goal);
+    int rows = Integer.parseInt(args[0]);
+    int cols = Integer.parseInt(args[1]);
+    int [][] walls = new int[rows][cols];
+    int col = (int)(0.1*cols), row = (int)(0.4*rows);
     Util.p(VT100.CLEAR_SCREEN);
-    while (true) {
-      Util.p(VT100.cursorForce(l.env.get().x, l.env.get().y)+"X");
-      l.learn();
-      //      if (!Util.sleep(100))
-      //        break;
+    for (; col < (int)(0.75*cols); col++) {
+      walls[row][col] = 1;
+      Util.p(VT100.cursorForce(row,col) + ".");
     }
-    
+    row = (int)(0.75*rows);
+    for (; col < (int)(0.75*cols); col++) {
+      walls[row][col] = 1;
+      Util.p(VT100.cursorForce(row,col) + ".");
+    }
+    final TestLearner l = new TestLearner();
+    l.setGoal(new Coord(20,40));
+    Util.p(VT100.cursorForce(l.goal.col, l.goal.row) + "G");
+    Coord env = new Coord(0,0);
+    while (true) {
+      final Coord out = l.transform(env);
+      if (walls[out.col][out.row] == 1) {
+        Util.p(VT100.cursorForce(env.col, env.row) + "1");
+        continue;
+      }
+      env = out;
+      Util.p(VT100.cursorForce(env.col, env.row) + "X");
+      if (!Util.sleep(100))
+        break;
+    }
   }
 }
