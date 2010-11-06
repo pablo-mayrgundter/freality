@@ -15,29 +15,43 @@
  *
  * --IN PROGRESS--
  */
-function Rules(args) {
-  var rules = args.split(';');
-  var uVal = parts[0];
-  var rVal = parts[1];
-  var dVal = parts[2];
-  var lVal = parts[3];
-  var ruleCurVal = parts[4];
-  var ruleNxtVal = parts[5];
-  for (var rule in rules) {
-    if (dir == 'up') {
-      var cur = get(x, y, 'val');
-      if (cur == ruleCurVal) {
-        set(x, y, 'val', ruleNxtVal);
+function Any(board) {
+  this.board = board;
+}
+
+Any.prototype.runRules = function() {
+  var b = this.board;
+  for (var y = 1; y < rows - 1; y++) {
+    for (var x = 1; x < cols - 1; x++) {
+      var rules;
+      if (!(rules = b.isSet(x, y, 'rules')))
+        return;
+      var rules = rules.split(';');
+      for (var rule in rules) {
+        var subs = rules.split(':');
+        var check = subs[0].split(',');
+        var apply = subs[1].split(',');
+        if (this.allOn(check))
+          this.apply(apply);
       }
     }
   }
-}
+};
 
-function runRules() {
-  for (var y = 1; y < rows - 1; y++) {
-    for (var x = 1; x < cols - 1; x++) {
-      var rules = new Rules(get(x, y, 'rules'));
-      rules.apply();
-    }
+// pseudo below.. need to transform the cell value to a board-modulo position.
+Any.prototype.allOn = function(checkCells) {
+  for (var cell in checkCells) {
+    if (!this.board.isOn(cell))
+      return false;
+  }
+  return true;
+};
+
+Any.prototype.apply = function(applyCells) {
+  for (var cell in applyCells) {
+    if (cell < 0)
+      this.board.clearRule(Math.abs(cell));
+    else
+      this.board.installRule(cell);
   }
 };
