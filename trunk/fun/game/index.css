@@ -1,15 +1,8 @@
-#main {
-  margin: 20px auto 0 auto;
-  width: 50%;
-  text-align: center;
-}
+body { margin: 0 }
 
 canvas {
   cursor: crosshair;
-}
-
-#game {
-  border: solid 1px grey;
+  border: none;
 }
 
 button {
