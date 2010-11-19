@@ -1,20 +1,25 @@
-function Board(size) {
-  this.size = size;
+function Board(width, height) {
+  this.width = width;
+  this.height = height;
   this.curCells = new Array();
   this.nxtCells = new Array();
 
-  for (var y = 0; y < size; y++) {
+  for (var y = 0; y < height; y++) {
     this.curCells[y] = new Array();
     this.nxtCells[y] = new Array();
-    for (var x = 0; x < size; x++) {
+    for (var x = 0; x < width; x++) {
       this.curCells[y][x] = {'set': 0};
       this.nxtCells[y][x] = {'set': 0};
     }
   }
 };
 
-Board.prototype.getSize = function() {
-  return this.size;
+Board.prototype.getWidth = function() {
+  return this.width;
+};
+
+Board.prototype.getHeight = function() {
+  return this.height;
 };
 
 // Logical on/off
@@ -26,20 +31,32 @@ Board.prototype.turnOn = function(x, y) {
   this.set(x, y, 'on', 'true');
 };
 
+Board.prototype.turnCurOn = function(x, y) {
+  this.setCur(x, y, 'on', 'true');
+};
+
 Board.prototype.turnOff = function(x, y) {
   this.set(x, y, 'on', 'false');
 };
 
+Board.prototype.turnCurOff = function(x, y) {
+  this.setCur(x, y, 'on', 'false');
+};
+
 // Inner state methods.
 Board.prototype.set = function(x, y, name, value) {
-  this.nxtCells[x][y][name] = value;
+  this.nxtCells[y][x][name] = value;
+};
+
+Board.prototype.setCur = function(x, y, name, value) {
+  this.curCells[y][x][name] = value;
 };
 
 Board.prototype.isSet = function(x, y, name) {
   //this.checkBoard('isSet', x, y, name);
-  if (!this.curCells[x][y][name])
+  if (!this.curCells[y][x][name])
     return false;
-  return this.curCells[x][y][name];
+  return this.curCells[y][x][name];
 };
 
 Board.prototype.next = function() {
@@ -48,8 +65,8 @@ Board.prototype.next = function() {
   this.curCells = this.nxtCells;
   this.nxtCells = tmp;
   // Clear next and set to cur.
-  for (var y = 0; y < this.size; y++) {
-    for (var x = 0; x < this.size; x++) {
+  for (var y = 0; y < this.height; y++) {
+    for (var x = 0; x < this.width; x++) {
       var curObj = this.curCells[y][x];
       var nxtObj = this.nxtCells[y][x] = {}; // Clear.
       for (var prop in curObj) {
@@ -63,11 +80,11 @@ Board.prototype.next = function() {
 Board.prototype.checkBoard = function(msg, x, y, name) {
   if (!this.cells)
     alert(msg+' !board');
-  else if (!this.cells[x])
-    alert(msg+' !cells['+x+']');
-  else if (!this.cells[x][y])
-    alert(msg+' !cells['+x+']['+y+']');
-  else if (!this.cells[x][y][name])
-    alert(msg+' !cells['+x+']['+y+']['+name+']');
+  else if (!this.cells[y])
+    alert(msg+' !cells['+y+']');
+  else if (!this.cells[y][x])
+    alert(msg+' !cells['+y+']['+x+']');
+  else if (!this.cells[y][x][name])
+    alert(msg+' !cells['+y+']['+x+']['+name+']');
 };
 */

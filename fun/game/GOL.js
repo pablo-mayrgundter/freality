@@ -17,8 +17,8 @@ function GOL(board) {
  */
 GOL.prototype.runRules = function() {
   var b = this.board;
-  for (var y = 1; y < b.getSize() - 1; y++) {
-    for (var x = 1; x < b.getSize() - 1; x++) {
+  for (var y = 1; y < b.getHeight() - 1; y++) {
+    for (var x = 1; x < b.getWidth() - 1; x++) {
       var count = 0;
       for (var i = -1; i < 2; i++) {
         for (var j = -1; j < 2; j++) {
@@ -29,8 +29,8 @@ GOL.prototype.runRules = function() {
         }
       }
       switch (count) {
-      case 0:;
-      case 1:; break; // A
+      case 0: ;
+      case 1: if (b.isOn(x, y)) { b.turnOff(x, y); }; break; // A
       case 2: if (b.isOn(x, y)) { b.turnOn(x, y); }; break; // B
       case 3: b.turnOn(x, y); break; // B & D
       case 4:;

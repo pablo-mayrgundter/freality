@@ -19,12 +19,6 @@ function addEvent( obj, type, fn ) {
   }
 }
 
-var debugElt;
 function d(msg) {
-  if (null == debugElt) {
-    debugElt = get('debug');
-    if (null == debugElt)
-      return;
-  }
-  debugElt.innerHTML += msg + '<br/>';
+  console.log(msg);
 }
