@@ -29,7 +29,7 @@ GOL.prototype.runRules = function() {
         }
       }
       switch (count) {
-      case 0: ;
+      case 0: ; break;
       case 1: if (b.isOn(x, y)) { b.turnOff(x, y); }; break; // A
       case 2: if (b.isOn(x, y)) { b.turnOn(x, y); }; break; // B
       case 3: b.turnOn(x, y); break; // B & D
