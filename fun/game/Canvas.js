@@ -7,6 +7,7 @@ function Canvas(elt, board, cellSize) {
     for (var x = 0; x < board.getWidth(); x++) {
       try {
         this.board.set(x, y, 'age', 0);
+        this.drawBorder(x, y, light);
       } catch(e) {
         alert(x+','+y);
         return;
@@ -40,6 +41,12 @@ Canvas.prototype.draw = function() {
 Canvas.prototype.drawCell = function(x, y, color) {
   this.canvas.fillStyle = color;
   this.canvas.fillRect(x * this.cellSize, y * this.cellSize, this.cellSize, this.cellSize);
+  this.drawBorder(x, y, light);
+};
+
+Canvas.prototype.drawBorder = function(x, y, color) {
+  this.canvas.strokeStyle = color;
+  this.canvas.strokeRect(x * this.cellSize, y * this.cellSize, this.cellSize, this.cellSize);
 };
 
 Canvas.prototype.clickHandler = function() {
@@ -56,10 +63,14 @@ Canvas.prototype.clickHandler = function() {
   var evt = window.event;
   var cX = evt.x - me.canvasElt.offsetLeft;
   var cY = evt.y - me.canvasElt.offsetTop;
-  var cW = me.canvasElt.width;
-  var cH = me.canvasElt.height;
-  var bX = Math.floor(cX / cW * board.getWidth());
-  var bY = Math.floor(cY / cH * board.getHeight());
+  var cW = me.canvasElt.offsetWidth;
+  var cH = me.canvasElt.offsetHeight;
+  var dX = cX / cW;
+  var dY = cY / cH;
+  var bW = me.board.getWidth();
+  var bH = me.board.getHeight();
+  var bX = Math.floor(dX * bW);
+  var bY = Math.floor(dY * bH);
   if (me.board.isOn(bX, bY)) {
     me.board.turnCurOff(bX, bY);
     me.board.turnOff(bX, bY);

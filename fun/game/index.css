@@ -1,11 +1,24 @@
-body { margin: 0 }
+body { margin: 0; }
 
-canvas {
+#game, #ruleIn, #ruleOut {
   cursor: crosshair;
   border: none;
+  margin: 0 auto;
 }
 
-button {
-  border: solid 1px grey;
-  padding: 3px
+#game {
+  display: block;
+}
+
+#controls {
+  height: 100;
+  width: 200;
+  margin: 0 auto;
+  padding: 1em;
+  text-align: center;
+  vertical-align:text-top;
+}
+
+#arrow {
+  vertical-align: 200%;
 }
