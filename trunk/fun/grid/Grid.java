@@ -30,8 +30,8 @@ class Grid {
   static final int HEIGHT = Integer.parseInt(System.getProperty("height", "800"));
   static final int SLEEP = Integer.parseInt(System.getProperty("sleep", "30"));
   static final boolean FULLSCREEN = Boolean.parseBoolean(System.getProperty("fs", "false"));
-  static final int levels = Integer.parseInt(System.getProperty("levels", "3"));
-  static final int size = Integer.parseInt(System.getProperty("size", "10"));
+  static final int levels = Integer.parseInt(System.getProperty("levels", "7"));
+  static final int size = Integer.parseInt(System.getProperty("size", "5"));
   static final int w = size, h = size;
   static final int [] path = new int[levels];
   static void genPath() {
