@@ -29,6 +29,7 @@ class Grid {
   static final int WIDTH = Integer.parseInt(System.getProperty("width", "800"));
   static final int HEIGHT = Integer.parseInt(System.getProperty("height", "800"));
   static final int SLEEP = Integer.parseInt(System.getProperty("sleep", "30"));
+  static final boolean FULLSCREEN = Boolean.parseBoolean(System.getProperty("fs", "false"));
   static final int levels = Integer.parseInt(System.getProperty("levels", "3"));
   static final int size = Integer.parseInt(System.getProperty("size", "10"));
   static final int w = size, h = size;
@@ -81,10 +82,12 @@ class Grid {
     f.setUndecorated(true);
     f.setVisible(true);
     f.setSize(WIDTH, HEIGHT);
-    final GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
-    final GraphicsDevice device = env.getDefaultScreenDevice();
-    final GraphicsConfiguration config = device.getDefaultConfiguration();
-    device.setFullScreenWindow(f);
+    if (FULLSCREEN) {
+      final GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+      final GraphicsDevice device = env.getDefaultScreenDevice();
+      final GraphicsConfiguration config = device.getDefaultConfiguration();
+      device.setFullScreenWindow(f);
+    }
     final Grid grid = new Grid(levels);
     System.out.println("leafs: "+ count);
     final Graphics g2d = f.getGraphics();
