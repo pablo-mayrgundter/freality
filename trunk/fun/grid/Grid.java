@@ -19,8 +19,9 @@ class Grid {
       neigh = null;
     } else {
       neigh = new Grid[FANOUT];
-      for (int i = 0; i < 4; i++)
+      for (int i = 0; i < 4; i++) {
         neigh[i] = new Grid(level - 1, layers);
+      }
     }
   }
 
@@ -30,8 +31,9 @@ class Grid {
     setColor(g, levels - level, 0);
     int off = w * (int)Math.pow(2, level - 1);
     if (pathType > 0 && level < levels) {
-      if (path[level - 1] != pos)
+      if (path[level - 1] != pos) {
         return;
+      }
       setColor(g, level, pathType);
       g.fillRect(x - w/2 + off/2, y - h/2 + off/2, off, off);
     }
@@ -76,14 +78,16 @@ class Grid {
 
   public static void main(final String [] args) {
     final FullScreenableFrame f = new FullScreenableFrame();
+    System.out.println(f);
     final LayeredImage layers = new LayeredImage(levels, f.getWidth(), f.getHeight());
     final Grid grid = new Grid(levels, layers);
     final Graphics g2d = f.getDrawGraphics();
     final BufferedImage compositeImg =
       new BufferedImage(f.getWidth(), f.getHeight(), BufferedImage.TYPE_INT_ARGB);
     // Grid is expensive to draw, render only once.
-    if (Boolean.getBoolean("grid"))
+    if (Boolean.getBoolean("grid")) {
       grid.draw(0, 0, 0, 0);
+    }
 
     while (true) {
       genPath();
