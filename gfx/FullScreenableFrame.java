@@ -56,11 +56,18 @@ public class FullScreenableFrame extends JFrame {
     if (drawGraphics == null) {
       drawGraphics = (Graphics2D) getContentPane().getGraphics();
       final java.util.Map hints = new java.util.HashMap();
-      hints.put(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
+      hints.put(java.awt.RenderingHints.KEY_ANTIALIASING,
+                java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
       drawGraphics.setRenderingHints(hints);
       drawGraphics.setColor(bgColor);
       drawGraphics.fillRect(0, 0, width, height);
     }
     return drawGraphics;
+  }
+
+  public String toString() {
+    return String.format("{%s@%d: width: %d, height: %d}",
+                         this.getClass().getName(),
+                         System.identityHashCode(this), width, height);
   }
 }
