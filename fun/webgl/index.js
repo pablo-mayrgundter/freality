@@ -1,10 +1,11 @@
 // Started with http://learningwebgl.com/blog/?p=28
 // and https://developer.mozilla.org/en/WebGL
 var gl;
+var canvas;
 var shader;
 
 function init() {
-  var canvas = $('canvas');
+  canvas = $('canvas');
   var ex;
   try {
     gl = canvas.getContext('experimental-webgl');
@@ -26,6 +27,8 @@ function init() {
   initShaders();
   initShape();
   initTexture();
+  initKeyHandler();
+  initMouseHandler();
 
   tick();
 }
@@ -46,6 +49,7 @@ function animate(time) {
 var count = 0;
 function tick() {
   requestAnimFrame(tick);
+  handleKeys();
   var time = new Date().getTime();
   drawScene(time);
   animate(time);
