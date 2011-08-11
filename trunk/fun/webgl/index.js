@@ -1,47 +1,59 @@
-var imageWidth, imageHeight, imageDepth;
-// Set these in delegates.
-var regionWidth, regionHeight, regionDepth,
-  regionXOffset, regionYOffset, regionZOffset,
-  xScale, yScale, zScale;
-var brushSize = 2;
-var gfx;
-var x = Math.random();
-var y = Math.random();
-var z = Math.random();
-var status;
-var r = g = b =255;
-var maxItr = 10000;
-var points = [];
-var ndx = 0;
+// Started with http://learningwebgl.com/blog/?p=28
+// and https://developer.mozilla.org/en/WebGL
+var gl;
+var shader;
 
 function init() {
-  var canvas = document.getElementById('canvas');
-  status = document.getElementById('status');
-  imageWidth = canvas.clientWidth;
-  imageHeight = canvas.clientHeight;
-  gfx = canvas.getContext('2d');
-  gfx.fillStyle = 'black';
-  gfx.fillRect(0, 0, imageWidth, imageHeight);
-  gfx.fillStyle = 'rgb(0,0,255)';
-  canvas.onclick = function(e){
-  };
-  // Bind to document key handlers.
-  document.onkeydown = function(e){
-    handleKeyEvent(e, true);
-  };
-  document.onkeyup = function(e){
-    handleKeyEvent(e, false);
-  };
-  count = 0;
-  //mandelbrot();
-  ifs();
+  var canvas = $('canvas');
+  var ex;
+  try {
+    gl = canvas.getContext('experimental-webgl');
+  } catch (e) {
+    ex = e;
+  }
+  if (!gl) {
+    alert('Cannot use WebGL :( '+ e);
+    return;
+  }
+  gl.viewportWidth = canvas.width;
+  gl.viewportHeight = canvas.height;
+
+  gl.clearColor(0, 0, 0, 1);
+  gl.clearDepth(1.0);
+  gl.enable(gl.DEPTH_TEST);
+  gl.depthFunc(gl.LEQUAL);
+
+  initShaders();
+  initShape();
+  initTexture();
+
+  tick();
 }
 
-function handleKeyEvent(e) {
-  switch (e.keyCode) {
-  case 37: keyLeft();break;
-  case 38: keyUp();break;
-  case 39: keyRight();break;
-  case 40: keyDown();break;
+var lastTime = 0;
+var rotTri = 0;
+var rotSqu = 0;
+
+function animate(time) {
+  if (lastTime != 0) {
+    var elapsed = time - lastTime;
+    rotTri += (90 * elapsed) / 1000.0;
+    rotSqu += (75 * elapsed) / 1000.0;
   }
+  lastTime = time;
+}
+
+var count = 0;
+function tick() {
+  requestAnimFrame(tick);
+  var time = new Date().getTime();
+  drawScene(time);
+  animate(time);
+  count++;
+}
+
+// Helpers.
+
+function $(id) {
+  return document.getElementById(id);
 }
