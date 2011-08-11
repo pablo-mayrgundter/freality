@@ -2,8 +2,14 @@ var mouseDown = false;
 var lastMouseX = null;
 var lastMouseY = null;
  
-var moonRotationMatrix = mat4.create();
-mat4.identity(moonRotationMatrix);
+var mouseRotation = mat4.create();
+mat4.identity(mouseRotation);
+
+function initMouseHandler() {
+  canvas.onmousedown = handleMouseDown;
+  window.onmouseup = handleMouseUp;
+  window.onmousemove = handleMouseMove;
+}
  
 function handleMouseDown(event) {
   mouseDown = true;
@@ -23,14 +29,14 @@ function handleMouseMove(event) {
   var newY = event.clientY;
  
   var deltaX = newX - lastMouseX;
-  var newRotationMatrix = mat4.create();
-  mat4.identity(newRotationMatrix);
-  mat4.rotate(newRotationMatrix, degToRad(deltaX / 10), [0, 1, 0]);
+  var newMouseRotation = mat4.create();
+  mat4.identity(newMouseRotation);
+  mat4.rotate(newMouseRotation, degToRad(deltaX / 10), [0, 1, 0]);
  
   var deltaY = newY - lastMouseY;
-  mat4.rotate(newRotationMatrix, degToRad(deltaY / 10), [1, 0, 0]);
+  mat4.rotate(newMouseRotation, degToRad(deltaY / 10), [1, 0, 0]);
  
-  mat4.multiply(newRotationMatrix, moonRotationMatrix, moonRotationMatrix);
+  mat4.multiply(newMouseRotation, mouseRotation, mouseRotation);
   lastMouseX = newX;
   lastMouseY = newY;
 }

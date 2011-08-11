@@ -21,12 +21,17 @@ function initShaders() {
 
   shader.aPos = gl.getAttribLocation(shader, 'aPos');
   gl.enableVertexAttribArray(shader.aPos);
+  shader.uPos = gl.getUniformLocation(shader, 'uPos');
+  shader.uView = gl.getUniformLocation(shader, 'uView');
+  shader.uNormal = gl.getUniformLocation(shader, 'uNormal');
 
   shader.aTex = gl.getAttribLocation(shader, 'aTex');
   gl.enableVertexAttribArray(shader.aTex);
 
   shader.aNormal = gl.getAttribLocation(shader, 'aNormal');
   gl.enableVertexAttribArray(shader.aNormal);
+
+  shader.uSampler = gl.getUniformLocation(shader, 'uSampler');
 }
 
 /**
