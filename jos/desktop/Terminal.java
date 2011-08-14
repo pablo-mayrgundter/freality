@@ -15,6 +15,7 @@ import jos.util.Debug;
  * @author <a href="pablo@freality.com">Pablo Mayrgundter</a>.
  * @version $Revision: 1.1.1.1 $
  */
+@SuppressWarnings(value="serial")
 class Terminal extends Application implements DocumentListener {
 
   static { CLASS = Terminal.class.getName(); } // HACK: Enables standalone.
@@ -82,6 +83,7 @@ class Terminal extends Application implements DocumentListener {
   public void changedUpdate(DocumentEvent e) { }
   public void removeUpdate(DocumentEvent e) { }
 
+  @SuppressWarnings(value="serial")
   class SharedTextArea extends JTextArea {
 
     /**

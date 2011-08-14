@@ -54,7 +54,7 @@ public class ChatServer {
   /**  e.g. "BUDDY_OFFLINE name" */
   public static final String PROTO_RESPONSE_BUDDY_OFFLINE = "BUDDY_OFFLINE";
 
-  public static final Map ONLINE_USERS = new HashMap();
+  public static final Map<String, String> ONLINE_USERS = new HashMap<String, String>();
 
   public static void main(String [] args) {
     new Thread(new Runnable() {
@@ -115,8 +115,7 @@ public class ChatServer {
                           } else if (signedon && line.startsWith(PROTO_REQUEST_BUDDY_INFO)) {
                             final String [] parts = line.split(" ");
                             final String requestBuddy = parts[1];
-                            final String buddySocketAddr =
-                              (String) ONLINE_USERS.get(requestBuddy);
+                            final String buddySocketAddr = ONLINE_USERS.get(requestBuddy);
                             if (buddySocketAddr != null) {
                               send(PROTO_RESPONSE_BUDDY_INFO
                                    + " " + requestBuddy

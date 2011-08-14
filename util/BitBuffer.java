@@ -36,25 +36,28 @@ public final class BitBuffer {
   }
 
   public BitBuffer clear() {
-    for (int i = mPos; i < mLim; i++)
+    for (int i = mPos; i < mLim; i++) {
       set(i, 0);
+    }
     return this;
   }
 
-  public int get (final int ndx) {
+  public int get(final int ndx) {
     final int block = ndx / 8;
     final int offset = ndx - (block * 8);
-    if (ndx < mPos || ndx >= mLim)
+    if (ndx < mPos || ndx >= mLim) {
       throw new ArrayIndexOutOfBoundsException("Index: "+ ndx +", "+ this);
+    }
     assert block < mBuf.limit() : "Index of "+ ndx +" goes to block "+ block +" of inner byte-buf: "+ mBuf;
     return Bits.get(mBuf.get(block), offset);
   }
 
-  public BitBuffer set (final int ndx, final int value) {
+  public BitBuffer set(final int ndx, final int value) {
     final int block = ndx / 8;
     final int offset = ndx - (block * 8);
-    if (ndx >= mLim)
+    if (ndx >= mLim) {
       throw new ArrayIndexOutOfBoundsException("Index: "+ ndx +", "+ this);
+    }
     assert block < mBuf.limit() : "Index of "+ ndx +" goes to block "+ block +" of inner byte-buf"+ mBuf;
     final byte withBitSet = Bits.set(mBuf.get(block), offset, value);
     mBuf.put(block, withBitSet);

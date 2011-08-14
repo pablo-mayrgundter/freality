@@ -1,6 +1,5 @@
 package jos.desktop.people;
 
-import com.wilko.jaim.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.InputStream;
@@ -24,50 +23,50 @@ import jos.desktop.Desktop;
  * @author <a href="mailto:pablo@freality.com">Pablo Mayrgundter</a>
  * @version $Revision: 1.1.1.1 $
  */
+@SuppressWarnings(value="serial")
 public class Groups extends Application implements ListSelectionListener {
 
-    TocConnection mTocConnection = null;
-    final JList mPeople;
+  ChatConnection mConn = null;
+  final JList mPeople;
     
-    public Groups() {
-        super("Groups");
-        setSize(200, 200);
-        DefaultListModel listModel = new DefaultListModel();
-        mPeople = new JList(listModel);
-        mPeople.addListSelectionListener(this);
-        mPeople.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        mPeople.setVisibleRowCount(20);
-        final JScrollPane scrollPane = new JScrollPane(mPeople);
-        add(scrollPane);
-        getConnection();
-    }
+  public Groups() {
+    super("Groups");
+    setSize(200, 200);
+    DefaultListModel listModel = new DefaultListModel();
+    mPeople = new JList(listModel);
+    mPeople.addListSelectionListener(this);
+    mPeople.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    mPeople.setVisibleRowCount(20);
+    final JScrollPane scrollPane = new JScrollPane(mPeople);
+    add(scrollPane);
+    getConnection();
+  }
 
-    //This method is required by ListSelectionListener.
-    public void valueChanged(ListSelectionEvent e) {
-        if (e.getValueIsAdjusting() == false) {
-            final int ndx = mPeople.getSelectedIndex();
-            mPeople.ensureIndexIsVisible(ndx);
-            final String name = (String) mPeople.getModel().getElementAt(ndx);
-            final Chat chat = new Chat(name, mTocConnection);
-            mTocConnection.chats.put(name.toLowerCase(), chat);
-            Desktop.getDesktop().addApp(chat);
-        }
+  //This method is required by ListSelectionListener.
+  public void valueChanged(ListSelectionEvent e) {
+    if (e.getValueIsAdjusting() == false) {
+      final int ndx = mPeople.getSelectedIndex();
+      mPeople.ensureIndexIsVisible(ndx);
+      final String name = (String) mPeople.getModel().getElementAt(ndx);
+      final Chat chat = new Chat(name, mConn);
+      mConn.chats.put(name.toLowerCase(), chat);
+      Desktop.getDesktop().addApp(chat);
     }
+  }
 
-    void addPerson(String name) {
-        ((DefaultListModel) mPeople.getModel()).addElement(name);
+  void addPerson(String name) {
+    ((DefaultListModel) mPeople.getModel()).addElement(name);
+  }
+
+  void delPerson(String name) {
+    ((DefaultListModel) mPeople.getModel()).removeElement(name);
+  }
+
+  ChatConnection getConnection() {
+    if (mConn == null) {
+      mConn = new ChatConnection(this);
+      mConn.connect();
     }
-
-    void delPerson(String name) {
-        ((DefaultListModel) mPeople.getModel()).removeElement(name);
-    }
-
-    TocConnection getConnection() {
-        if (mTocConnection == null) {
-            mTocConnection = new TocConnection(this);
-            mTocConnection.connect();
-        }
-        return mTocConnection;
-    }
-
+    return mConn;
+  }
 }

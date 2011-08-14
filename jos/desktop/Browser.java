@@ -24,6 +24,8 @@ import jos.util.Debug;
  */
 class Browser extends Application implements ActionListener, HyperlinkListener {
 
+  static final long serialVersionUID = 3528072258620852946L;
+
   static { CLASS = Browser.class.getName(); } // HACK: Enables standalone.
   public static final String CVS_VERSION = "$Revision: 1.1.1.1 $";
 
@@ -87,6 +89,7 @@ class Browser extends Application implements ActionListener, HyperlinkListener {
   }
 
   class MyVector<E> extends Vector<E> {
+    static final long serialVersionUID = 630960036961310784L;
     public void removeRange(int from, int to) { super.removeRange(from, to); }
   }
 
@@ -102,7 +105,7 @@ class Browser extends Application implements ActionListener, HyperlinkListener {
   void back() throws IOException {
     if (mHistoryCurPos > 0) {
       mHistoryCurPos--;
-      mDocDisplay.setPage((String) mHistory.get(mHistoryCurPos));
+      mDocDisplay.setPage(mHistory.get(mHistoryCurPos));
       mForwardButton.setEnabled(true);
     }
     if (mHistoryCurPos <= 0)
@@ -112,7 +115,7 @@ class Browser extends Application implements ActionListener, HyperlinkListener {
   void forward() throws IOException {
     if (mHistoryCurPos + 1 < mHistory.size()) {
       mHistoryCurPos++;
-      mDocDisplay.setPage((String) mHistory.get(mHistoryCurPos));
+      mDocDisplay.setPage(mHistory.get(mHistoryCurPos));
       mBackButton.setEnabled(true);
     }
     if (mHistoryCurPos + 1 >= mHistory.size())
@@ -121,7 +124,7 @@ class Browser extends Application implements ActionListener, HyperlinkListener {
   }
 
   void refresh() throws IOException {
-    mDocDisplay.setPage((String) mHistory.get(mHistoryCurPos));
+    mDocDisplay.setPage(mHistory.get(mHistoryCurPos));
   }
 
   public void actionPerformed(ActionEvent e) {

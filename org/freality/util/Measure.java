@@ -164,6 +164,9 @@ public class Measure {
   }
 
   static class MeasureFormatException extends IllegalArgumentException {
+
+    static final long serialVersionUID = 7643768565382046869L;
+
     MeasureFormatException(String msg) {
       super(msg);
     }

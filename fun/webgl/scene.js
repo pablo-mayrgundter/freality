@@ -2,24 +2,33 @@ var scenePos = mat4.create();
 var sceneView = mat4.create();
 var sceneNormals = mat4.create();
 
-var yRot = 0;
+var strafe = 0;
 var zoom = -10;
+var pitch = 0;
+var yaw = 0;
+
+var yRot = 0;
 
 function drawScene(time) {
   gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gl.uniformMatrix4fv(shader.uPos, false, scenePos);
   gl.uniformMatrix4fv(shader.uView, false, sceneView);
+
+  mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 150.0, scenePos);
+  mat4.identity(sceneView);
+
+  // Camera
+  mat4.rotate(sceneView, degToRad(-pitch), [1, 0, 0]);
+  mat4.multiply(sceneView, mouseRotation);
+  mat4.translate(sceneView, [strafe, 0, zoom]);
+
+  // Object
   var normalMatrix = mat3.create();
   mat4.toInverseMat3(sceneView, normalMatrix);
   mat3.transpose(normalMatrix);
   gl.uniformMatrix3fv(shader.uNormal, false, normalMatrix);
-
-  mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 150.0, scenePos);
-  mat4.identity(sceneView);
-  mat4.translate(sceneView, [0, 0, zoom]);
   mat4.rotate(sceneView, degToRad(yRot += 0.05), [0, 1, 0]);
-  mat4.multiply(sceneView, mouseRotation);
 
   gl.bindBuffer(gl.ARRAY_BUFFER, shapeVertices);
   gl.vertexAttribPointer(shader.aPos, shapeVertices.itemSize, gl.FLOAT, false, 0, 0);
