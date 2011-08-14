@@ -30,7 +30,7 @@ class ColoredDensityMap extends DensityMap {
     //    System.out.println(funcNdx);
     final int ndx = super.map(x, y);
     // Move some of this normalization to the draw() routine ?
-    float c = (mColor[ndx] + (float) funcNdx / (float) mPalette.length) / 2f;
+    float c = (mColor[ndx] + funcNdx / (float) mPalette.length) / 2f;
     mColor[ndx] = (float) math.util.Linear.squeeze(0, c, 1);
     assert mColor[ndx] >= 0 && mColor[ndx] <= 1f : "mColor[ndx]: "+ mColor[ndx];
   }

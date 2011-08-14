@@ -12,10 +12,12 @@ import org.freality.util.Measure;
  * @version $Revision: 1.1.1.1 $
  */
 public class Star extends Galaxy {
-    public Star(String name, String parent, double apparentMagnitude, float colorIndex,
-                Measure mass, double density,
-                Measure meanRadius, Measure siderealRotationPeriod, double axialInclination,
-                ObservedLocation loc) {
-        super(name, parent, apparentMagnitude, colorIndex, mass, density, meanRadius, siderealRotationPeriod, axialInclination, loc);
-    }
+  public Star(String name, String parent,
+              double apparentMagnitude, float colorIndex,
+              Measure mass, double density,
+              Measure meanRadius, Measure siderealRotationPeriod,
+              double axialInclination, ObservedLocation loc) {
+    super(name, parent, apparentMagnitude, colorIndex, mass,
+          density, meanRadius, siderealRotationPeriod, axialInclination, loc);
+  }
 }

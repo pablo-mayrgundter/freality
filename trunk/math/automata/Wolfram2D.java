@@ -29,7 +29,11 @@ final class Wolfram2D {
 
     BitBuffer tmp;
     for (int y = 0; y < mHeight - 1; y++) {
-      mGraphics.draw(mCur, true);
+      for (int x = 0; x < mWidth; x++) {
+        if (mCur.get(x) != 0) {
+          mGraphics.drawPixel(x, y);
+        }
+      }
       Wolfram.apply(mCur, mNext, rule);
       tmp = mCur; mCur = mNext; mNext = tmp;
       mNext.clear();

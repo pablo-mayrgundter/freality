@@ -8,13 +8,13 @@ package vr.cpack.space.model;
  */
 public class Universe extends CelestialBody {
 
-    public static final Universe OUR_UNIVERSE = new Universe();
+  public static final Universe OUR_UNIVERSE = new Universe();
 
-    private Universe() {
-        super("Our Universe", null);
-    }
+  private Universe() {
+    super("Our Universe", null);
+  }
 
-    protected Universe(String name, String parent) {
-        super(name, parent);
-    }
+  protected Universe(String name, String parent) {
+    super(name, parent);
+  }
 }

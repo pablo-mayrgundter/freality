@@ -84,7 +84,7 @@ public class SpaceHandler extends DefaultHandler {
     if (qName.equalsIgnoreCase("system")) {
 
       if (!frameStack.isEmpty())
-        curFrame = (StackFrame) frameStack.pop();
+        curFrame = frameStack.pop();
 
       final CelestialBody body = makeBody();
 
@@ -100,7 +100,7 @@ public class SpaceHandler extends DefaultHandler {
   CelestialBody makeBody() {
     if (curFrame.type.equalsIgnoreCase("star")) {
       return new Star(curFrame.name,
-                      frameStack.isEmpty() ? "" : ((StackFrame) frameStack.peek()).name,
+                      frameStack.isEmpty() ? "" : frameStack.peek().name,
                       getTagValue("apparentMagnitude"),
                       (float) getTagValue("colorIndex"),
                       getTagMeasure("mass"),
@@ -112,7 +112,7 @@ public class SpaceHandler extends DefaultHandler {
                                                           getTagValue("ascension"), new Measure(0.0, LENGTH)), Epoch.J2000));
     } else if (curFrame.type.equalsIgnoreCase("planet")) {
       return new Planet(curFrame.name,
-                        frameStack.isEmpty() ? "" : ((StackFrame) frameStack.peek()).name,
+                        frameStack.isEmpty() ? "" : frameStack.peek().name,
                         getTagValue("apparentMagnitude"),
                         Color.fromBVColorIndex((float) getTagValue("color")),
                         getTagMeasure("mass"),
@@ -141,7 +141,7 @@ public class SpaceHandler extends DefaultHandler {
 
     } else if (curFrame.type.equalsIgnoreCase("rings")) {
       return new Rings(curFrame.name,
-                       frameStack.isEmpty() ? "" : ((StackFrame) frameStack.peek()).name,
+                       frameStack.isEmpty() ? "" : frameStack.peek().name,
                        getTagMeasure("innerSemiMajorAxis"),
                        getTagMeasure("outerSemiMajorAxis"));
     } // Could handle star cluster, galaxy, galaxy cluster, etc. here.
@@ -152,7 +152,7 @@ public class SpaceHandler extends DefaultHandler {
    * Helper to consolidate lookup code.
    */
   private final double getTagValue(final String attribute) {
-    final String value = (String)curFrame.params.get(attribute.toLowerCase());
+    final String value = curFrame.params.get(attribute.toLowerCase());
     return value == null ? 1.0 : Double.parseDouble(value);
   }
 
@@ -160,7 +160,7 @@ public class SpaceHandler extends DefaultHandler {
    * Helper to consolidate lookup code.
    */
   private final Measure getTagMeasure(final String attribute) {
-    final String value = (String)curFrame.params.get(attribute.toLowerCase());
+    final String value = curFrame.params.get(attribute.toLowerCase());
     if (value == null) {
       System.err.println("bogus: " + attribute);
       return null;
@@ -197,7 +197,7 @@ public class SpaceHandler extends DefaultHandler {
       bodyNames.add(bodyName);
     final LinkedHashMap<String, CelestialBody> reversedMap = new LinkedHashMap<String, CelestialBody>();
     for (int i = bodyNames.size() - 1; i >= 0; i--)
-      reversedMap.put((String)bodyNames.get(i), (CelestialBody)handler.bodyMap.get((String)bodyNames.get(i)));
+      reversedMap.put(bodyNames.get(i), handler.bodyMap.get(bodyNames.get(i)));
     return new DataAndExtents(reversedMap, handler.largestOrbit);
   }
 

@@ -18,6 +18,8 @@ import java.util.Map;
  */
 class Calculator extends Application implements ActionListener {
 
+  static final long serialVersionUID = -6893984478913168872L;
+
   static { CLASS = Calculator.class.getName(); } // HACK: Enables standalone.
   public static final String CVS_VERSION = "$Revision: 1.1.1.1 $";
 
@@ -95,6 +97,7 @@ class Calculator extends Application implements ActionListener {
     accumulator = "";
   }
 
+  @SuppressWarnings(value="fallthrough")
   public void actionPerformed(ActionEvent e) {
     final Button button = buttonLookup.get(e.getActionCommand());
 

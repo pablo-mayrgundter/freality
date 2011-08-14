@@ -39,7 +39,7 @@ import org.freality.gui.three.ViewPlatformGroup;
 /**
  * Testing a standalone browser.  Starting it as a scene-graph itself.
  */
-class Browser extends BranchGroup {
+public class Browser extends BranchGroup {
 
   public static void main(final String [] args) {
     final Browser scene = new Browser();
@@ -65,7 +65,7 @@ class Browser extends BranchGroup {
   SpaceHandler.DataAndExtents dae = null;
   Bounds bounds;
 
-  Browser() {
+  public Browser() {
     setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
     setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
     setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
@@ -107,7 +107,7 @@ class Browser extends BranchGroup {
       }
 
       final TransformGroup [] bodyTGs = makePlanetGroup((Planet) body, ((Planet) body).orbit);
-      final TransformGroup parentTG = (TransformGroup) systemTGMap.get(body.parent);
+      final TransformGroup parentTG = systemTGMap.get(body.parent);
       parentTG.addChild(bodyTGs[0]);
 
       if (body.parent.equalsIgnoreCase("sol")) {

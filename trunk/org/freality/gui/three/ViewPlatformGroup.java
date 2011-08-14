@@ -46,7 +46,7 @@ public class ViewPlatformGroup extends BranchGroup {
     // Setup view.
     vp = new ViewPlatform();
     vp.setCapability(Node.ALLOW_BOUNDS_WRITE);
-    vp.setActivationRadius((float) activationRadius);
+    vp.setActivationRadius(activationRadius);
     tg.addChild(vp);
 
     makeViewBehaviors();

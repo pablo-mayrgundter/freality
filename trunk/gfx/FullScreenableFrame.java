@@ -7,6 +7,7 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsConfiguration;
 import javax.swing.JFrame;
 
+@SuppressWarnings(value="serial")
 public class FullScreenableFrame extends JFrame {
 
   static final int WIDTH = Integer.parseInt(System.getProperty("width", "400"));

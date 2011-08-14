@@ -17,6 +17,7 @@ import jos.util.Debug;
  * @author <a href="pablo@freality.com">Pablo Mayrgundter</a>.
  * @version $Revision: 1.1.1.1 $
  */
+@SuppressWarnings(value="serial")
 public class Desktop extends FullScreenableFrame implements ActionListener {
 
   final String BROWSER = Utils.getRsrcProp("browser.name");

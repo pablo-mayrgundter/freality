@@ -33,7 +33,7 @@ public class Color {
    */
   public static Color fromBVColorIndex(float index) {
     if (index <= WHITE_INDEX) {
-      index = (float) Math.min(Math.max(index, MIN_BLUE_INDEX), WHITE_INDEX); // Clamp to [-0.4, 0.2].
+      index = Math.min(Math.max(index, MIN_BLUE_INDEX), WHITE_INDEX); // Clamp to [-0.4, 0.2].
       final float delta = WHITE_INDEX - index; // [0,0.6].
       // Set blue max, and decrease R&G inversely to strength of
       // blue delta strength.  Doesn't vary whole range of blue,
@@ -41,7 +41,7 @@ public class Color {
       // blue".
       return new Color(1f - delta, 1f - delta, 1f);
     } else {
-      index = (float) Math.min(Math.max(index, WHITE_INDEX), MAX_RED_INDEX); // Clamp to [0.2, 2.0].
+      index = Math.min(Math.max(index, WHITE_INDEX), MAX_RED_INDEX); // Clamp to [0.2, 2.0].
       final float delta = MAX_RED_INDEX - index; // [0, 1.8].
       // Reduce the green a bit to give good reds (?).
       return new Color(1f, Math.min(delta * 0.5f, 1f), Math.min(delta * 0.25f, 1f));

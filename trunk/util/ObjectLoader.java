@@ -22,6 +22,7 @@ public final class ObjectLoader {
   /**
    * @throws RuntimeExeption
    */
+  @SuppressWarnings(value="unchecked")
   public static<T> T load(final String filename) {
     T obj = null;
     try {

@@ -31,6 +31,7 @@ public class LexicalAttraction {
     lexicon = new Lexicon();
   }
 
+  @SuppressWarnings(value="unchecked")
   void reset(final String [] words) {
     this.words = words;
     leftLinks = new LinkedHashSet[words.length];

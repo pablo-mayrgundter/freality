@@ -51,7 +51,7 @@ class Sunglasses {
   }
 
   static ArrayList getPicsData(String filename) {
-    ArrayList pics = new ArrayList();
+    ArrayList<PicData> pics = new ArrayList<PicData>();
     try {
       LineNumberReader lnr = new LineNumberReader(new InputStreamReader(new FileInputStream(filename)));
       String line;

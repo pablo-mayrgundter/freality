@@ -31,11 +31,15 @@ package ai;
  *
  * @author Pablo Mayrgundter
  */
-public abstract class Learner<G,E> {
+public abstract class Learner<T> {
+  protected T goal;
+  protected Environment<T> environment;
+  protected double risk;
+  protected abstract T learn(T t);
 
-  public G goal;
+  public T getGoal() {
+    return goal;
+  }
 
-  public Learner() {}
-
-  public abstract E transform(E input);
+  public abstract double differenceFromGoal();
 }

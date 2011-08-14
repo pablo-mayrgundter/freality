@@ -22,7 +22,7 @@ final class ColoredBlob extends Blob {
   Color color;
   void setMass(final float mass) {
     this.mass = mass;
-    final int ndx = (int)((float)mass / (MAXMASS * 1.1f) * (float)COLORS.length);
+    final int ndx = (int)(mass / (MAXMASS * 1.1f) * (float)COLORS.length);
     color = COLORS[ndx];
     radius = (int) (mass * SIZE);
   }

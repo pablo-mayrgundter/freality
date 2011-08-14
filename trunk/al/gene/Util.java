@@ -11,7 +11,7 @@ class Util {
     final ArrayList<String> bigramList = new ArrayList<String>();
     for (int i = 0; i < s.length() - 1; i++)
       bigramList.add(s.substring(i, i+2));
-    return (String [])bigramList.toArray(new String[]{});
+    return bigramList.toArray(new String[]{});
   }
 
   static char randChar() {

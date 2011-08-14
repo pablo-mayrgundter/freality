@@ -1,7 +1,9 @@
 package vr.cpack.space;
 
 import com.sun.j3d.utils.behaviors.mouse.*;
+import gfx.Display3D;
 import gfx.FullScreenableFrame;
+
 
 import javax.media.j3d.*;
 import javax.vecmath.Point3d;
@@ -18,7 +20,7 @@ import org.freality.gui.three.*;
  * @author Pablo Mayrgundter
  * @version $Revision: 1.1.1.1 $
  */
-public class SimpleSolarSystem extends SceneTest {
+public class SimpleSolarSystem extends Display3D {
 
   public SimpleSolarSystem() {
     super(new Scene());
@@ -34,7 +36,6 @@ public class SimpleSolarSystem extends SceneTest {
 
   public static void main(final String [] args) {
     final SimpleSolarSystem ss = new SimpleSolarSystem();
-    ss.makeLive();
-    ss.showScreenFrame();
+    ss.setVisible();
   }
 }
