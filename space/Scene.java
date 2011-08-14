@@ -40,7 +40,7 @@ import org.freality.util.Measure;
  * @author <a href="mailto:pablo@freality.com">Pablo Mayrgundter</a>
  * @version $Revision: 1.1.1.1 $
  */
-class Scene extends BranchGroup {
+public class Scene extends BranchGroup {
 
   static {
     org.freality.io.loader.java.Handler.register();
@@ -57,7 +57,7 @@ class Scene extends BranchGroup {
   final Map<String, TransformGroup> systemTGMap;
   final Node [] destinationNodes;
 
-  Scene() {
+  public Scene() {
     setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
     setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
     setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
@@ -102,7 +102,7 @@ class Scene extends BranchGroup {
 
       final TransformGroup [] bodyTGs = makePlanetGroup((Planet) body, ((Planet) body).orbit);
 
-      final TransformGroup parentTG = (TransformGroup) systemTGMap.get(body.parent);
+      final TransformGroup parentTG = systemTGMap.get(body.parent);
 
       if (parentTG == null) {
         System.err.println("adding " + body.name + " to ROOT SCENE");

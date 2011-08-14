@@ -8,6 +8,7 @@ import audio.Synth;
 import gene.Pool;
 import util.Bits;
 import util.CLI;
+import util.Flags;
 import util.ObjectLoader;
 
 final class MusicBox implements Runnable {
@@ -17,14 +18,14 @@ final class MusicBox implements Runnable {
    * away the first 32 notes, or 4 instruments to get rid of bad low
    * sounds, leaving 28.
    */
-  static final int INSTRUMENTS = Integer.parseInt(System.getProperty("instruments", "28"));
-  static final int BEATS = Integer.parseInt(System.getProperty("beats", "16"));
-  static final int MEASURES = Integer.parseInt(System.getProperty("measures", "10"));
-  static final int LOWESTNOTE = Integer.parseInt(System.getProperty("lowestNote", "32"));
-  static final int TEMPO = Integer.parseInt(System.getProperty("tempo", "2000"));
-  static final boolean RANDINIT = Boolean.getBoolean("randinit");
-  static final String LOAD_FILE = System.getProperty("loadFile", "song.obj");
-  static final boolean LOAD = Boolean.getBoolean("load");
+  static final int INSTRUMENTS = Flags.getInt("instruments", 28);
+  static final int BEATS = Flags.getInt("beats", 16);
+  static final int MEASURES = Flags.getInt("measures", 10);
+  static final int LOWESTNOTE = Flags.getInt("lowestNote", 32);
+  static final int TEMPO = Flags.getInt("tempo", 2000);
+  static final boolean RANDINIT = Flags.getBool("randinit");
+  static final String LOAD_FILE = Flags.get("loadFile", "song.obj");
+  static final boolean LOAD = Flags.getBool("load", false);
 
   static final class Song implements java.io.Serializable {
     static final long serialVersionUID = -3733986784126345220L;

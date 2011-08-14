@@ -8,6 +8,7 @@ import javax.swing.JLabel;
  * @author <a href="pablo@freality.com">Pablo Mayrgundter</a>.
  * @version $Revision: 1.1.1.1 $
  */
+@SuppressWarnings(value="serial")
 class Clock extends JLabel implements Runnable {
   public void run() {
     while (true) {

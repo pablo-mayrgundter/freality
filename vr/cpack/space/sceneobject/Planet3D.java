@@ -86,7 +86,7 @@ public class Planet3D extends Group {
   }
 
   Color3f makeColor() {
-    final float albedo = (float) ((Planet) mCelestialBody).albedo;
+    final float albedo = (float) (mCelestialBody).albedo;
     return new Color3f(albedo, albedo, albedo);
   }
 }

@@ -1,4 +1,5 @@
 var activeKeys = new Array();
+var dTrans = 0.1;
 
 function initKeyHandler() {
   document.onkeydown = handleKeyDown;
@@ -15,17 +16,17 @@ function handleKeyUp(event) {
 
 function handleKeys() {
   if (activeKeys[37]) {
-    // Left cursor key
+    strafe += dTrans;
   }
   if (activeKeys[39]) {
-    // Right cursor key
+    strafe -= dTrans;
   }
   if (activeKeys[38]) {
     // Up cursor key
-    zoom++;
+    pitch += dTrans;
   }
   if (activeKeys[40]) {
     // Down cursor key
-    zoom--;
+    pitch -= dTrans;
   }
 }

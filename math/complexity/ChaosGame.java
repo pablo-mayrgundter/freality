@@ -84,7 +84,7 @@ public class ChaosGame implements Runnable {
     }
 
     double distance(final Point p) {
-      return (double) Math.sqrt(distanceSquared(p));
+      return Math.sqrt(distanceSquared(p));
     }
 
     double distanceSquared(final Point p) {
@@ -96,7 +96,7 @@ public class ChaosGame implements Runnable {
     double theta(final Point p) {
       if (p.x == 0)
         return 0;
-      return (double) Math.atan(p.y/p.x);
+      return Math.atan(p.y/p.x);
     }
 
     String equationType() {

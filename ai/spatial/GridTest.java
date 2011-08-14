@@ -19,7 +19,10 @@ final class GridTest extends Test {
   }
 
   static class TestLearner extends LinearLearner<Coord> {
-    public Coord transform(final Coord input) {
+    public double differenceFromGoal() {
+      return -1;
+    }
+    public Coord learn(final Coord input) {
       int dCols = 0;
       int dRows = 0;
       double d = 2.0;
@@ -52,10 +55,10 @@ final class GridTest extends Test {
     }
     final TestLearner l = new TestLearner();
     l.setGoal(new Coord(20,40));
-    Util.p(VT100.cursorForce(l.goal.col, l.goal.row) + "G");
+    Util.p(VT100.cursorForce(l.getGoal().col, l.getGoal().row) + "G");
     Coord env = new Coord(0,0);
     while (true) {
-      final Coord out = l.transform(env);
+      final Coord out = l.learn(env);
       if (walls[out.col][out.row] == 1) {
         Util.p(VT100.cursorForce(env.col, env.row) + "1");
         continue;

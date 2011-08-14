@@ -24,8 +24,8 @@ import vr.cpack.space.SpaceShipNavigator;
 public class Display3D extends Display {
 
   public final ViewPlatformGroup vpg;
-  final BranchGroup scene;
-  final DefaultView view;
+  protected final BranchGroup scene;
+  protected final DefaultView view;
   final VirtualUniverse universe;
   final Locale locale;
   final Graphics3D graphics;

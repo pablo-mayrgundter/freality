@@ -16,6 +16,7 @@ class Test {
   static final int iterations = Integer.parseInt(System.getProperty("iterations", "1"));
   static final String values = System.getProperty("values", "rand");
 
+  @SuppressWarnings(value="unchecked")
   public static void main(final String [] args) {
     if (help) {
       System.err.println(usage);

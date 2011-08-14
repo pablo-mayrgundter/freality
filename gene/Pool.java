@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
 
+@SuppressWarnings(value="serial")
 public class Pool extends ArrayList<Gene> {
 
   static final Random R = new Random();

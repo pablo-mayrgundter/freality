@@ -17,8 +17,8 @@ class Time {
     final double day   = cal.get(Calendar.DAY_OF_MONTH);
     final double hour  = cal.get(Calendar.HOUR) + cal.get(Calendar.MINUTE) * 60 + cal.get(Calendar.SECOND) * 3600;
     return 367.0 * year
-      - 7.0 * (int)((double)(year + (int)((month + 9.0) / 12.0)) / 4.0)
-      + (int)(275.0 * month / 9.0)
+      - 7.0 * (int)((year + (int)((month + 9.0) / 12.0)) / 4.0)
+      + (275.0 * month / 9.0)
       + day - 730531.5
       + hour / 24.0;
   }

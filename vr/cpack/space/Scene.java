@@ -105,7 +105,7 @@ class Scene extends BranchGroup {
 
       final TransformGroup [] bodyTGs = makePlanetGroup((Planet) body, ((Planet) body).orbit);
 
-      final TransformGroup parentTG = (TransformGroup) systemTGMap.get(body.parent);
+      final TransformGroup parentTG = systemTGMap.get(body.parent);
 
       if (parentTG == null) {
         System.err.println("adding " + body.name + " to ROOT SCENE");

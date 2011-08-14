@@ -18,6 +18,8 @@ import javax.swing.JFrame;
 
 class Fire extends JFrame implements Runnable {
 
+  static final long serialVersionUID = -722656561849578647L;
+
   final int width;
   final int height;
   final Random r;

@@ -109,6 +109,7 @@ public class MouseLook extends MouseBehavior {
     y_last = e.getY();
   }
 
+  @SuppressWarnings(value="unchecked")
   public void mouseMoved(MouseEvent e) {
     synchronized (mouseq) {
       mouseq.add(e);
@@ -117,6 +118,7 @@ public class MouseLook extends MouseBehavior {
     }
   }
 
+  @SuppressWarnings(value="unchecked")
   public void processStimulus (Enumeration criteria) {
     WakeupCriterion wakeup;
     AWTEvent[] events;

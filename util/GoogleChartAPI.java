@@ -12,6 +12,8 @@ import java.util.List;
  */
 public class GoogleChartAPI extends ArrayList<double []> implements List<double []> {
 
+  static final long serialVersionUID = -8454523170791857747L;
+
   final String names;
   final String colors;
   final int numSeries;

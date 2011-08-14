@@ -53,7 +53,7 @@ public class SoundIO {
     final float sampleRate = audioFormat.getSampleRate();
     System.err.println("sample rate: "+ sampleRate);
 
-    final float seconds = (float)audioInputStream.getFrameLength() / (float)audioFormat.getFrameRate();
+    final float seconds = (float)audioInputStream.getFrameLength() / audioFormat.getFrameRate();
     System.err.println("seconds: "+ seconds);
 
     final int samples = (int) (seconds * sampleRate) / 8;
