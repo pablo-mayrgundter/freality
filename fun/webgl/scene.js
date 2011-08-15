@@ -6,6 +6,7 @@ var strafe = 0;
 var zoom = -10;
 var pitch = 0;
 var yaw = 0;
+var dRot = 0.1;
 
 var yRot = 0;
 
@@ -15,36 +16,40 @@ function drawScene(time) {
   gl.uniformMatrix4fv(shader.uPos, false, scenePos);
   gl.uniformMatrix4fv(shader.uView, false, sceneView);
 
-  mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 150.0, scenePos);
-  mat4.identity(sceneView);
-
-  // Camera
-  mat4.rotate(sceneView, degToRad(-pitch), [1, 0, 0]);
-  mat4.multiply(sceneView, mouseRotation);
-  mat4.translate(sceneView, [strafe, 0, zoom]);
-
-  // Object
   var normalMatrix = mat3.create();
   mat4.toInverseMat3(sceneView, normalMatrix);
   mat3.transpose(normalMatrix);
   gl.uniformMatrix3fv(shader.uNormal, false, normalMatrix);
-  mat4.rotate(sceneView, degToRad(yRot += 0.05), [0, 1, 0]);
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, shapeVertices);
-  gl.vertexAttribPointer(shader.aPos, shapeVertices.itemSize, gl.FLOAT, false, 0, 0);
- 
-  gl.bindBuffer(gl.ARRAY_BUFFER, shapeNormals);
-  gl.vertexAttribPointer(shader.aNormal, shapeNormals.itemSize, gl.FLOAT, false, 0, 0);
+  mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 150.0, scenePos);
+  mat4.identity(sceneView);
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, shapeTexCoords);
-  gl.vertexAttribPointer(shader.aTex, shapeTexCoords.itemSize, gl.FLOAT, false, 0, 0);
+  // Camera control
+  mat4.rotate(sceneView, degToRad(-pitch), [1, 0, 0]);
+  mat4.multiply(sceneView, mouseRotation);
+
+  mat4.translate(sceneView, [strafe, 0, zoom]);
+  mat4.rotate(sceneView, degToRad(yRot += dRot), [0, 1, 0]);
+
+  var shapes = [earth];
+  for (var i in shapes) {
+    var shape = shapes[i];
+    gl.bindBuffer(gl.ARRAY_BUFFER, shape.shapeVertices);
+    gl.vertexAttribPointer(shader.aPos, shape.shapeVertices.itemSize, gl.FLOAT, false, 0, 0);
  
-  gl.activeTexture(gl.TEXTURE0);
-  gl.bindTexture(gl.TEXTURE_2D, theTexture);
-  gl.uniform1i(shader.uSampler, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, shape.shapeNormals);
+    gl.vertexAttribPointer(shader.aNormal, shape.shapeNormals.itemSize, gl.FLOAT, false, 0, 0);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, shape.shapeTexCoords);
+    gl.vertexAttribPointer(shader.aTex, shape.shapeTexCoords.itemSize, gl.FLOAT, false, 0, 0);
  
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shapeVertexIndices);
-  gl.drawElements(gl.TRIANGLES, shapeVertexIndices.numItems, gl.UNSIGNED_SHORT, 0);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, shape.texture.theTexture);
+    gl.uniform1i(shader.uSampler, 0);
+ 
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape.shapeVertexIndices);
+    gl.drawElements(gl.TRIANGLES, shape.shapeVertexIndices.numItems, gl.UNSIGNED_SHORT, 0);
+  }
 }
 
 var viewStack = new Array();

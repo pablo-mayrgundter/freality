@@ -3,6 +3,8 @@
 var gl;
 var canvas;
 var shader;
+var earth, atmos;
+var earthTex, atmosTex;
 
 function init() {
   canvas = $('canvas');
@@ -22,14 +24,21 @@ function init() {
   gl.clearColor(0, 0, 0, 1);
   gl.clearDepth(1.0);
   gl.enable(gl.DEPTH_TEST);
-  gl.depthFunc(gl.LEQUAL);
+  gl.depthFunc(gl.LESS);
 
   initShaders();
-  initShape();
-  initTexture();
+  earthTex = new Texture('earth.jpg');
+  earthTex.init();
+  // atmosTex = new Texture('/textures/earth-atmos.jpg');
+  // atmosTex.init();
+
+  earth = new Sphere(2, earthTex);
+  earth.init();
+  // atmos = new Sphere(3, atmosTex);
+  // atmos.init();
+
   initKeyHandler();
   initMouseHandler();
-
   tick();
 }
 
