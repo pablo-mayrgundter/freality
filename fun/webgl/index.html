@@ -6,10 +6,44 @@
     <script src="mouse.js" type="text/javascript"></script>
     <script src="shader.js" type="text/javascript"></script>
     <script src="texture.js" type="text/javascript"></script>
-<!--    <script src="cube.js" type="text/javascript"></script>-->
     <script src="sphere.js" type="text/javascript"></script>
     <script src="scene.js" type="text/javascript"></script>
     <script src="index.js" type="text/javascript"></script>
+    <script id="pixel_shader" type="x-shader/x-fragment">
+      #ifdef GL_ES
+      precision highp float;
+      #endif
+      varying highp vec2 vTex;
+      varying highp vec3 vLightWeighting;
+      uniform sampler2D uSampler;
+      void main(void) {
+        vec4 texelColor = texture2D(uSampler, vec2(vTex.s, vTex.t));
+        gl_FragColor = vec4(texelColor.rgb * vLightWeighting, texelColor.a);
+      }
+    </script>
+    <script id="vertex_shader" type="x-shader/x-vertex">
+      attribute highp vec3 aPos;
+      attribute highp vec3 aNormal;
+      attribute highp vec2 aTex;
+      uniform highp mat4 uPos;
+      uniform highp mat4 uView;
+      uniform highp mat3 uNormal;
+      varying highp vec2 vTex;
+      varying highp vec3 vLightWeighting;
+      highp vec3 ambient = vec3(0.01, 0.01, 0.01);
+      highp vec3 lightPos = vec3(7, 7, 0);
+      highp vec3 lightColor = vec3(1.0, 1.0, 1.0);
+      void main(void) {
+        vec4 mvPosition = uView * vec4(aPos, 1.0);
+        gl_Position = uPos * mvPosition;
+        vTex = aTex;
+
+        highp vec3 lightDirection = normalize(lightPos - mvPosition.xyz);
+        highp vec3 transformedNormal = uNormal * aNormal;
+        highp float directional = max(dot(transformedNormal, lightDirection), 0.0);
+        vLightWeighting = lightColor * directional + ambient;
+      }
+    </script>
     <script id="pixel_shader_color" type="x-shader/x-fragment">
       #ifdef GL_ES
       precision highp float;
@@ -51,38 +85,6 @@
       void main(void) {
         gl_Position = uPos * uView * vec4(aPos, 1);
         vTex = aTex;
-      }
-    </script>
-    <script id="pixel_shader" type="x-shader/x-fragment">
-      #ifdef GL_ES
-      precision highp float;
-      #endif
-      varying highp vec2 vTex;
-      varying highp vec3 vLighting;
-      uniform sampler2D uSampler;
-      void main(void) {
-        vec4 texelColor = texture2D(uSampler, vec2(vTex.s, vTex.t));
-        gl_FragColor = vec4(texelColor.rgb * vLighting, texelColor.a);
-      }
-    </script>
-    <script id="vertex_shader" type="x-shader/x-vertex">
-      attribute highp vec3 aPos;
-      attribute highp vec3 aNormal;
-      attribute highp vec2 aTex;
-      uniform highp mat4 uPos;
-      uniform highp mat4 uView;
-      uniform highp mat3 uNormal;
-      varying highp vec2 vTex;
-      varying highp vec3 vLighting;
-      void main(void) {
-        gl_Position = uPos * uView * vec4(aPos, 1.0);
-        vTex = aTex;
-        highp vec3 ambient = vec3(0.01, 0.01, 0.01);
-        highp vec3 directionalColor = vec3(1.0, 1.0, 1.0);
-        highp vec3 directionalVector = vec3(0.85, 0.8, 0.75);
-        highp vec3 transformedNormal = uNormal * aNormal;
-        highp float directional = max(dot(transformedNormal, directionalVector), 0.0);
-        vLighting = ambient + (directionalColor * directional);
       }
     </script>
   </head>

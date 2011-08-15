@@ -23,10 +23,10 @@ function handleKeys() {
   }
   if (activeKeys[38]) {
     // Up cursor key
-    pitch += dTrans;
+    zoom += dTrans;
   }
   if (activeKeys[40]) {
     // Down cursor key
-    pitch -= dTrans;
+    zoom -= dTrans;
   }
 }
