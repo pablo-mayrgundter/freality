@@ -6,21 +6,16 @@ var shader;
 var earth, atmos;
 var earthTex, atmosTex;
 
-function init() {
-  canvas = $('canvas');
-  var ex;
-  try {
-    gl = canvas.getContext('experimental-webgl');
-  } catch (e) {
-    ex = e;
-  }
-  if (!gl) {
-    alert('Cannot use WebGL :( '+ e);
-    return;
-  }
+function init(canvasEltId) {
+  canvas = $(canvasEltId);
+
+  document.onselectstart = function() {
+    return false;
+  }; // http://aerotwist.com/lab/ten-things-i-learned/
+
+  gl = initGl(canvas);
   gl.viewportWidth = canvas.width;
   gl.viewportHeight = canvas.height;
-
   gl.clearColor(0, 0, 0, 1);
   gl.clearDepth(1.0);
   gl.enable(gl.DEPTH_TEST);
@@ -29,28 +24,34 @@ function init() {
   initShaders();
   earthTex = new Texture('earth.jpg');
   earthTex.init();
-  // atmosTex = new Texture('/textures/earth-atmos.jpg');
-  // atmosTex.init();
+  atmosTex = new Texture('textures/earth-atmos.jpg');
+  atmosTex.init();
 
   earth = new Sphere(2, earthTex);
   earth.init();
-  // atmos = new Sphere(3, atmosTex);
-  // atmos.init();
+  atmos = new Sphere(2.01, atmosTex);
+  atmos.init();
 
   initKeyHandler();
   initMouseHandler();
+
   tick();
 }
 
+function initGl(canvas) {
+  try {
+    return canvas.getContext('experimental-webgl');
+  } catch (e) {
+    alert('Cannot use WebGL :( '+ e);
+    return null;
+  }
+}
+
 var lastTime = 0;
-var rotTri = 0;
-var rotSqu = 0;
 
 function animate(time) {
   if (lastTime != 0) {
     var elapsed = time - lastTime;
-    rotTri += (90 * elapsed) / 1000.0;
-    rotSqu += (75 * elapsed) / 1000.0;
   }
   lastTime = time;
 }

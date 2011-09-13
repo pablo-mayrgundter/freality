@@ -1,21 +1,21 @@
 package algs.graph;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import junit.framework.TestCase;
 
-public class BreadthFirstIteratorTest {
+public class BreadthFirstIteratorTest extends TestCase {
 
   Graph<String> g;
   BreadthFirstIterator<String> itr;
 
-  @Before
-  public void setup() {
+  public void setUp() {
     g = new AdjacencyMapGraph<String>();
     itr = new BreadthFirstIterator<String>(g);
   }
 
-  @Test
+  public void tearDown() {
+    g = null; itr = null;
+  }
+
   public void testSingleNode() {
     g.addNode("a");
     itr.setStart("a");
@@ -25,7 +25,6 @@ public class BreadthFirstIteratorTest {
     assertEquals(null, itr.next());
   }
 
-  @Test
   public void testSingleEdge() {
     g.addEdge("a", "b");
     itr.setStart("a");
@@ -37,7 +36,6 @@ public class BreadthFirstIteratorTest {
     assertEquals(null, itr.next());
   }
 
-  @Test
   public void testVee() {
     g.addEdge("a", "b");
     g.addEdge("b", "c");
@@ -52,7 +50,6 @@ public class BreadthFirstIteratorTest {
     assertEquals(null, itr.next());
   }
 
-  @Test
   public void testTriangle() {
     g.addEdge("a", "b");
     g.addEdge("b", "c");
@@ -68,7 +65,6 @@ public class BreadthFirstIteratorTest {
     assertEquals(null, itr.next());
   }
 
-  @Test
   public void testTriangleWithSpur() {
     g.addEdge("a", "b");
     g.addEdge("b", "c");
@@ -85,5 +81,14 @@ public class BreadthFirstIteratorTest {
     assertEquals("d", itr.next());
     assertFalse(itr.hasNext());
     assertEquals(null, itr.next());
+  }
+
+  /**
+   * Runnable as:
+   *
+   *   java algs.graph.BreadthFirstIteratorTest
+   */
+  public static void main(String [] args) {
+    junit.textui.TestRunner.run(BreadthFirstIteratorTest.class);
   }
 }
