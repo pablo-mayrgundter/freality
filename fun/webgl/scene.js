@@ -11,8 +11,8 @@ var dRot = 0.1;
 var yRot = 0;
 
 function drawScene(time) {
-  gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
   gl.uniformMatrix4fv(shader.uPos, false, scenePos);
   gl.uniformMatrix4fv(shader.uView, false, sceneView);
 
@@ -27,13 +27,19 @@ function drawScene(time) {
   // Camera control
   mat4.rotate(sceneView, degToRad(-pitch), [1, 0, 0]);
   mat4.multiply(sceneView, mouseRotation);
-
   mat4.translate(sceneView, [strafe, 0, zoom]);
   mat4.rotate(sceneView, degToRad(yRot += dRot), [0, 1, 0]);
 
-  var shapes = [earth];
+  // Ordered with opaque earth first, then transparent atmosphere
+  // second.  Blending is switched on at atmos.
+  var shapes = [earth, atmos];
   for (var i in shapes) {
     var shape = shapes[i];
+    if (shape == atmos) {
+      //gl.disable(gl.DEPTH_TEST);
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    }
     gl.bindBuffer(gl.ARRAY_BUFFER, shape.shapeVertices);
     gl.vertexAttribPointer(shader.aPos, shape.shapeVertices.itemSize, gl.FLOAT, false, 0, 0);
  
@@ -49,6 +55,7 @@ function drawScene(time) {
  
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape.shapeVertexIndices);
     gl.drawElements(gl.TRIANGLES, shape.shapeVertexIndices.numItems, gl.UNSIGNED_SHORT, 0);
+    gl.uniform1i(shader.uSampler, 0);
   }
 }
 

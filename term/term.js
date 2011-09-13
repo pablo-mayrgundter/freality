@@ -1,41 +1,21 @@
-function Term(screenElt) {
+/**
+ * Create a new terminal in the given dom element.
+ */
+function Term(screenEltId) {
 
-  var SPACE = ' ';
+  var SPACE = '_';
 
-  this.display = screenElt;
-  var w = 10, h = 10;
-  this.display.innerHTML = '<span>asdf</span>';
-  // Probe size for large display.
-  if (this.display.offsetWidth > 100 && this.display.offsetHeight > 100) {
-    w = h = 0;
-    while (this.display.offsetWidth > this.display.firstChild.offsetWidth) {
-      this.display.firstChild.innerHTML += SPACE;
-      w++;
-      if (w > 1000)
-        break;
-    }
-    if (w>0)
-      w--;
-    while (this.display.offsetHeight > this.display.firstChild.offsetHeight) {
-      this.display.firstChild.innerHTML += SPACE+'<br/>';
-      h++;
-      if (h > 1000)
-        break;
-    }
-    if (h>0)
-      h--;
-  }
-  this.display.innerHTML = '';
-  this.width = w;
-  this.height = h;
-  this.buf = new Array(this.height);
+  this.display = document.getElementById(screenEltId);
+  this.cols = this.display.cols;
+  this.rows = this.display.rows;
+  this.buf = new Array(this.rows);
   this.row = 0;
   this.col = 0;
 
   Term.prototype.init = function() {
-    for (var row = 0; row < this.height; row++) {
-      this.buf[row] = new Array(this.width);
-      for (var col = 0; col < this.width; col++) {
+    for (var row = 0; row < this.rows; row++) {
+      this.buf[row] = new Array(this.cols);
+      for (var col = 0; col < this.cols; col++) {
         this.buf[row][col] = SPACE;
       }
     }
@@ -43,8 +23,8 @@ function Term(screenElt) {
   this.init();
 
   Term.prototype.clear = function() {
-    for (var row = 0; row < this.height; row++)
-      for (var col = 0; col < this.width; col++)
+    for (var row = 0; row < this.rows; row++)
+      for (var col = 0; col < this.cols; col++)
         this.buf[row][col] = SPACE;
     this.redraw();
   };
@@ -62,7 +42,7 @@ function Term(screenElt) {
           return;
         if (this.row > 0) {
           this.row--;
-          this.col = this.width;
+          this.col = this.cols;
         }
       }
       this.buf[this.row][--this.col] = SPACE;
@@ -73,29 +53,49 @@ function Term(screenElt) {
       this.redraw();
     }; break;
     case 16: break; // Shift, so not skipped in default.
-    case 37: this.col--; this.redraw(); break;
-    case 38: this.row--; this.redraw(); break;
-    case 39: this.col++; this.redraw(); break;
-    case 40: this.row++; this.redraw(); break;
     default: {
       this.print(String.fromCharCode(code));
     }
     };
   };
+
+  this.shift = false;
+
   var me = this;
+
   document.onkeypress = function(e) {
-    if (!e)
+    if (!e) {
       e = window.event;
+    }
     code = e.keyCode;
-    if (!code)
+    if (!code) {
       code = e.which;
+    }
     me.handleKey(code);
     return false;
   };
 
+  document.onkeydown = function(e) {
+    switch (e.keyCode) {
+    case 8: me.handleKey(e.keyCode); return false; // backspace.
+    case 37: me.col--; break; // left
+    case 38: me.row--; break; // up
+    case 39: me.col++; break; // right
+    case 40: me.row++; break; // down
+    }
+    me.updateCursor();
+  };
+
+  document.onkeyup = function(e) {
+    if (e.shiftKey) {
+      me.shift = false
+    }
+  };
+
   Term.prototype.ret = function() {
-    if (this.row == this.height - 1)
+    if (this.row == this.rows - 1) {
       return;
+    }
     this.col = 0;
     this.row++;
   };
@@ -110,8 +110,9 @@ function Term(screenElt) {
         continue;
       }
       this.buf[this.row][this.col++] = c;
-      if (this.col == this.width)
+      if (this.col == this.cols) {
         this.ret();
+      }
     }
     this.redraw();
   };
@@ -123,15 +124,18 @@ function Term(screenElt) {
 
   Term.prototype.redraw = function() {
     var s = '';
-    for (var row = 0; row < this.height; row++) {
-      for (var col = 0; col < this.width; col++) {
-        if (row == this.row && col == this.col)
-          s += '<span style="background-color: white">'+this.buf[row][col]+'</span>';
-        else
-          s += this.buf[row][col];
+    for (var row = 0; row < this.rows; row++) {
+      for (var col = 0; col < this.cols; col++) {
+        s += this.buf[row][col];
       }
-      s += '<br/>';
+      s += '\n';
     }
     this.display.innerHTML = s;
+    me.updateCursor();
+  };
+
+  Term.prototype.updateCursor = function() {
+    var linearOffset = (this.cols + 1) * this.row + this.col;
+    this.display.setSelectionRange(linearOffset, linearOffset);
   };
 }
