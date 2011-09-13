@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="freality" basedir="." default="test">
+
+  <path id="classpath">
+    <pathelement path="."/>
+    <pathelement path="test"/>
+    <fileset dir="lib">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+
+  <target name="classpath">
+    <property name="cp" refid="classpath"/>
+    <echo message="export CLASSPATH=${cp}"></echo>
+  </target>
+
+  <target name="compile">
+    <javac debug="on" memoryMaximumSize="256m" memoryInitialSize="256m"
+           fork="true" includeantruntime="false">
+      <compilerarg value="-Xlint"/>
+      <classpath refid="classpath"/>
+      <src path="."/>
+    </javac>
+  </target>
+
+  <target name="test" depends="compile">
+    <junit fork="true" showoutput="true">
+      <classpath>
+        <path>
+          <path refid="classpath"/>
+          <pathelement location="${classes}"/>
+        </path>
+      </classpath>
+      <formatter type="brief" usefile="false"/>
+      <test name="AllTests"/>
+    </junit>
+  </target>
+</project>
