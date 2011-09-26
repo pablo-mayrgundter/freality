@@ -2,6 +2,12 @@ package math.complexity;
 
 import java.awt.Color;
 
+/**
+ * The ColoredDensityMap class extends DensityMap to also record a
+ * color component of a density.
+ *
+ * @author Pablo Mayrgundter
+ */
 class ColoredDensityMap extends DensityMap {
 
   final float [] mColor;
@@ -11,6 +17,7 @@ class ColoredDensityMap extends DensityMap {
     super(width, height);
     mColor = new float[mWidth * mHeight];
     mPalette = new int[10];
+    System.out.println("Number of colors in palette: " + mPalette.length);
     initPalette();
   }
 
@@ -20,10 +27,10 @@ class ColoredDensityMap extends DensityMap {
   }
 
   public void initPalette() {
-    System.out.println("Palette length: "+ mPalette.length);
-    for (int i = 0; i < mPalette.length; i++)
-      //      mPalette[i] = new Color((float)Math.random(), (float)Math.random(), (float)Math.random()).getRGB();
-      mPalette[i] = Color.BLACK.getRGB();
+    for (int i = 0; i < mPalette.length; i++) {
+      mPalette[i] = new Color((float)Math.random(), (float)Math.random(), (float)Math.random()).getRGB();
+      //mPalette[i] = Color.BLACK.getRGB();
+    }
   }
 
   public void map(final double x, final double y, final float funcNdx) {

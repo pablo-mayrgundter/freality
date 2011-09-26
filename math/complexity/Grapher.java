@@ -4,6 +4,12 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 
+/**
+ * The Grapher class extends ColoredDensityMap to enable drawing the
+ * density map to an image for display.
+ *
+ * @author Pablo Mayrgundter
+ */
 public final class Grapher extends ColoredDensityMap {
 
   public Grapher(final int width, final int height) {
@@ -28,22 +34,22 @@ public final class Grapher extends ColoredDensityMap {
 
         final float lD = (float) Math.log(density);
         final float normalized = lD/lMax * 255f;
-        //        a = (float) density / mMax;
-        //        a = normalized * 255f;
-        //        a = ((float) Math.pow(normalized, .75)) * 4f;
-        a = ((float) Math.pow(normalized, .454545)) * 22f;
-        //        a = ((float) Math.pow(normalized, .5)) * 50f;
-        //        a = ((float) Math.pow(lD/lMax, .5)) * 255f;
-        //        System.out.println(a);
+        //a = (float) density / mMax;
+        //a = normalized * 255f;
+        //a = ((float) Math.pow(normalized, .75)) * 4f;
+        //a = ((float) Math.pow(normalized, .454545)) * 22f;
+        //a = ((float) Math.pow(normalized, .5)) * 50f;
+        a = ((float) Math.pow(lD/lMax, 0.5)) * 255f;
         assert a >= 0 && a <= 255f : "a out of range: " + a;
         final int al = (((int) a) << 24);
         final int pc = 0x00ffffff & mPalette[(int) (mColor[ndx] * (mPalette.length - 1))];
-        //        img.setRGB(x, y, al | pc);
+        img.setRGB(x, y, al | pc);
         //        if (x > lX)
         //          g.drawRect(lX, lY, x - lX, y - lY);
         //        else
         //          g.drawRect(x, y, lX - x, lY - y);
-        g.drawRect(x, y, 100, 100);
+        //g.drawRect(x, y, 100, 100);
+        //g.drawLine(x, y, x, y);
         lX = x;
         lY = y;
       }
