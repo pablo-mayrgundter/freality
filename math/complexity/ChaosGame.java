@@ -45,9 +45,8 @@ public class ChaosGame implements Runnable {
   }
 
   static abstract class BaseFunction implements Function {
-
+    double weight, color, a, b, c, d, e, f;
     public BaseFunction(final org.w3c.dom.Node node) {
-      /*
       weight = Double.parseDouble(node.getAttributes().getNamedItem("weight").getTextContent());
       color = Integer.parseInt(node.getAttributes().getNamedItem("color").getTextContent());
       final String [] coeffs = node.getAttributes().getNamedItem("coeffs").getTextContent().split("\\s");
@@ -57,16 +56,23 @@ public class ChaosGame implements Runnable {
       d = Float.parseFloat(coeffs[3]);
       e = Float.parseFloat(coeffs[4]);
       f = Float.parseFloat(coeffs[5]);
-      */
     }
 
     BaseFunction() {
+      a = Math.random();
+      b = Math.random();
+      c = Math.random();
+      d = Math.random();
+      e = Math.random();
+      f = Math.random();
+      color = Math.random();
+      weight = Math.random();
     }
 
     public String toXml() {
       String s = "";
-      //      s += String.format("<xform weight=\"%7f\" color=\"%d\" %s=\"1\"", weight, color, equationType());
-      //      s += String.format(" coeffs=\"%7f %7f %7f %7f %7f %7f\"/>", a, b, c, d, e, f);
+      s += String.format("<xform weight=\"%7f\" color=\"%f\" %s=\"1\"", weight, color, equationType());
+      s += String.format(" coeffs=\"%7f %7f %7f %7f %7f %7f\"/>", a, b, c, d, e, f);
       return s;
     }
 
@@ -94,15 +100,17 @@ public class ChaosGame implements Runnable {
     }
 
     double theta(final Point p) {
-      if (p.x == 0)
+      if (p.x == 0) {
         return 0;
+      }
       return Math.atan(p.y/p.x);
     }
 
     String equationType() {
       String name = this.getClass().getName();
-      if (name.indexOf("$") != -1)
+      if (name.indexOf("$") != -1) {
         name = name.split("\\$")[1];
+      }
       return name;
     }
   }
@@ -158,8 +166,8 @@ public class ChaosGame implements Runnable {
       p.x = y;
       p.y = y;
       //      System.out.println("ou: "+ p);
-      //      p.x = p.x + 0.00001;
-      //      p.y = r*p.x - r*Math.pow(p.x, 2);
+      //p.x = p.x + 0.00001;
+      //p.y = r*p.x - r*Math.pow(p.x, 2);
     }
     public String toString() {
       return "y, rx(1 - x)";
@@ -179,8 +187,9 @@ public class ChaosGame implements Runnable {
   static final class Spherical extends BaseFunction {
     public void variation(final Point p) {
       double distanceSquared = distanceSquared(p);
-      if (distanceSquared == 0)
+      if (distanceSquared == 0) {
         distanceSquared = 0.01f;
+      }
       p.x = p.x / distanceSquared;
       p.y = p.y / distanceSquared;
     }
@@ -361,9 +370,9 @@ public class ChaosGame implements Runnable {
       final Xml flameXml = new Xml(new java.io.File(LOADFILE));
       final org.w3c.dom.NodeList xforms = flameXml.getNodes("/flame/xform");
       mFuncs = new Function[xforms.getLength()];
-      //      for (int i = 0; i < xforms.getLength(); i++) {
-      //        mFuncs[i] = new BaseFunction(xforms.item(i));
-      //      }
+      for (int i = 0; i < xforms.getLength(); i++) {
+        //mFuncs[i] = new BaseFunction(xforms.item(i));
+      }
     } else {
       initializeFunctions();
     }
@@ -403,22 +412,24 @@ public class ChaosGame implements Runnable {
     case 14: return new Ex();
     case 15: return new Julia(mRand);
     case 16: return new LorenzAttractor();
-    case 17: return new LogisticMap(mRand.nextDouble()*Double.parseDouble(System.getProperty("r", "3.7")));
+    case 17: return new LogisticMap(mRand.nextDouble() * Double.parseDouble(System.getProperty("r", "3.7")));
     default: throw new IllegalStateException();
     }
   }
 
   public Map<Integer,String> getFunctionStrings() {
     final Map<Integer,String> funcStrs = new HashMap<Integer,String>();
-    for (int i = 0; i < mFuncs.length; i++)
+    for (int i = 0; i < mFuncs.length; i++) {
       funcStrs.put(i, mFuncs[i].toString());
+    }
     return funcStrs;
   }
 
   public String getFunctionXml() {
     String s = "<flame>";
-    for (int i = 0; i < mFuncs.length; i++)
+    for (int i = 0; i < mFuncs.length; i++) {
       s += "\n  "+ mFuncs[i].toXml();
+    }
     s += "\n</flame>";
     return s;
   }
@@ -430,8 +441,9 @@ public class ChaosGame implements Runnable {
 
     // Warmup.
     Function f = null;
-    for (int i = 0; i < 20; i++)
+    for (int i = 0; i < 20; i++) {
       (f = mFuncs[mRand.nextInt(mFuncs.length)]).doOp(p);
+    }
 
     // Start graphing.
     for (int i = 0; i < mIterations; i++) {
@@ -452,8 +464,9 @@ public class ChaosGame implements Runnable {
   }
 
   double theta(final Point p) {
-    if (p.x == 0)
+    if (p.x == 0) {
       return 0;
+    }
     return Math.atan(p.y/p.x);
   }
 }
