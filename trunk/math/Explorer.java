@@ -32,7 +32,7 @@ class Explorer {
     grapher.clear();
 
     final Explorer ex = new Explorer();
-    final ChaosGame flame = new ChaosGame(grapher, ITERATIONS, 1f, new Random(SEED));
+    final ChaosGame flame = new ChaosGame(grapher, ITERATIONS / NUM_PROCESSORS, 1f, new Random(SEED));
     final Drawer drawer = new Drawer(frame.getWidth(),
                                      frame.getHeight(),
                                      OVERSAMPLE);
