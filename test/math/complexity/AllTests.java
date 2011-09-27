@@ -1,3 +1,5 @@
+package math.complexity;
+
 import junit.framework.TestSuite;
 
 /**
@@ -14,15 +16,14 @@ public class AllTests {
    */
   public static TestSuite suite() {
     TestSuite suite = new TestSuite();
-    suite.addTest(algs.AllTests.suite());
-    suite.addTest(math.complexity.AllTests.suite());
+    suite.addTestSuite(DensityMapTest.class);
     return suite;
   }
 
   /**
    * Runnable as:
    *
-   *   java AllTests
+   *   java math.complexity.AllTests
    */
   public static void main(final String [] args) {
     junit.textui.TestRunner.run(suite());

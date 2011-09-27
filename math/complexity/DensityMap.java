@@ -2,6 +2,8 @@ package math.complexity;
 
 import math.util.Linear;
 
+import java.io.Serializable;
+
 /**
  * The DensityMap class is a two dimensional density histogram
  * oriented on a cartesian plane.  Coordinate scalars are divided by
@@ -12,24 +14,21 @@ import math.util.Linear;
  *
  * @author Pablo Mayrgundter
  */
-class DensityMap {
-
-  static final int SCALE = Integer.parseInt(System.getProperty("scale", "100"));
-  static final int XOFF = Integer.parseInt(System.getProperty("xoff", "0"));
-  static final int YOFF = Integer.parseInt(System.getProperty("yoff", "0"));
+public class DensityMap implements Serializable {
 
   final int mWidth, mHeight;
-  final float mHalfWidth, mHalfHeight;
+  final int mHalfWidth, mHalfHeight;
   final int [] mDensity;
-  int mMaxDensity;
+  int mScale, mMaxDensity;
 
-  DensityMap(final int width, final int height) {
+  public DensityMap(final int width, final int height, final int scale) {
     // width and half width (and height) are used for cartesian
     // orientation.
     mWidth = width;
     mHeight = height;
-    mHalfWidth = mWidth / 2f;
-    mHalfHeight = mHeight / 2f;
+    mScale = scale;
+    mHalfWidth = mWidth / 2;
+    mHalfHeight = mHeight / 2;
     mDensity = new int[mWidth * mHeight];
   }
 
@@ -43,27 +42,28 @@ class DensityMap {
   }
 
   public int getDensity(final double x, final double y) {
-    return coordToNdx(x, y);
+    return mDensity[coordToNdx(x, y)];
   }
 
-  protected final int coordToNdx(final double x, final double y) {
-    final int xc =
-      Linear.squeezeToInt(0,
-                          mHalfWidth + Linear.squeeze(-SCALE, x / SCALE, SCALE) * mWidth + XOFF,
-                          mWidth - 1);
-    final int yc =
-      Linear.squeezeToInt(0,
-                          mHalfHeight - Linear.squeeze(-SCALE, y / SCALE, SCALE) * mHeight + YOFF,
-                          mHeight - 1);
-    return yc * mWidth + xc;
+  protected final int coordToNdx(double x, double y) {
+    x /= mScale;
+    y /= mScale;
+    x *= (double) mWidth;
+    y *= (double) mWidth;
+    y *= -1.0;
+    final int xc = mHalfWidth + (int) x;
+    final int yc = mHalfHeight + (int) y;
+    return (int) Linear.squeeze(0, yc * mWidth + xc, mDensity.length - 1);
   }
 
   public int map(final double x, final double y) {
     final int ndx = coordToNdx(x, y);
-    mDensity[ndx]++;
-    if (mDensity[ndx] > mMaxDensity) {
-      mMaxDensity = mDensity[ndx];
+    final int val = ++mDensity[ndx];
+    if (val > mMaxDensity) {
+      mMaxDensity = val;
     }
     return ndx;
   }
+
+  static final long serialVersionUID = 2486513494901805181L;
 }
