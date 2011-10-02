@@ -27,6 +27,7 @@ public class ChaosGame implements Runnable {
   public static interface Function {
     void doOp(Point p);
     void rotate(double theta);
+    int getId();
     String toXml();
   }
 
@@ -40,17 +41,21 @@ public class ChaosGame implements Runnable {
       this.y = y;
       this.z = z;
     }
+    public Object clone() {
+      return new Point(x, y, z);
+    }
     public String toString() {
       return x + "," + y + "," + z;
     }
   }
 
   static class Linear implements Function {
-    Random mRand;
+    Random rand;
     double weight, color, a, b, c, d, e, f;
+    int id;
     public Linear(final org.w3c.dom.Node node) {
-      mRand = new Random();
-      mRand.setSeed(Long.parseLong(node.getAttributes().getNamedItem("seed").getTextContent()));
+      rand = new Random();
+      rand.setSeed(Long.parseLong(node.getAttributes().getNamedItem("seed").getTextContent()));
       weight = Double.parseDouble(node.getAttributes().getNamedItem("weight").getTextContent());
       color = Integer.parseInt(node.getAttributes().getNamedItem("color").getTextContent());
       final String [] coeffs = node.getAttributes().getNamedItem("coeffs").getTextContent().split("\\s");
@@ -62,8 +67,10 @@ public class ChaosGame implements Runnable {
       f = Float.parseFloat(coeffs[5]);
     }
 
-    Linear(final Random r) {
-      mRand = r;
+    Linear(Random r, int id) {
+      this.rand = r;
+      this.id = id;
+
       a = r.nextDouble();
       b = r.nextDouble();
 
@@ -76,6 +83,28 @@ public class ChaosGame implements Runnable {
 
       color = r.nextDouble();
       weight = r.nextDouble();
+    }
+
+    public int getId() {
+      return id;
+    }
+
+    static Point sharedPoint = new Point(0,0,0);
+    static double sharedRadius;
+    static double sharedTheta;
+
+    static void setPoint(Point point) {
+      sharedPoint.x = point.x;
+      sharedPoint.y = point.y;
+      sharedPoint.z = point.z;
+    }
+
+    static void updateRadius() {
+      sharedRadius = distance(sharedPoint);
+    }
+
+    static void updateTheta() {
+      sharedTheta = theta(sharedPoint);
     }
 
     public void rotate(double theta) {
@@ -113,17 +142,17 @@ public class ChaosGame implements Runnable {
       variation(p);
     }
 
-    double distance(final Point p) {
+    static double distance(final Point p) {
       return Math.sqrt(distanceSquared(p));
     }
 
-    double distanceSquared(final Point p) {
+    static double distanceSquared(final Point p) {
       final double x = p.x;
       final double y = p.y;
       return x*x + y*y;
     }
 
-    double theta(final Point p) {
+    static double theta(final Point p) {
       if (p.x == 0) {
         return 0;
       }
@@ -140,8 +169,8 @@ public class ChaosGame implements Runnable {
   }
 
   static final class Identity extends Linear {
-    Identity(Random r) {
-      super(r);
+    Identity(Random r, int id) {
+      super(r, id);
     }
     public void variation(final Point p) {
       p.x = p.x;
@@ -153,8 +182,8 @@ public class ChaosGame implements Runnable {
   }
 
   static final class Parabolic extends Linear {
-    Parabolic(Random r) {
-      super(r);
+    Parabolic(Random r, int id) {
+      super(r, id);
     }
     public void variation(final Point p) {
       p.x = a * Math.pow(p.y, 2);
@@ -171,8 +200,8 @@ public class ChaosGame implements Runnable {
 
   static final class LogisticMap extends Linear {
     final double r;
-    LogisticMap(final double r, Random rand) {
-      super(rand);
+    LogisticMap(double r, Random rand, int id) {
+      super(rand, id);
       this.r = r;
     }
     public void variation(final Point p) {
@@ -191,12 +220,12 @@ public class ChaosGame implements Runnable {
   }
 
   static final class Sinusoidal extends Linear {
-    Sinusoidal(Random r) {
-      super(r);
+    Sinusoidal(Random r, int id) {
+      super(r, id);
     }
     public void variation(final Point p) {
-      p.x = Math.sin(p.x);
-      p.y = Math.sin(p.y);
+      p.x = a * Math.sin(p.x);
+      p.y = b * Math.sin(p.y);
     }
     public String toString() {
       return "sin(x), sin(y)";
@@ -204,8 +233,8 @@ public class ChaosGame implements Runnable {
   }
 
   static final class Spherical extends Linear {
-    Spherical(Random r) {
-      super(r);
+    Spherical(Random r, int id) {
+      super(r, id);
     }
     public void variation(final Point p) {
       double distanceSquared = distanceSquared(p);
@@ -221,12 +250,12 @@ public class ChaosGame implements Runnable {
   }
 
   static final class Swirl extends Linear {
-    Swirl(Random r) {
-      super(r);
+    Swirl(Random r, int id) {
+      super(r, id);
     }
     public void variation(final Point p) {
-      final double r = distance(p);
-      final double t = theta(p);
+      double r = sharedRadius * a;
+      double t = sharedTheta * b;
       p.x = r * Math.cos(t + r);
       p.y = r * Math.sin(t + r);
     }
@@ -236,12 +265,12 @@ public class ChaosGame implements Runnable {
   }
 
   static final class Horseshoe extends Linear {
-    Horseshoe(Random r) {
-      super(r);
+    Horseshoe(Random r, int id) {
+      super(r, id);
     }
     public void variation(final Point p) {
-      final double r = distance(p);
-      final double t = theta(p);
+      double r = sharedRadius * a;
+      double t = sharedTheta * b;
       p.x = r * Math.cos(2f * t);
       p.y = r * Math.sin(2f * t);
     }
@@ -251,8 +280,8 @@ public class ChaosGame implements Runnable {
   }
 
   static final class Polar extends Linear {
-    Polar(Random r) {
-      super(r);
+    Polar(Random r, int id) {
+      super(r, id);
     }
     public void variation(final Point p) {
       p.x = theta(p) / Math.PI;
@@ -264,8 +293,8 @@ public class ChaosGame implements Runnable {
   }
 
   static final class Hankerchief extends Linear {
-    Hankerchief(Random r) {
-      super(r);
+    Hankerchief(Random r, int id) {
+      super(r, id);
     }
     public void variation(final Point p) {
       final double r = distance(p);
@@ -279,12 +308,12 @@ public class ChaosGame implements Runnable {
   }
 
   static final class Heart extends Linear {
-    Heart(Random r) {
-      super(r);
+    Heart(Random r, int id) {
+      super(r, id);
     }
     public void variation(final Point p) {
-      final double r = distance(p);
-      final double t = theta(p);
+      double r = sharedRadius * a;
+      double t = sharedTheta * b;
       p.x = r * Math.sin(t * r);
       p.y = -r * Math.cos(t * r);
     }
@@ -294,12 +323,12 @@ public class ChaosGame implements Runnable {
   }
 
   static final class Disc extends Linear {
-    Disc(Random r) {
-      super(r);
+    Disc(Random r, int id) {
+      super(r, id);
     }
     public void variation(final Point p) {
-      final double r = distance(p);
-      final double t = theta(p);
+      double r = sharedRadius * a;
+      double t = sharedTheta * b;
       p.x = t * Math.sin(Math.PI * r) / Math.PI;
       p.y = t * Math.cos(Math.PI * r) / Math.PI;
     }
@@ -309,12 +338,12 @@ public class ChaosGame implements Runnable {
   }
 
   static final class Spiral extends Linear {
-    Spiral(Random r) {
-      super(r);
+    Spiral(Random r, int id) {
+      super(r, id);
     }
     public void variation(final Point p) {
-      final double r = distance(p);
-      final double t = theta(p);
+      double r = sharedRadius * a;
+      double t = sharedTheta * b;
       p.x = (Math.cos(t) + Math.sin(r)) / r;
       p.y = (Math.sin(t) - Math.cos(r)) / r;
     }
@@ -324,12 +353,12 @@ public class ChaosGame implements Runnable {
   }
 
   static final class Hyperbolic extends Linear {
-    Hyperbolic(Random r) {
-      super(r);
+    Hyperbolic(Random r, int id) {
+      super(r, id);
     }
     public void variation(final Point p) {
-      final double r = distance(p);
-      final double t = theta(p);
+      double r = sharedRadius * a;
+      double t = sharedTheta * b;
       p.x = Math.sin(t) / r;
       p.y = Math.cos(t) * r;
     }
@@ -339,12 +368,12 @@ public class ChaosGame implements Runnable {
   }
 
   static final class Diamond extends Linear {
-    Diamond(Random r) {
-      super(r);
+    Diamond(Random r, int id) {
+      super(r, id);
     }
     public void variation(final Point p) {
-      final double r = distance(p);
-      final double t = theta(p);
+      double r = sharedRadius * a;
+      double t = sharedTheta * b;
       p.x = Math.sin(t) / Math.cos(r);
       p.y = Math.cos(t) / Math.sin(r);
     }
@@ -354,12 +383,12 @@ public class ChaosGame implements Runnable {
   }
 
   static final class Ex extends Linear {
-    Ex(Random r) {
-      super(r);
+    Ex(Random r, int id) {
+      super(r, id);
     }
     public void variation(final Point p) {
-      final double r = distance(p);
-      final double t = theta(p);
+      double r = sharedRadius * a;
+      double t = sharedTheta * b;
       p.x = r * Math.pow(Math.sin(t + r), 3);
       p.y = r * Math.pow(Math.cos(t - r), 3);
     }
@@ -369,13 +398,13 @@ public class ChaosGame implements Runnable {
   }
 
   static final class Julia extends Linear {
-    Julia (final Random r) {
-      super(r);
+    Julia (Random r, int id) {
+      super(r, id);
     }
     public void variation(final Point p) {
-      final double sqr = Math.sqrt(distance(p));
-      final double t = theta(p);
-      final double O = mRand.nextDouble() <= 0.5 ? 0f : Math.PI;
+      final double sqr = Math.sqrt(sharedRadius) * a;
+      final double t = sharedTheta * b;
+      final double O = rand.nextDouble() <= 0.5 ? 0f : Math.PI;
       p.x = sqr * Math.cos(t / 2f + O);
       p.y = sqr * Math.sin(t / 2f + O);
     }
@@ -385,8 +414,8 @@ public class ChaosGame implements Runnable {
   }
 
   static final class LorenzAttractor extends Linear {
-    LorenzAttractor(Random r) {
-      super(r);
+    LorenzAttractor(Random r, int id) {
+      super(r, id);
     }
     public void variation(final Point p) {
       double dX = 0.01 * (10.0*(p.y - p.x));
@@ -403,7 +432,7 @@ public class ChaosGame implements Runnable {
 
   final ColoredDensityMap mMap;
   final int mIterations;
-  final Random mRand;
+  final Random rand;
   final double mBlend;
 
   Function [] mFuncs;
@@ -415,12 +444,12 @@ public class ChaosGame implements Runnable {
     mMap = map;
     mIterations = iterations;
     mBlend = blend;
-    mRand = new Random();
+    rand = new Random();
     init();
   }
 
   public void setSeed(long seed) {
-    mRand.setSeed(seed);
+    rand.setSeed(seed);
   }
 
   public void init() {
@@ -433,7 +462,7 @@ public class ChaosGame implements Runnable {
       }
     } else {
       final List<Function> functions = new ArrayList<Function>();
-      for (int i = 0, n = 1 + mRand.nextInt(NUM_FUNCS); i < n; i++) {
+      for (int i = 0, n = 1 + rand.nextInt(NUM_FUNCS); i < n; i++) {
         functions.add(randFunction());
       }
       mFuncs = functions.toArray(new Function[functions.size()]);
@@ -442,31 +471,31 @@ public class ChaosGame implements Runnable {
 
   Function randFunction() {
     if (FUNC_NDX < 0) {
-      return lookupFunction(mRand.nextInt(NUM_FUNCS));
+      return lookupFunction(rand.nextInt(NUM_FUNCS));
     }
     return lookupFunction(FUNC_NDX);
   }
 
   Function lookupFunction(final int ndx) {
     switch (ndx % 18) {
-    case 0: return new Identity(mRand);
-    case 1: return new Linear(mRand);
-    case 2: return new Parabolic(mRand);
-    case 3: return new Sinusoidal(mRand);
-    case 4: return new Spherical(mRand);
-    case 5: return new Swirl(mRand);
-    case 6: return new Horseshoe(mRand);
-    case 7: return new Polar(mRand);
-    case 8: return new Hankerchief(mRand);
-    case 9: return new Heart(mRand);
-    case 10: return new Disc(mRand);
-    case 11: return new Spiral(mRand);
-    case 12: return new Hyperbolic(mRand);
-    case 13: return new Diamond(mRand);
-    case 14: return new Ex(mRand);
-    case 15: return new Julia(mRand);
-    case 16: return new LorenzAttractor(mRand);
-    case 17: return new LogisticMap(mRand.nextDouble() * Double.parseDouble(System.getProperty("r", "3.7")), mRand);
+    case 0: return new Identity(rand, 0);
+    case 1: return new Linear(rand, 1);
+    case 2: return new Parabolic(rand, 2);
+    case 3: return new Sinusoidal(rand, 3);
+    case 4: return new Spherical(rand, 4);
+    case 5: return new Swirl(rand, 5);
+    case 6: return new Horseshoe(rand, 6);
+    case 7: return new Polar(rand, 7);
+    case 8: return new Hankerchief(rand, 8);
+    case 9: return new Heart(rand, 9);
+    case 10: return new Disc(rand, 10);
+    case 11: return new Spiral(rand, 11);
+    case 12: return new Hyperbolic(rand, 12);
+    case 13: return new Diamond(rand, 13);
+    case 14: return new Ex(rand, 14);
+    case 15: return new Julia(rand, 15);
+    case 16: return new LorenzAttractor(rand, 16);
+    case 17: return new LogisticMap(rand.nextDouble() * Double.parseDouble(System.getProperty("r", "3.7")), rand, 17);
     default: throw new IllegalStateException();
     }
   }
@@ -494,20 +523,13 @@ public class ChaosGame implements Runnable {
 
   public final void run() {
     final Point p = new Point(Double.parseDouble(System.getProperty("x", "0.5")), 0, 0);
-    // For Ex.
-    //    final Point p = new Point(0.5, 0.5, 0);
-
-    // Warmup.
-    Function f = null;
-    for (int i = 0; i < 20; i++) {
-      (f = mFuncs[mRand.nextInt(mFuncs.length)]).doOp(p);
-    }
-
-    // Start graphing.
     for (int i = 0; i < mIterations; i++) {
-      final int funcNdx = mRand.nextInt(mFuncs.length);
-      mFuncs[funcNdx].doOp(p);
-      mMap.map(p.x, p.y, funcNdx);
+      Function f = mFuncs[rand.nextInt(mFuncs.length)];
+      Linear.setPoint(p);
+      Linear.updateRadius();
+      Linear.updateTheta();
+      f.doOp(p);
+      mMap.map(p.x, p.y, f.getId());
     }
   }
 
