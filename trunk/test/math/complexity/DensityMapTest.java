@@ -23,10 +23,10 @@ public class DensityMapTest extends TestCase {
   public void testMap() {
     map.map(3, 4.2);
     map.map(3, 4.2);
-    map.map(3, 5.2);
+    map.map(3, 3.2);
     assertEquals(2, map.getDensity(3, 4.2));
-    assertEquals(1, map.getDensity(3, 5.2));
-    assertEquals(0, map.getDensity(3, 6.2));
+    assertEquals(1, map.getDensity(3, 3.2));
+    assertEquals(0, map.getDensity(3, 8.2));
     assertEquals(2, map.getMaxDensity());
   }
 
