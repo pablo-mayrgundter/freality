@@ -1,0 +1,5 @@
+package wn;
+
+class WordNet {
+  
+}
