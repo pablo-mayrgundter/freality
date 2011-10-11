@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:ng="http://angularjs.org">
+  <head>
+    <title>solar system</title>
+    <style type="text/css">
+      body {
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+        color: white;
+        font-family: arial, sans;
+      }
+
+      li {
+        list-style: none;
+      }
+
+      select {
+        position: absolute;
+        top: 0;
+        z-index: 100;
+      }
+
+      #info {
+        position: absolute;
+        bottom: 0;
+        z-index: 100;
+      }
+    </style>
+    <script type="text/javascript" src="angular.js" ng:autobind></script>
+    <script type="text/javascript" src="Three.js"></script>
+    <script type="text/javascript" src="Detector.js"></script>
+    <script type="text/javascript" src="RequestAnimationFrame.js"></script>
+    <script type="text/javascript" src="index.js"></script>
+  </head>
+  <body>
+    <div id="info"></div>
+    <div ng:controller="PlanetRsrc">
+      <select name="name">
+        <option selected="true">Sun</option>
+        <option>Mercury</option>
+        <option>Venus</option>
+        <option>Earth</option>
+        <option>Mars</option>
+        <option>Jupiter</option>
+        <option>Saturn</option>
+        <option>Uranus</option>
+        <option>Neptune</option>
+        <option>Pluto</option>
+      </select>
+      <ul id="info">
+        <li ng:repeat="(prop,val) in planet">
+          {{prop}}: {{val}}
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>
