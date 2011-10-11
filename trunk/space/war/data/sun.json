@@ -1,0 +1,22 @@
+{"type":"star",
+"name":"sol",
+"parent":"milky way",
+"apparentMagnitude":"-26.8",
+"colorIndex":"1.0",
+"mass":"1.9891E30kg",
+"density":"1.41",
+"radius":"694248.95km",
+"siderealRotationPeriod":"2160000.0s",
+"axialInclination":"1.0",
+"system":[
+  "mercury",
+  "venus",
+  "earth",
+  "mars",
+  "jupiter",
+  "saturn",
+  "uranus",
+  "neptune",
+  "pluto"
+]
+}

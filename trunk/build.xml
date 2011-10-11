@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Everything is shared up to target=test, then use target=print to see a
+  list of projects to build, or target=all (the default) for the whole
+  thing.
+-->
 <project name="freality" basedir="." default="test">
+  <property name="build" value="build"/>
+  <property name="classes" value="${build}/classes"/>
+  <property name="libs" value="${build}/libs"/>
 
   <path id="classpath">
     <pathelement path="."/>
@@ -14,9 +22,18 @@
     <echo message="export CLASSPATH=${cp}"></echo>
   </target>
 
-  <target name="compile">
-    <javac debug="on" memoryMaximumSize="256m" memoryInitialSize="256m"
-           fork="true" includeantruntime="false">
+  <target name="init">
+    <mkdir dir="${build}"/>
+    <mkdir dir="${classes}"/>
+    <mkdir dir="${libs}"/>
+  </target>
+
+  <target name="clean">
+    <delete dir="${build}"/>
+  </target>
+
+  <target name="compile" depends="init">
+    <javac debug="on" destdir="${classes}" includeantruntime="false">
       <compilerarg value="-Xlint"/>
       <classpath refid="classpath"/>
       <src path="."/>
@@ -34,5 +51,35 @@
       <formatter type="brief" usefile="false"/>
       <test name="AllTests"/>
     </junit>
+  </target>
+
+  <target name="jar" depends="test">
+    <jar destfile="build/${project}.jar" basedir="${classes}" includes="${project}/**">
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <attribute name="Implementation-Vendor" value="code.google.com/p/freality"/>
+        <attribute name="Implementation-Title" value="${project}"/>
+        <attribute name="Implementation-Version" value="0.1"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="war" depends="jar">
+    <mkdir dir="${build}/war/WEB-INF/lib"/>
+    <mkdir dir="${build}/war/WEB-INF/classes"/>
+    <copy toDir="${build}/war/WEB-INF/lib" failonerror="true">
+      <fileset dir="${libs}" includes="*.jar"/>
+      <fileset dir="${build}" includes="${project}.jar"/>
+      <fileset dir="${project}/war/WEB-INF/lib" includes="*.jar"/>
+    </copy>
+    <copy toDir="${build}/war" failonerror="true">
+      <fileset dir="${project}/war" includes="*.html,*.js,*.png,*.jpg"/>
+    </copy>
+    <copy toDir="${build}/war/WEB-INF" failonerror="true">
+      <fileset dir="${project}/war/WEB-INF" includes="*.xml"/>
+    </copy>
+    <copy toDir="${build}/war/WEB-INF/classes" failonerror="true">
+      <fileset dir="${project}/war/WEB-INF/classes" includes="logging.properties"/>
+    </copy>
   </target>
 </project>
