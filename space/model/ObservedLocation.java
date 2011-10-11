@@ -15,7 +15,12 @@ public class ObservedLocation {
   }
 
   public StringBuffer toString(StringBuffer buf) {
-    buf.append("{").append(coordinate).append(",").append(epoch).append("}");
+    buf.append("{\"coord\":").append(coordinate).append(",\n\"epoch\":").append(epoch).append("}");
     return buf;
+  }
+
+  static final ObservedLocation TEST = new ObservedLocation(Coordinate.TEST, Epoch.TEST);
+  public static void main(String [] args) {
+    System.out.println(TEST);
   }
 }

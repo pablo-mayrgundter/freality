@@ -79,14 +79,15 @@ public class Galaxy extends Universe {
 
   public void toString(StringBuffer buf) {
     super.toString(buf);
-    buf.append('\n');
-    buf.append("{apparentMagnitude:     ").append(apparentMagnitude).append(",\n");
-    buf.append("colorIndex:                   ").append(colorIndex).append(",\n");
-    buf.append("mass:                   ").append(mass).append(",\n");
-    buf.append("density:                ").append(density).append(",\n");
-    buf.append("meanRadius:             ").append(meanRadius).append(",\n");
-    buf.append("siderealRotationPeriod: ").append(siderealRotationPeriod).append(",\n");
-    buf.append("axialInclination:       ").append(axialInclination).append(",\n");
-    buf.append(location).append("}");
+    buf.setLength(buf.length() - 1);
+    buf.append(",\n");
+    buf.append("\"apparentMagnitude\":\"").append(apparentMagnitude).append("\",\n");
+    buf.append("\"colorIndex\":\"").append(colorIndex).append("\",\n");
+    buf.append("\"mass\":\"").append(mass).append("\",\n");
+    buf.append("\"density\":\"").append(density).append("\",\n");
+    buf.append("\"radius\":\"").append(meanRadius).append("\",\n");
+    buf.append("\"siderealRotationPeriod\":\"").append(siderealRotationPeriod).append("\",\n");
+    buf.append("\"axialInclination\":\"").append(axialInclination).append("\",\n");
+    buf.append("\"location\":").append(location).append("}");
   }
 }

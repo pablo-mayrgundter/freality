@@ -133,9 +133,13 @@ public class Orbit {
 
   public String toString() {
     final StringBuffer buf = new StringBuffer();
-    buf.append("{eccentricity:        ").append(eccentricity).append("}\n");
-    buf.append("{semiMajorAxis:       ").append(semiMajorAxis).append("}\n");
-    buf.append("{siderealOrbitPeriod: ").append(siderealOrbitPeriod).append("}");
+    buf.append("{\"eccentricity\":\"").append(eccentricity).append("\",\n");
+    buf.append("\"inclination\":\"").append(inclination).append("\",\n");
+    buf.append("\"longitudeOfAscendingNode\":\"").append(longitudeOfAscendingNode).append("\",\n");
+    buf.append("\"longitudeOfPerihelion\":\"").append(longitudeOfPerihelion).append("\",\n");
+    buf.append("\"meanLongitude\":\"").append(meanLongitude).append("\",\n");
+    buf.append("\"semiMajorAxis\":\"").append(semiMajorAxis).append("\",\n");
+    buf.append("\"siderealOrbitPeriod\":\"").append(siderealOrbitPeriod).append("\"}");
     return buf.toString();
   }
 }
