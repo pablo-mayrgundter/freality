@@ -4,7 +4,7 @@
   <system type="galaxy" name="Andromeda"/>
   <system type="galaxy" name="Milky Way">
 
-    <system type="star" name="Sol">
+    <system type="star" name="Sun">
 
       <physicalParameters>
         <apparentMagnitude value="-26.8"/>
@@ -86,7 +86,7 @@
         <system type="planet" name="Moon">
           <orbitalElements>
             <eccentricity value="0.0554"/>
-            <inclination value="90"/><!-- 23 -->
+            <inclination value="5.14"/><!-- 23 -->
             <longitudeOfAscendingNode value="125.08"/>
             <longitudeOfPerihelion value="0"/>
             <meanLongitude value="0"/>
@@ -102,7 +102,7 @@
             <equatorialGravity value="1.622"/>
             <escapeVelocity value="2.38"/>
             <siderealRotationPeriod value="31449525.66s"/>
-            <axialInclination value="5"/>
+            <axialInclination value="1.543"/>
           </physicalParameters>
 
         </system>

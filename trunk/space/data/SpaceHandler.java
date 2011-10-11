@@ -11,6 +11,13 @@ import space.model.Rings;
 import space.model.Star;
 import space.model.Universe;
 
+import org.freality.util.Measure;
+import static org.freality.util.Measure.Unit.*;
+import org.freality.util.Measure.Magnitude.*;
+
+import java.io.File;
+import java.io.FileWriter;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,10 +29,6 @@ import java.util.Stack;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-import org.freality.util.Measure;
-import static org.freality.util.Measure.Unit.*;
-import org.freality.util.Measure.Magnitude.*;
 
 import org.xml.sax.SAXException;
 import org.xml.sax.Attributes;
@@ -207,7 +210,29 @@ public class SpaceHandler extends DefaultHandler {
   public static void main(String [] args) throws Exception {
     final DataAndExtents dae = SpaceHandler.parseToBodyMap("java:vr/cpack/space/data/solarSystem.xml");
     final Map<String,? extends CelestialBody> bodyMap = dae.bodies;
-    for (final String bodyName : bodyMap.keySet())
-      System.out.println((CelestialBody) bodyMap.get(bodyName));
+    if (args.length == 1) {
+      System.out.println((CelestialBody) bodyMap.get(args[0]));
+    } else {
+      for (final String bodyName : bodyMap.keySet()) {
+        File f = new File(bodyName);
+        f.createNewFile();
+        FileWriter w = new FileWriter(f);
+        CelestialBody b = (CelestialBody) bodyMap.get(bodyName);
+        String json = b.toString();
+        json = json.substring(1, json.length());
+        String type;
+        if (b.getClass() == Planet.class) {
+          type = "\"planet\"";
+        } else if (b.getClass() == Star.class) {
+          type = "\"star\"";
+        } else {
+          continue;
+        }
+        json = "{\"type\":" + type + ",\n" + json;
+        w.write(json);
+        w.close();
+        f.renameTo(new File(bodyName+".json"));
+      }
+    }
   }
 }
