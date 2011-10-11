@@ -112,6 +112,6 @@ public class HYGLoader {
 
   public static void main(String [] args) throws Exception {
     final Map parsedBodies = parseToBodyMap(System.in);
-    System.err.println("Parsed: " + parsedBodies.size());
+    System.err.println("Parsed: " + parsedBodies);
   }
 }
