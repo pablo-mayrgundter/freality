@@ -36,11 +36,13 @@ public class Epoch {
   }
 
   public StringBuffer toString(StringBuffer buf) {
-    buf.append(name);
+    buf.append("{\"name\":\"").append(name).append("\",\n");
+    buf.append("\"date\":\"").append(dateOfEpoch).append("\"}");
     return buf;
   }
 
+  static final Epoch TEST = J2000;
   public static void main(String [] args) {
-    System.out.println(J2000);
+    System.out.println(TEST);
   }
 }

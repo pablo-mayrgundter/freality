@@ -19,7 +19,14 @@ public class Coordinate {
   }
 
   public StringBuffer toString(StringBuffer buf) {
-    buf.append("{ra: ").append(ra).append(", dec: ").append(dec).append(", distance: ").append(distance).append("}");
+    buf.append("{\"ra\":\"").append(ra).append("\",\n");
+    buf.append("\"dec\":\"").append(dec).append("\",\n");
+    buf.append("\"dist\":\"").append(distance).append("\"}");
     return buf;
+  }
+
+  static final Coordinate TEST = new Coordinate(1,2,new Measure(3,Measure.Unit.LENGTH));
+  public static void main(String [] args) {
+    System.out.println(TEST);
   }
 }

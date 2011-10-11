@@ -25,7 +25,11 @@ public class CelestialBody {
   }
 
   public void toString(StringBuffer buf) {
-    buf.append("{name:  ").append(name).append("\n");
-    buf.append("parent: ").append(parent).append("}");
+    if (parent == null || parent.equals("")) {
+      buf.append("{\"name\":\"").append(name).append("\"}");
+    } else {
+      buf.append("{\"name\":\"").append(name).append("\",\n");
+      buf.append("\"parent\":\"").append(parent).append("\"}");
+    }
   }
 }
