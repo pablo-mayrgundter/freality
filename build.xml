@@ -65,21 +65,10 @@
   </target>
 
   <target name="war" depends="jar">
-    <mkdir dir="${build}/war/WEB-INF/lib"/>
-    <mkdir dir="${build}/war/WEB-INF/classes"/>
-    <copy toDir="${build}/war/WEB-INF/lib" failonerror="true">
-      <fileset dir="${libs}" includes="*.jar"/>
-      <fileset dir="${build}" includes="${project}.jar"/>
-      <fileset dir="${project}/war/WEB-INF/lib" includes="*.jar"/>
-    </copy>
     <copy toDir="${build}/war" failonerror="true">
-      <fileset dir="${project}/war" includes="*.html,*.js,*.png,*.jpg"/>
-    </copy>
-    <copy toDir="${build}/war/WEB-INF" failonerror="true">
-      <fileset dir="${project}/war/WEB-INF" includes="*.xml"/>
-    </copy>
-    <copy toDir="${build}/war/WEB-INF/classes" failonerror="true">
-      <fileset dir="${project}/war/WEB-INF/classes" includes="logging.properties"/>
+      <fileset dir="${project}/war">
+        <include name="**"/>
+      </fileset>
     </copy>
   </target>
 </project>
