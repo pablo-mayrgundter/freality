@@ -1,5 +1,5 @@
 angular.service('Planet', function($resource) {
-    return $resource('/data/:name.json');
+    return $resource('data/:name.json');
   });
 
 var sceneNodes = [];
