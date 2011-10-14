@@ -14,7 +14,7 @@ var showOrbits = false;
 var starImage, starGlowMaterial;
 
 angular.service('Planet', function($resource) {
-    return $resource('/data/:name.json');
+    return $resource('data/:name.json');
   });
 
 function PlanetRsrc(Planet) {
