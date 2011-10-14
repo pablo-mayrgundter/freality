@@ -1,6 +1,6 @@
 {"type":"planet",
 "name":"earth",
-"parent":"sol",
+"parent":"sun",
 "apparentMagnitude":"-3.86",
 "colorIndex":"0.63369966",
 "mass":"59.736Mg",

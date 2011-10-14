@@ -1,6 +1,6 @@
 {"type":"planet",
 "name":"uranus",
-"parent":"sol",
+"parent":"sun",
 "apparentMagnitude":"-7.19",
 "colorIndex":"0.63369966",
 "mass":"868.32Mg",
