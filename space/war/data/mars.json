@@ -1,6 +1,6 @@
 {"type":"planet",
 "name":"mars",
-"parent":"sol",
+"parent":"sun",
 "apparentMagnitude":"-1.52",
 "colorIndex":"0.63369966",
 "mass":"6.4185Mg",

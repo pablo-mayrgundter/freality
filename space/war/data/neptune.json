@@ -1,6 +1,6 @@
 {"type":"planet",
 "name":"neptune",
-"parent":"sol",
+"parent":"sun",
 "apparentMagnitude":"-6.87",
 "colorIndex":"0.63369966",
 "mass":"1024.3Mg",

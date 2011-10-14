@@ -1,8 +1,21 @@
-angular.service('Planet', function($resource) {
-    return $resource('data/:name.json');
-  });
-
+var atmosScale = 1.005,
+  maxOrbit = 10000000000.0,
+  orbitScale = 1.0 / maxOrbit * (maxOrbit / 10000.0),
+  starScale = maxOrbit,
+  timeScale = 10,
+  height = window.innerHeight,
+  width  = window.innerWidth,
+  container,
+  camera, scene, renderer,
+  root, globe,
+  time = new Date().getTime();
 var sceneNodes = [];
+var showOrbits = false;
+var starImage, starGlowMaterial;
+
+angular.service('Planet', function($resource) {
+    return $resource('/data/:name.json');
+  });
 
 function PlanetRsrc(Planet) {
 
@@ -24,12 +37,16 @@ function PlanetRsrc(Planet) {
                       function(p){ me.display(p); });
   };
 
+  this.toggleOrbits = function() {
+    console.log('toggleOrbits');
+    showOrbits = !showOrbits;
+  }
+
   this.select = function(node) {
     console.log('Camera to: ' + node.planet.name);
-    camera.position.x = node.position.x;
-    camera.position.y = node.position.y;
-    camera.position.z = node.position.z;
-    //camera.target = node;
+    camera.position.x = node.position.x + 100;
+    camera.position.y = node.position.y + 100;
+    camera.position.z = node.position.z + 100;
   };
 
   this.display = function(p) {
@@ -42,7 +59,7 @@ function PlanetRsrc(Planet) {
     p.axialInclination = p.axialInclination / 360.0 * 2.0 * Math.PI;
 
     var parentNode = sceneNodes[p.parent];
-    var obj = displayPlanet(parentNode, p);
+    var obj = createPlanet(parentNode, p);
     if (!root) {
       root = obj;
       scene.addObject(obj);
@@ -60,7 +77,7 @@ function PlanetRsrc(Planet) {
           console.log('getting xOff from: ' + parentNode.planet.name + ', equals: '+ parentSemiMajorAxis);
         }
       }
-      displayOrbit(parentNode, p.orbit, parentSemiMajorAxis);
+      parentNode.addChild(createOrbit(parentNode, p.orbit, parentSemiMajorAxis));
     }
     if (p.system) {
       for (s in p.system) {
@@ -74,19 +91,6 @@ function PlanetRsrc(Planet) {
 
   this.$watch('name', 'load(name)');
 }
-
-var atmosScale = 1.005,
-  maxOrbit = 10000000000.0,
-//  maxOrbit = 100000000.0,
-  orbitScale = 1.0 / maxOrbit * (maxOrbit / 10000.0),
-  starScale = 1.0 / orbitScale * 10.0,
-  timeScale = 0.1,
-  height = window.innerHeight,
-  width  = window.innerWidth,
-  container,
-  camera, scene, renderer,
-  root, globe,
-  time = new Date().getTime();
 
 function init() {
   container = document.createElement('div');
@@ -118,44 +122,60 @@ function init() {
 
   camera.position.z = 1;
 
-  var dirLight = new THREE.DirectionalLight(0xFFFFFF);
-  dirLight.position.set(-1, 0, 1);
-  dirLight.position.normalize();
+  var dirLight = new THREE.PointLight(0xFFFFFF);
+  dirLight.position.z = 10;
   scene.addLight(dirLight);
 
+  starImage = THREE.ImageUtils.loadTexture('textures/star_glow.png');
+  starGlowMaterial =
+    new THREE.ParticleBasicMaterial({ color: 0xffffff,
+                                      size: 1300,
+                                      map: starImage,
+                                      sizeAttenuation: true,
+                                      blending: THREE.AdditiveBlending,
+                                      transparent: true });
+
+  starMiniMaterial =
+    new THREE.ParticleBasicMaterial({ color: 0xffffff,
+                                      size: 8,
+                                      map: starImage,
+                                      sizeAttenuation: false,
+                                      blending: THREE.AdditiveBlending,
+                                      transparent: true });
+
+  scene.addChild(createStars());
+
   // stars
-  var i,
-    vector,
-    starsGeometry = new THREE.Geometry();
-  for (i = 0; i < 1500; i++) {
+  window.addEventListener('resize', onWindowResize, false);
+}
+
+// TODO(pablo): reintroduce some varitey.
+function createStars() {
+  var vector, starsGeometry = new THREE.Geometry();
+  for (var i = 0; i < 10000; i++) {
     vector = new THREE.Vector3(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1);
     vector.multiplyScalar(starScale);
     starsGeometry.vertices.push(new THREE.Vertex(vector));
   }
-  var stars,
-    starsMaterials = [new THREE.ParticleBasicMaterial({ color: 0xFFFFFF, size: 2, sizeAttenuation: false }),
-                      new THREE.ParticleBasicMaterial({ color: 0xFFFFFF, size: 1, sizeAttenuation: false }),
-                      new THREE.ParticleBasicMaterial({ color: 0xCCCCCC, size: 2, sizeAttenuation: false }),
-                      new THREE.ParticleBasicMaterial({ color: 0xCCCCCC, size: 1, sizeAttenuation: false }),
-                      new THREE.ParticleBasicMaterial({ color: 0xAAAAAA, size: 2, sizeAttenuation: false }),
-                      new THREE.ParticleBasicMaterial({ color: 0xAAAAAA, size: 1, sizeAttenuation: false })];
-  for (i = 10; i < 30; i++) {
-    stars = new THREE.ParticleSystem(starsGeometry, starsMaterials[ i % 6 ]);
-    stars.rotation.x = Math.random() * 6;
-    stars.rotation.y = Math.random() * 6;
-    stars.rotation.z = Math.random() * 6;
-    var s = i * 10;
-    stars.scale.set(s, s, s);
-    stars.matrixAutoUpdate = false;
-    stars.updateMatrix();
-    scene.addObject(stars);
-  }
 
-  window.addEventListener('resize', onWindowResize, false);
+  // For the sun.
+  starsGeometry.vertices.push(new THREE.Vertex(new THREE.Vector3()));
+
+  var stars = new THREE.Object3D();
+
+  var starPoints = new THREE.ParticleSystem(starsGeometry, starMiniMaterial);
+  starPoints.sortParticles = true;
+  stars.addChild(starPoints);
+
+  var starGlows = new THREE.ParticleSystem(starsGeometry, starGlowMaterial);
+  starGlows.sortParticles = true;
+  stars.addChild(starGlows);
+
+  return stars;
 }
 
-function displayPlanet(parentNode, planet) {
-  console.log('displayPlanet: '+ planet.name);
+function createPlanet(parentNode, planet) {
+  console.log('createPlanet: '+ planet.name);
   var globe = new THREE.Object3D;
   if (parentNode) {
     parentNode.addChild(globe);
@@ -170,15 +190,25 @@ function displayPlanet(parentNode, planet) {
   globe.position.set(xOff, 0, 0);
 
   // planet
-  var geometry = new THREE.SphereGeometry(planet.radius, 100, 50);
-  geometry.computeTangents();
+  var sphereGeom = new THREE.SphereGeometry(planet.radius, 100, 50);
+  sphereGeom.computeTangents();
 
   var planetMaterial;
-  if (false) {
-    planetMaterial = new THREE.LineBasicMaterial({color: 0x0000ff});
+  if (planet.type == 'star') {
+    var sunImage = THREE.ImageUtils.loadTexture('textures/sun-white.jpg');
+    var sunMaterial = new THREE.MeshBasicMaterial({color: 0xffffff, map: sunImage});
+    //var sunPointMaterial =
+    //  new THREE.LineBasicMaterial({ color: 0xffffff });
+    var sunMesh = new THREE.Mesh(sphereGeom, sunMaterial);
+    globe.addChild(sunMesh);
+    globe.surface = sunMesh;
   } else if (!(planet.texture_hydrosphere || planet.texture_terrain)) {
     var planetTexture = THREE.ImageUtils.loadTexture('textures/' + planet.name + '.jpg');
     planetMaterial = new THREE.MeshPhongMaterial({color: 0xffffff, map: planetTexture});
+    var surface = new THREE.Mesh(sphereGeom, planetMaterial);
+    globe.surface = surface;
+    globe.rotation.z = globe.planet.axialInclination;
+    globe.addChild(surface);
   } else {
     var planetTexture = THREE.ImageUtils.loadTexture('textures/' + planet.name + '.jpg');
     // Fancy planets.
@@ -211,25 +241,24 @@ function displayPlanet(parentNode, planet) {
         uniforms: uniforms,
         lights: true
       });
-  }
 
-  var surface = new THREE.Mesh(geometry, planetMaterial);
-  globe.addChild(surface);
-  globe.surface = surface;
+    var surface = new THREE.Mesh(sphereGeom, planetMaterial);
+    globe.addChild(surface);
+    globe.surface = surface;
+    globe.rotation.z = globe.planet.axialInclination;
+  }
 
   if (globe.planet.texture_atmosphere) {
     var atmosTexture = THREE.ImageUtils.loadTexture('textures/' + globe.planet.name + '_atmos.png');
     var materialAtmos =
       new THREE.MeshLambertMaterial({color: 0xffffff, map: atmosTexture, transparent: true});
-    atmosphere = new THREE.Mesh(geometry, materialAtmos);
+    atmosphere = new THREE.Mesh(sphereGeom, materialAtmos);
     //atmosphere.position.set(xOff, 0, 0);
     atmosphere.scale.set(atmosScale, atmosScale, atmosScale);
     atmosphere.rotation.z = globe.planet.axialInclination;
     globe.addChild(atmosphere);
     globe.atmosphere = atmosphere;
   }
-
-  globe.rotation.z = globe.planet.axialInclination;
 
   return globe;
 };
@@ -267,9 +296,9 @@ THREE.EllipseCurve.prototype.getPoint = function (t) {
 
 // Move object to parent's semiMajorAxis; this only works for 1
 // level nesting and x-axis offsets.
-function displayOrbit(parentNode, orbit, parentSemiMajorAxis) {
+function createOrbit(parentNode, orbit, parentSemiMajorAxis) {
   var orbitXoff = parentSemiMajorAxis * orbitScale;
-  console.log('displayOrbit: parent: ' + parentNode.planet.name
+  console.log('createOrbit: parent: ' + parentNode.planet.name
               + ', orbit.semiMajorAxis: ' + orbit.semiMajorAxis
               + ', parentSemiMajorAxis; ' + parentSemiMajorAxis
               + ', orbit xOff: ' + orbitXoff);
@@ -285,9 +314,11 @@ function displayOrbit(parentNode, orbit, parentSemiMajorAxis) {
   var orbitMaterial = new THREE.LineBasicMaterial({color: 0x0000ff});
   var line = new THREE.Line(ellipseGeometry, orbitMaterial);
   line.rotation.x = Math.PI / 2.0;
-  if (parentNode) {
+  //line.type = 'orbit';
+  if (parentNode) { // TODO(pablo): needed?
     parentNode.addChild(line);
   }
+  return line;
 };
 
 window.onload = function() {
@@ -325,7 +356,7 @@ function render() {
   time = t;
 
   if (root) {
-    renderSystem(root, dt);
+    animateSystem(root, dt);
   }
 
   if (renderer) {
@@ -334,29 +365,31 @@ function render() {
   }
 };
 
-function renderSystem(system, dt) {
+function animateSystem(system, dt) {
   var rot = Math.PI * 2.0 * (dt / system.planet.siderealRotationPeriod);
-  system.surface.rotation.y += rot;
-  var pos;
-  if (system.planet.orbit) {
-    // TODO: switch this back to negative.
-    var angle = Math.PI * 2.0 * (dt / system.planet.orbit.siderealOrbitPeriod);
-    pos = new THREE.Vector3(Math.cos(angle) * system.position.x
-                            - Math.sin(angle) * system.position.z,
-                            0,
-                            Math.sin(angle) * system.position.x
-                            + Math.cos(angle) * system.position.z);
-  } else {
-    pos = new THREE.Vector3(0,0,0);
-  }
-  system.position = pos;
-  if (system.atmosphere) {
-    system.atmosphere.rotation.y += rot;
+  if (system.surface) {
+    system.surface.rotation.y += rot;
+    var pos;
+    if (system.planet.orbit) {
+      // TODO: switch this back to negative.
+      var angle = Math.PI * 2.0 * (dt / system.planet.orbit.siderealOrbitPeriod);
+      pos = new THREE.Vector3(Math.cos(angle) * system.position.x
+                              - Math.sin(angle) * system.position.z,
+                              0,
+                              Math.sin(angle) * system.position.x
+                              + Math.cos(angle) * system.position.z);
+    } else {
+      pos = new THREE.Vector3(0,0,0);
+    }
+    system.position = pos;
+    if (system.atmosphere) {
+      system.atmosphere.rotation.y += rot;
+    }
   }
   for (c in system.children) {
     var p = system.children[c];
     if (p.planet) {
-      renderSystem(p, dt);
+      animateSystem(p, dt);
     }
   }
 }

@@ -1,6 +1,6 @@
 {"type":"planet",
 "name":"jupiter",
-"parent":"sol",
+"parent":"sun",
 "apparentMagnitude":"-9.4",
 "colorIndex":"0.63369966",
 "mass":"18986.0Mg",

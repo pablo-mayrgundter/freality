@@ -1,6 +1,6 @@
 {"type":"planet",
 "name":"mercury",
-"parent":"sol",
+"parent":"sun",
 "apparentMagnitude":"-0.42",
 "colorIndex":"0.63369966",
 "mass":"3.302Mg",

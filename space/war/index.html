@@ -7,7 +7,6 @@
         padding: 0;
         margin: 0;
         overflow: hidden;
-        color: white;
         font-family: arial, sans;
       }
 
@@ -15,13 +14,14 @@
         list-style: none;
       }
 
-      select {
+      controls {
         position: absolute;
         top: 0;
         z-index: 100;
       }
 
       #info {
+        color: white;
         position: absolute;
         bottom: 0;
         z-index: 100;
@@ -36,19 +36,22 @@
   <body>
     <div id="info"></div>
     <div ng:controller="PlanetRsrc">
-      <select name="name">
-        <option selected="true">Sun</option>
-        <option>Mercury</option>
-        <option>Venus</option>
-        <option>Earth</option>
-        <option>Mars</option>
-        <option>Jupiter</option>
-        <option>Saturn</option>
-        <option>Uranus</option>
-        <option>Neptune</option>
-        <option>Pluto</option>
-      </select>
-      <ul id="info">
+      <div id="controls">
+        <select name="name">
+          <option selected="true">Sun</option>
+          <option>Mercury</option>
+          <option>Venus</option>
+          <option>Earth</option>
+          <option>Mars</option>
+          <option>Jupiter</option>
+          <option>Saturn</option>
+          <option>Uranus</option>
+          <option>Neptune</option>
+          <option>Pluto</option>
+        </select>
+        <span style="display: none">Orbits: <input type="checkbox" name="orbits" ng:click="toggleOrbits()"/></span>
+      </div>
+      <ul id="info" style="display: none">
         <li ng:repeat="(prop,val) in planet">
           {{prop}}: {{val}}
         </li>

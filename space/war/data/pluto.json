@@ -1,6 +1,6 @@
 {"type":"planet",
 "name":"pluto",
-"parent":"sol",
+"parent":"sun",
 "apparentMagnitude":"-1.0",
 "colorIndex":"0.63369966",
 "mass":"0.15Mg",

@@ -1,5 +1,5 @@
 {"type":"star",
-"name":"sol",
+"name":"sun",
 "parent":"milky way",
 "apparentMagnitude":"-26.8",
 "colorIndex":"1.0",
@@ -17,6 +17,5 @@
   "saturn",
   "uranus",
   "neptune",
-  "pluto"
-]
+  "pluto"]
 }

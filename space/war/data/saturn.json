@@ -1,6 +1,6 @@
 {"type":"planet",
 "name":"saturn",
-"parent":"sol",
+"parent":"sun",
 "apparentMagnitude":"-8.88",
 "colorIndex":"0.63369966",
 "mass":"5684.6Mg",

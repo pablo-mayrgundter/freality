@@ -1,6 +1,6 @@
 {"type":"planet",
 "name":"venus",
-"parent":"sol",
+"parent":"sun",
 "apparentMagnitude":"-4.4",
 "colorIndex":"0.63369966",
 "mass":"48.685Mg",
