@@ -49,7 +49,9 @@
           <option>Neptune</option>
           <option>Pluto</option>
         </select>
-        <span style="display: none">Orbits: <input type="checkbox" name="orbits" ng:click="toggleOrbits()"/></span>
+        <span style="display: none">
+          Orbits: <input type="checkbox" name="orbits" ng:click="toggleOrbits()"/>
+        </span>
       </div>
       <ul id="info" style="display: none">
         <li ng:repeat="(prop,val) in planet">

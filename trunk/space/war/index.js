@@ -1,8 +1,8 @@
 var atmosScale = 1.005,
-  maxOrbit = 10000000000.0,
-  orbitScale = 1.0 / maxOrbit * (maxOrbit / 10000.0),
-  starScale = maxOrbit,
-  timeScale = 10,
+  maxOrbit = 5869660000.0, // in km, pluto orbit's semi-major axis
+  orbitScale = 1.0,
+  starScale = maxOrbit * 100000.0, // arbitrary big multiplier to push them far out
+  timeScale = 1.0,
   height = window.innerHeight,
   width  = window.innerWidth,
   container,
@@ -54,7 +54,6 @@ function PlanetRsrc(Planet) {
     // Fix up wire notation.
     // TODO(pablo): shouldn't need to do this.
     p.radius = p.radius.match(/\d+(.\d+)?/)[0];
-    p.radius = Math.log(p.radius);
     p.siderealRotationPeriod = p.siderealRotationPeriod.match(/\d+(.\d+)?/)[0];
     p.axialInclination = p.axialInclination / 360.0 * 2.0 * Math.PI;
 
@@ -107,8 +106,8 @@ function init() {
   camera = new THREE.TrackballCamera({
       fov: 25,
       aspect: width / height,
-      near: 50,
-      far: starScale * 100.0,
+      near: 50, // ?
+      far: starScale * 100.0, // arbitrary big amount further out.
       rotateSpeed: 1.0,
       zoomSpeed: 1.2,
       panSpeed: 0.2,
@@ -129,7 +128,7 @@ function init() {
   starImage = THREE.ImageUtils.loadTexture('textures/star_glow.png');
   starGlowMaterial =
     new THREE.ParticleBasicMaterial({ color: 0xffffff,
-                                      size: 1300,
+                                      size: 69424800,
                                       map: starImage,
                                       sizeAttenuation: true,
                                       blending: THREE.AdditiveBlending,
@@ -137,7 +136,7 @@ function init() {
 
   starMiniMaterial =
     new THREE.ParticleBasicMaterial({ color: 0xffffff,
-                                      size: 8,
+                                      size: 4,
                                       map: starImage,
                                       sizeAttenuation: false,
                                       blending: THREE.AdditiveBlending,
@@ -149,7 +148,7 @@ function init() {
   window.addEventListener('resize', onWindowResize, false);
 }
 
-// TODO(pablo): reintroduce some varitey.
+// TODO(pablo): load from dataset.
 function createStars() {
   var vector, starsGeometry = new THREE.Geometry();
   for (var i = 0; i < 10000; i++) {
@@ -351,8 +350,9 @@ function animate() {
 };
 
 function render() {
+  // dt in seconds, since orbital and rotational data are as well.
   var t = new Date().getTime(),
-    dt = (t - time) / timeScale;
+    dt = (t - time) / 1000.0 * timeScale;
   time = t;
 
   if (root) {
@@ -372,7 +372,7 @@ function animateSystem(system, dt) {
     var pos;
     if (system.planet.orbit) {
       // TODO: switch this back to negative.
-      var angle = Math.PI * 2.0 * (dt / system.planet.orbit.siderealOrbitPeriod);
+      var angle = Math.PI * -2.0 * (dt / system.planet.orbit.siderealOrbitPeriod);
       pos = new THREE.Vector3(Math.cos(angle) * system.position.x
                               - Math.sin(angle) * system.position.z,
                               0,
