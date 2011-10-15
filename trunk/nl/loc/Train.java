@@ -47,10 +47,11 @@ class Train {
   void quiz(boolean reverse) throws IOException {
     int count = 0, guesses = 0, correct = 0;
     BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
+    List<String> practiceList = new ArrayList<String>();
     try {
       for (String [] transPair : transList) {
-        String phrase = (String) transPair[reverse ? 1 : 0];
-        String trans = (String) transPair[reverse ? 0 : 1];
+        String phrase = transPair[reverse ? 1 : 0];
+        String trans = transPair[reverse ? 0 : 1];
         count++;
         for (int i = 0; i < 3; i++) {
           System.out.print(phrase + ": ");
@@ -68,9 +69,18 @@ class Train {
             System.out.println("Try again!");
           } else {
             System.out.println("Correct translation: " + trans);
+            practiceList.add(phrase + " -> " + trans);
           }
         }
       }
+      System.out.println("Practice the ones you missed. Type each of these in 3 times:");
+      for (String transPair : practiceList) {
+        System.out.println(transPair + ":");
+        for (int i = 0; i < 3; i++) {
+          r.readLine();
+        }
+      }
+      practiceList.clear();
     } finally {
       System.out.printf("count: %d, guesses: %d, correct: %d\n", count, guesses, correct);
     }
