@@ -31,14 +31,20 @@
     <script type="text/javascript" src="Three.js"></script>
     <script type="text/javascript" src="Detector.js"></script>
     <script type="text/javascript" src="RequestAnimationFrame.js"></script>
+    <script type="text/javascript" src="shared.js"></script>
+    <script type="text/javascript" src="shapes.js"></script>
+    <script type="text/javascript" src="controller.js"></script>
+    <script type="text/javascript" src="scene.js"></script>
+    <script type="text/javascript" src="animation.js"></script>
     <script type="text/javascript" src="index.js"></script>
   </head>
   <body>
     <div id="info"></div>
-    <div ng:controller="PlanetRsrc">
+    <div ng:controller="ObjectCtrl">
       <div id="controls">
         <select name="name">
-          <option selected="true">Sun</option>
+          <option selected="true">Milky Way</option>
+          <option>Sun</option>
           <option>Mercury</option>
           <option>Venus</option>
           <option>Earth</option>
@@ -54,7 +60,7 @@
         </span>
       </div>
       <ul id="info" style="display: none">
-        <li ng:repeat="(prop,val) in planet">
+        <li ng:repeat="(prop,val) in object">
           {{prop}}: {{val}}
         </li>
       </ul>
