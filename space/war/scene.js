@@ -7,37 +7,6 @@ var
 var globe;
 var starImage, starGlowMaterial;
 
-function init() {
-  var container = document.createElement('div');
-  document.body.appendChild(container);
-
-  scene = new THREE.Scene();
-
-  renderer = new THREE.WebGLRenderer({ clearAlpha: 1, clearColor: 0x000000 });
-  renderer.setSize(width, height);
-  renderer.sortObjects = false;
-  renderer.autoClear = false;
-  container.appendChild(renderer.domElement);
-
-  camera = new THREE.TrackballCamera({
-      fov: 25,
-      aspect: width / height,
-      near: 50, // ?
-      far: starScale * 100.0, // arbitrary big amount further out.
-      rotateSpeed: 1.0,
-      zoomSpeed: 1.2,
-      panSpeed: 0.2,
-      noZoom: false,
-      noPan: false,
-      staticMoving: false,
-      dynamicDampingFactor: 0.3,
-      keys: [ 65, 83, 68 ], // [ rotateKey, zoomKey, panKey ],
-      domElement: renderer.domElement,
-    });
-  camera.position.z = 1;
-  window.addEventListener('resize', onWindowResize, false);
-}
-
 /**
  * Creates a cube of 10k random stars around the origin.
  *
@@ -152,7 +121,7 @@ function createPlanet(parentNode, planet) {
   var surface = new THREE.Mesh(sphereGeom, planetMaterial);
   shape.rotation.z = planet.axialInclination;
   shape.surface = surface;
-  shape.addChild(surface);
+  //shape.addChild(surface);
 
   if (planet.texture_atmosphere) {
     var atmosTexture = THREE.ImageUtils.loadTexture('textures/' + planet.name + '_atmos.png');
@@ -162,18 +131,20 @@ function createPlanet(parentNode, planet) {
     atmosphere.scale.set(atmosScale, atmosScale, atmosScale);
     atmosphere.rotation.z = planet.axialInclination;
     shape.atmosphere = atmosphere; // ?
-    shape.addChild(atmosphere);
+    //shape.addChild(atmosphere);
   }
 
-  parentNode.addChild(createOrbit(planet.orbit, planet.orbit.semiMajorAxis));
+  parentNode.addChild(createOrbit(planet.orbit));
 
   return shape;
 };
 
+rads = 2.0 * Math.PI / 360.0;
+
 function createOrbit(orbit) {
   var ellipseCurve = new THREE.EllipseCurve(0, 0,
                                             orbit.semiMajorAxis * orbitScale,
-                                            orbit.eccentricity,
+                                            orbit.eccentricity * 3.0,
                                             0, 2.0 * Math.PI,
                                             false);
   var ellipseCurvePath = new THREE.CurvePath();
@@ -182,6 +153,11 @@ function createOrbit(orbit) {
   ellipseGeometry.computeTangents();
   var orbitMaterial = new THREE.LineBasicMaterial({color: 0x0000ff});
   var line = new THREE.Line(ellipseGeometry, orbitMaterial);
-  line.rotation.x = Math.PI / 2.0;
+  // orbit.longitudeOfPerihelion = 20.0;
+  line.rotation.z = orbit.longitudeOfPerihelion * rads; // Add true anomaly here.
+  // orbit.inclination = 45.0;
+  line.rotation.x = orbit.inclination * rads + Math.PI / 2.0;
+  // orbit.longitudeOfAscendingNode = 45.0;
+  //line.rotation.y = orbit.longitudeOfAscendingNode * rads;
   return line;
 };
