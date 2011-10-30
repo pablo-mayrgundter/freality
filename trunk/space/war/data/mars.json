@@ -11,7 +11,8 @@
 "albedo":"0.15",
 "equatorialGravity":"3.69",
 "escapeVelocity":"5.027",
-"orbit":{"eccentricity":"0.09341233",
+"orbit":{
+  "eccentricity":"0.09341233",
   "inclination":"1.85061",
   "longitudeOfAscendingNode":"49.57854",
   "longitudeOfPerihelion":"336.04084",
