@@ -60,7 +60,7 @@ function ObjectCtrl(Object) {
     } else if (props.type == 'planet') {
       obj = createPlanet(parentNode, props);
     }
-    parentNode.addChild(obj);
+    parentNode.add(obj);
 
     obj.props = props;
     this.sceneNodes[props.name] = obj;

@@ -44,11 +44,11 @@ function createStars(stars) {
 
   var starPoints = new THREE.ParticleSystem(starsGeometry, starMiniMaterial);
   starPoints.sortParticles = true;
-  shape.addChild(starPoints);
+  shape.add(starPoints);
 
   var starGlows = new THREE.ParticleSystem(starsGeometry, starGlowMaterial);
   starGlows.sortParticles = true;
-  shape.addChild(starGlows);
+  shape.add(starGlows);
 
   return shape;
 }
@@ -57,7 +57,7 @@ function createStar(star, scene) {
   console.log('createStar: '+ star.name);
 
   var sunLight = new THREE.PointLight(0xFFFFFF);
-  scene.addLight(sunLight);
+  scene.add(sunLight);
 
   var sphereGeom = new THREE.SphereGeometry(star.radius, 100, 50);
   sphereGeom.computeTangents();
@@ -67,7 +67,7 @@ function createStar(star, scene) {
 
   var shape = new THREE.Object3D;
   shape.surface = sunMesh; // ?
-  shape.addChild(sunMesh);
+  shape.add(sunMesh);
   return shape;
 }
 
@@ -106,7 +106,7 @@ function createPlanet(parentNode, planet) {
       uniforms['uNormalScale'].value = 0.85;
     }
 
-    planetMaterial = new THREE.MeshShaderMaterial({
+    planetMaterial = new THREE.ShaderMaterial({
         fragmentShader: shader.fragmentShader,
         vertexShader: shader.vertexShader,
         uniforms: uniforms,
@@ -121,7 +121,7 @@ function createPlanet(parentNode, planet) {
   var surface = new THREE.Mesh(sphereGeom, planetMaterial);
   shape.rotation.z = planet.axialInclination;
   shape.surface = surface;
-  //shape.addChild(surface);
+  shape.add(surface);
 
   if (planet.texture_atmosphere) {
     var atmosTexture = THREE.ImageUtils.loadTexture('textures/' + planet.name + '_atmos.png');
@@ -131,10 +131,10 @@ function createPlanet(parentNode, planet) {
     atmosphere.scale.set(atmosScale, atmosScale, atmosScale);
     atmosphere.rotation.z = planet.axialInclination;
     shape.atmosphere = atmosphere; // ?
-    //shape.addChild(atmosphere);
+    shape.add(atmosphere);
   }
 
-  parentNode.addChild(createOrbit(planet.orbit));
+  parentNode.add(createOrbit(planet.orbit));
 
   return shape;
 };
