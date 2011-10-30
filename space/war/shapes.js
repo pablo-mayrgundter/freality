@@ -70,10 +70,10 @@ function lineGrid(params) {
   yzGrid.position.z += size / 2;
   yzGrid.position.y -= size / 2;
 
-  grids.addChild(xzGrid);
-  grids.addChild(yzGrid);
+  grids.add(xzGrid);
+  grids.add(yzGrid);
 
-  grids.addChild(xyGrid);
+  grids.add(xyGrid);
 
   return grids;
 }
