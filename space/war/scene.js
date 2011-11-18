@@ -1,29 +1,38 @@
 var
-  atmosScale = 1.005,
-  maxOrbit = 5869660000.0, // in km, pluto orbit's semi-major axis
-  orbitScale = 1,
-  starScale = maxOrbit * 1000.0; // arbitrary big multiplier to push them far out
+  radiusScale = 1E-6,
+  atmosScale = radiusScale * 1.005,
+  atmosUpperScale = atmosScale,
+  orbitScale = 1E-7;
 
 var globe;
 var starImage, starGlowMaterial;
 
-/**
- * News a cube of 10k random stars around the origin.
- *
- * TODO(pablo): load from dataset.
- */
-function newStars(stars) {
+function newStars(starProps, stars) {
   var orbitPlane = new THREE.Object3D;
   var orbitPosition = new THREE.Object3D;
   orbitPlane.add(orbitPosition);
 
+  var starsGeometry = new THREE.Geometry();
+
+  // For the sun.
+  starsGeometry.vertices.push(new THREE.Vertex(new THREE.Vector3()));
+  for (var i = 0; i < stars.length; i++) {
+    var s = stars[i];
+    var ra = s[0] * toRad;
+    var dec = s[1] * toRad;
+    var dist = s[2] * orbitScale;
+    var vec = new THREE.Vector3(dist * Math.sin(ra) * Math.cos(dec),
+                                dist * Math.sin(ra) * Math.sin(dec),
+                                dist * Math.cos(ra));
+    starsGeometry.vertices.push(new THREE.Vertex(vec));
+  }
+
   var starImage = pathTexture('star_glow', '.png');
   var starGlowMaterial =
     new THREE.ParticleBasicMaterial({ color: 0xffffff,
-                                      size: stars.radius,
+                                      size: starProps.radius * 1E1 * radiusScale,
                                       map: starImage,
                                       sizeAttenuation: true,
-                                      blending: THREE.AdditiveBlending,
                                       depthTest: false,
                                       transparent: false });
 
@@ -33,19 +42,8 @@ function newStars(stars) {
                                       map: starImage,
                                       sizeAttenuation: false,
                                       blending: THREE.AdditiveBlending,
-                                      depthTest: true,
+                                      depthTest: false,
                                       transparent: true });
-
-  var starsGeometry = new THREE.Geometry();
-
-  // For the sun.
-  starsGeometry.vertices.push(new THREE.Vertex(new THREE.Vector3()));
-
-  for (var i = 1; i < stars.count; i++) {
-    var vector = new THREE.Vector3(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1);
-    vector.multiplyScalar(starScale);
-    starsGeometry.vertices.push(new THREE.Vertex(vector));
-  }
 
   var shape = new THREE.Object3D();
 
@@ -86,6 +84,8 @@ function newStar(starProps) {
   return orbitPlane;
 }
 
+var n = {};
+
 function newOrbitingPlanet(planetProps) {
   var orbitPlane = new THREE.Object3D;
   doRot(orbitPlane, planetProps.orbit);
@@ -96,12 +96,13 @@ function newOrbitingPlanet(planetProps) {
   orbitPosition.orbit = planetProps.orbit;
 
   var planet = newPlanet(planetProps);
-  //var planet = sphere();
   planet.rotation.x -= halfPi;
   orbitPosition.add(planet);
 
   // Children centered at this planet's orbit position.
   orbitPlane.orbitPosition = orbitPosition;
+
+  n[planetProps.name] = orbitPlane;
   return orbitPlane;
 };
 
@@ -110,7 +111,7 @@ function newPlanet(planetProps) {
   // TODO(pablo): put these in near LOD only.
   if (planetProps.texture_atmosphere) {
     planet.add(newAtmosphere(planetProps));
-    planet.add(atmos(1.01));
+    planet.add(atmos(planetProps.radius * atmosUpperScale));
   }
 
   // TODO(pablo): if underlying planet is a BasicMeshMaterial, order
@@ -122,8 +123,8 @@ function newPlanet(planetProps) {
 
   // Tilt could be set in orbit configuration, but for the moment
   // seems more intrinsic.
-  planet.rotation.z = planetProps.axialInclination * toRad;
-  //planet.rotation.x += planetProps.axialInclination * toRad;
+  planet.rotation.z = planetProps.axialInclination * toDeg;
+  //planet.rotation.x += planetProps.axialInclination * toDeg;
 
   // Attaching this property triggers rotation of planet during animation.
   planet.siderealRotationPeriod = planetProps.siderealRotationPeriod;
@@ -133,7 +134,7 @@ function newPlanet(planetProps) {
 
 function newSurface(planetProps) {
   var planetMaterial;
-  if (true || !(planetProps.texture_hydrosphere || planetProps.texture_terrain)) {
+  if (!(planetProps.texture_hydrosphere || planetProps.texture_terrain)) {
     planetMaterial = cacheMaterial(planetProps.name);
   } else {
     // Fancy planets.
@@ -162,12 +163,12 @@ function newSurface(planetProps) {
         fragmentShader: shader.fragmentShader,
         vertexShader: shader.vertexShader,
         uniforms: uniforms,
-        //        wireframe: true,
+        // wireframe: true,
         lights: true
       });
   }
 
-  return lodSphere(planetProps.radius, planetMaterial);
+  return lodSphere(planetProps.radius * radiusScale, planetMaterial);
 }
 
 function newAtmosphere(planetProps) {
@@ -202,6 +203,6 @@ function newOrbit(orbit) {
 
 function doRot(obj, orbit) {
   //obj.rotation.z = orbit.longitudeOfPerihelion; // Add true anomaly here.
-  obj.rotation.x = halfPi + parseInt(orbit.inclination);
+  obj.rotation.x = halfPi + orbit.inclination * toDeg;
   //obj.rotation.y = orbit.longitudeOfAscendingNode;
 }

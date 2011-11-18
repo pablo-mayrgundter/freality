@@ -11,10 +11,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
 import org.freality.util.Measure;
 
 /**
@@ -110,8 +113,23 @@ public class HYGLoader {
     return name;
   }
 
+  static {
+    org.freality.io.loader.java.Handler.register();
+  }
   public static void main(String [] args) throws Exception {
-    final Map parsedBodies = parseToBodyMap(System.in);
-    System.err.println("Parsed: " + parsedBodies);
+    final Map<String,Star> parsedBodies =
+      parseToBodyMap(new GZIPInputStream(new URL("java:space/data/hygfull.csv.gz").openStream()));
+    System.out.println("var stars = [");
+    ArrayList<Star> l = new ArrayList<Star>();
+    l.addAll(parsedBodies.values());
+    Collections.shuffle(l);
+    for (Star star : l) {
+      System.out.println("["
+                         + star.location.coordinate.ra
+                         + "," + star.location.coordinate.dec
+                         + "," + star.location.coordinate.distance.toUnitScalar()
+                         + "],");
+    }
+    System.out.println("];\n");
   }
 }

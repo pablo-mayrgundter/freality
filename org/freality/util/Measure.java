@@ -159,6 +159,10 @@ public class Measure {
     return new Measure(mag.convert(scalar, magnitude), unit, mag);
   }
 
+  public double toUnitScalar() {
+    return Magnitude.UNIT.convert(scalar, magnitude);
+  }
+
   public String toString() {
     Measure canonical = this.convert(Magnitude.UNIT);
     String s = "";

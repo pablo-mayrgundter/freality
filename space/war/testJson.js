@@ -2,8 +2,7 @@ var starsObj = {
   type: 'stars',
   name: 'stars',
   parent: 'milky way',
-  radius: 1E3,
-  count: 1000,
+  radius: 1E3
 }
 
 var sunObj = {

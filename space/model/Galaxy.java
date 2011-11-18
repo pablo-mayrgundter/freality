@@ -81,10 +81,10 @@ public class Galaxy extends Universe {
     super.toString(buf);
     buf.append("\"apparentMagnitude\": ").append("\"" + apparentMagnitude + "\"");
     buf.append(",\n\"colorIndex\": ").append(colorIndex);
-    buf.append(",\n\"mass\": ").append(mass.scalar);
+    buf.append(",\n\"mass\": ").append(mass.toUnitScalar());
     buf.append(",\n\"density\": ").append(density);
-    buf.append(",\n\"radius\": ").append(meanRadius.scalar);
-    buf.append(",\n\"siderealRotationPeriod\": ").append(siderealRotationPeriod.scalar);
+    buf.append(",\n\"radius\": ").append(meanRadius.toUnitScalar());
+    buf.append(",\n\"siderealRotationPeriod\": ").append(siderealRotationPeriod.toUnitScalar());
     buf.append(",\n\"axialInclination\": ").append(axialInclination);
     buf.append(",\n\"location\": ").append(location).append("\n");
   }
