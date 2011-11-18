@@ -47,6 +47,7 @@ function getSphereGeom(segmentSize) {
   var geom = _sphereGeoms[segmentSize];
   if (!geom) {
     geom = _sphereGeoms[segmentSize] = new THREE.SphereGeometry(1, segmentSize, segmentSize / 2);
+    //geom.computeNormals();
     geom.computeTangents();
   }
   return geom;

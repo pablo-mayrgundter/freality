@@ -86,7 +86,7 @@
         <system type="planet" name="Moon">
           <orbitalElements>
             <eccentricity value="0.0554"/>
-            <inclination value="5.14"/><!-- 23 -->
+            <inclination value="5.14"/>
             <longitudeOfAscendingNode value="125.08"/>
             <longitudeOfPerihelion value="0"/>
             <meanLongitude value="0"/>
@@ -597,8 +597,7 @@
 
         <orbitalElements>
           <eccentricity value="0.24880766"/>
-          <!--<inclination value="17.14175"/>-->
-          <inclination value="11.88"/>
+          <inclination value="17.14175"/>
           <longitudeOfAscendingNode value="110.30347"/>
           <longitudeOfPerihelion value="224.06676"/>
           <meanLongitude value="238.92881"/>

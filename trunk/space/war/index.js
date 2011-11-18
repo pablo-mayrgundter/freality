@@ -1,5 +1,4 @@
 var time = new Date().getTime();
-var timeStepInv = 1E3;
 
 var test_hook = null;
 

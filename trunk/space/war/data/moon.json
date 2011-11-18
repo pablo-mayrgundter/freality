@@ -5,9 +5,9 @@
 "parent":"earth",
 "apparentMagnitude": "-12.74",
 "colorIndex": 0.63369966,
-"mass": 0.7347,
+"mass": 734700.0,
 "density": 3.344,
-"radius": 1738.1,
+"radius": 1738100.0,
 "siderealRotationPeriod": 3.144952566E7,
 "axialInclination": 1.543,
 "location": {
@@ -30,7 +30,7 @@
 "longitudeOfAscendingNode": 125.08,
 "longitudeOfPerihelion": 0.0,
 "meanLongitude": 0.0,
-"semiMajorAxis": 384467.0,
+"semiMajorAxis": 3.84467E8,
 "siderealOrbitPeriod": 2548108.8
 }
 ,

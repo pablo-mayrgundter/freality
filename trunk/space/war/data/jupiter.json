@@ -5,9 +5,9 @@
 "parent":"sun",
 "apparentMagnitude": "-9.4",
 "colorIndex": 0.63369966,
-"mass": 18986.0,
+"mass": 1.8986E10,
 "density": 1.326,
-"radius": 69911.0,
+"radius": 6.9911E7,
 "siderealRotationPeriod": 35727.3,
 "axialInclination": 3.08,
 "location": {
@@ -30,7 +30,7 @@
 "longitudeOfAscendingNode": 100.55615,
 "longitudeOfPerihelion": 14.75385,
 "meanLongitude": 34.40438,
-"semiMajorAxis": 7.7857E8,
+"semiMajorAxis": 7.7857E11,
 "siderealOrbitPeriod": 3.7409942664E8
 }
 ,

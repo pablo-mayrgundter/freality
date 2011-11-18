@@ -47,8 +47,8 @@ function ObjectCtrl(Object) {
       obj = new THREE.Object3D; // to be a parent for stars.
       obj.orbitPosition = obj;
     } else if (props.type == 'stars') {
-      obj = newStars(props);
-      camera.position.z = props.radius * 5;
+      obj = newStars(props, stars); // TODO(pablo): get rid of global for stars.
+      camera.position.z = props.radius * radiusScale * 5;
     } else if (props.type == 'star') {
       //obj = newStar(props);
       obj = new THREE.Object3D;

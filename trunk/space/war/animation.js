@@ -8,7 +8,7 @@ function animateSystem(system, time) {
 
   if (system.orbit) {
     var eccentricity = system.orbit.eccentricity;
-    var aRadius = system.orbit.semiMajorAxis;
+    var aRadius = system.orbit.semiMajorAxis * orbitScale;
     var bRadius = aRadius * Math.sqrt(1.0 - Math.pow(eccentricity, 2.0));
     var t = twoPiTime / system.orbit.siderealOrbitPeriod;
     system.position.set(aRadius * Math.cos(t),

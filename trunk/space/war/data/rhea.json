@@ -5,9 +5,9 @@
 "parent":"saturn",
 "apparentMagnitude": "1.0",
 "colorIndex": 0.63369966,
-"mass": 2.3166E21,
+"mass": 2.3166E24,
 "density": 1.24,
-"radius": 1528.0,
+"radius": 1528000.0,
 "siderealRotationPeriod": 390312.0,
 "axialInclination": 0.35,
 "location": {
@@ -30,7 +30,7 @@
 "longitudeOfAscendingNode": 1.0,
 "longitudeOfPerihelion": 1.0,
 "meanLongitude": 1.0,
-"semiMajorAxis": 527040.0,
+"semiMajorAxis": 5.2704E8,
 "siderealOrbitPeriod": 390312.0
 }
 ,

@@ -5,9 +5,9 @@
 "parent":"mars",
 "apparentMagnitude": "1.0",
 "colorIndex": 0.63369966,
-"mass": 1.8E15,
+"mass": 1.8E18,
 "density": 1.0,
-"radius": 7.5,
+"radius": 7500.0,
 "siderealRotationPeriod": 108864.0,
 "axialInclination": 1.0,
 "location": {
@@ -30,7 +30,7 @@
 "longitudeOfAscendingNode": 1.0,
 "longitudeOfPerihelion": 1.0,
 "meanLongitude": 1.0,
-"semiMajorAxis": 23459.0,
+"semiMajorAxis": 2.3459E7,
 "siderealOrbitPeriod": 109074.82464
 }
 ,

@@ -5,9 +5,9 @@
 "parent":"jupiter",
 "apparentMagnitude": "1.0",
 "colorIndex": 0.63369966,
-"mass": 1.4799999999999999E23,
+"mass": 1.48E26,
 "density": 1.936,
-"radius": 2634.0,
+"radius": 2634000.0,
 "siderealRotationPeriod": 617760.0,
 "axialInclination": 1.0,
 "location": {
@@ -30,7 +30,7 @@
 "longitudeOfAscendingNode": 1.0,
 "longitudeOfPerihelion": 1.0,
 "meanLongitude": 1.0,
-"semiMajorAxis": 1070000.0,
+"semiMajorAxis": 1.07E9,
 "siderealOrbitPeriod": 618153.53472
 }
 ,

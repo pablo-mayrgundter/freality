@@ -138,8 +138,8 @@ public class Orbit {
     buf.append(",\n\"longitudeOfAscendingNode\": ").append(longitudeOfAscendingNode);
     buf.append(",\n\"longitudeOfPerihelion\": ").append(longitudeOfPerihelion);
     buf.append(",\n\"meanLongitude\": ").append(meanLongitude);
-    buf.append(",\n\"semiMajorAxis\": ").append(semiMajorAxis.scalar);
-    buf.append(",\n\"siderealOrbitPeriod\": ").append(siderealOrbitPeriod.scalar).append("\n}");
+    buf.append(",\n\"semiMajorAxis\": ").append(semiMajorAxis.toUnitScalar());
+    buf.append(",\n\"siderealOrbitPeriod\": ").append(siderealOrbitPeriod.toUnitScalar()).append("\n}");
     return buf.toString();
   }
 }
