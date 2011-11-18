@@ -133,13 +133,13 @@ public class Orbit {
 
   public String toString() {
     final StringBuffer buf = new StringBuffer();
-    buf.append("{\"eccentricity\":\"").append(eccentricity).append("\",\n");
-    buf.append("\"inclination\":\"").append(inclination).append("\",\n");
-    buf.append("\"longitudeOfAscendingNode\":\"").append(longitudeOfAscendingNode).append("\",\n");
-    buf.append("\"longitudeOfPerihelion\":\"").append(longitudeOfPerihelion).append("\",\n");
-    buf.append("\"meanLongitude\":\"").append(meanLongitude).append("\",\n");
-    buf.append("\"semiMajorAxis\":\"").append(semiMajorAxis).append("\",\n");
-    buf.append("\"siderealOrbitPeriod\":\"").append(siderealOrbitPeriod).append("\"}");
+    buf.append("{\n\"eccentricity\": ").append(eccentricity);
+    buf.append(",\n\"inclination\": ").append(inclination);
+    buf.append(",\n\"longitudeOfAscendingNode\": ").append(longitudeOfAscendingNode);
+    buf.append(",\n\"longitudeOfPerihelion\": ").append(longitudeOfPerihelion);
+    buf.append(",\n\"meanLongitude\": ").append(meanLongitude);
+    buf.append(",\n\"semiMajorAxis\": ").append(semiMajorAxis.scalar);
+    buf.append(",\n\"siderealOrbitPeriod\": ").append(siderealOrbitPeriod.scalar).append("\n}");
     return buf.toString();
   }
 }

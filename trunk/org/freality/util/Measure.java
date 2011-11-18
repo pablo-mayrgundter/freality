@@ -160,7 +160,12 @@ public class Measure {
   }
 
   public String toString() {
-    return scalar + magnitude.abbreviation + unit.unitAbbreviation;
+    Measure canonical = this.convert(Magnitude.UNIT);
+    String s = "";
+    s += canonical.scalar;
+    s += canonical.magnitude.abbreviation;
+    s += canonical.unit.unitAbbreviation;
+    return s;
   }
 
   static class MeasureFormatException extends IllegalArgumentException {

@@ -46,11 +46,9 @@ public class Planet extends Star {
 
   public void toString(StringBuffer buf) {
     super.toString(buf);
-    buf.setLength(buf.length() - 1);
-    buf.append(",\n");
-    buf.append("\"albedo\":\"").append(albedo).append("\",\n");
-    buf.append("\"equatorialGravity\":\"").append(equatorialGravity).append("\",\n");
-    buf.append("\"escapeVelocity\":\"").append(escapeVelocity).append("\",\n");
-    buf.append("\"orbit\":").append(orbit.toString().replaceAll("\",\n", "\",\n  ")).append("\n}\n");
+    buf.append(",\"albedo\": ").append(albedo);
+    buf.append(",\n\"equatorialGravity\": ").append(equatorialGravity);
+    buf.append(",\n\"escapeVelocity\": ").append(escapeVelocity);
+    buf.append(",\n\"orbit\": ").append(orbit).append("\n");
   }
 }
