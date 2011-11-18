@@ -5,14 +5,35 @@
     <script type="text/javascript" src="Detector.js"></script>
     <script type="text/javascript" src="RequestAnimationFrame.js"></script>
     <script type="text/javascript" src="shared.js"></script>
+    <script type="text/javascript" src="material.js"></script>
+    <script type="text/javascript" src="scene.js"></script>
     <script type="text/javascript" src="shapes.js"></script>
-    <script type="text/javascript" src="lod.js"></script>
     <script type="text/javascript" src="animation.js"></script>
-    <script>
-      var starScale = 1E10;
-    </script>
+    <script type="text/javascript" src="testJson.js"></script>
     <script type="text/javascript" src="index.js"></script>
+    <script>
+      test_hook = function(){
+        var scene = initCanvas(document.getElementById('scene'), 0);
+        timeScale = 1.0 / 1.5E1;
+
+        //scene.add(grid({stepSize: 1E2}));
+
+        scene.add(stars = newStars(starsObj));
+
+        scene.add(l=newPointLight());
+        scene.add(sun = newStar(sunObj));
+        //scene.add(sun = new THREE.Object3D);
+
+        sun.add(earth=newOrbitingPlanet(earthObj));
+        sun.add(newOrbit(earthObj.orbit));
+
+        earth.orbitPosition.add(moon=newOrbitingPlanet(moonObj));
+        earth.orbitPosition.add(newOrbit(moonObj.orbit));
+
+        camera.position.z = sunObj.radius * 1E5;
+      }
+    </script>
   </head>
-  <body style="margin: 0; padding: 0; overflow: hidden; font-family: arial, sans">
+  <body id="scene" style="position: relative; margin: 0; padding: 0; overflow: hidden; font-family: arial, sans">
   </body>
 </html>

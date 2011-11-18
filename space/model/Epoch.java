@@ -36,8 +36,8 @@ public class Epoch {
   }
 
   public StringBuffer toString(StringBuffer buf) {
-    buf.append("{\"name\":\"").append(name).append("\",\n");
-    buf.append("\"date\":\"").append(dateOfEpoch).append("\"}");
+    buf.append("{\n\"name\": \"").append(name);
+    buf.append("\",\n\"date\": \"").append(dateOfEpoch).append("\"\n}");
     return buf;
   }
 

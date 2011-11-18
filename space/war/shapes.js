@@ -1,43 +1,114 @@
-THREE.EllipseCurve = function(aX, aY, aRadius, eccentricity,
-                             aStartAngle, aEndAngle,
-                             aClockwise) {
+// Simple cube for testing.
+function cube() {
+  var geometry = new THREE.CubeGeometry(1, 1, 1);
+  var material = new THREE.MeshBasicMaterial({
+      color: 0xff0000,
+      wireframe: true
+    });
+  return new THREE.Mesh(geometry, material);
+}
 
-  this.aX = aX;
-  this.aY = aY;
-  this.aRadius = aRadius;
-  this.bRadius = aRadius * Math.sqrt(1.0 - Math.pow(eccentricity, 2.0));
-  this.aStartAngle = aStartAngle;
-  this.aEndAngle = aEndAngle;
-  this.aClockwise = aClockwise;
-};
+// Simple sphere for testing.
+function sphere(segmentSize) {
+  segmentSize = segmentSize || 10;
+  var geometry = new THREE.SphereGeometry(1, segmentSize, segmentSize / 2);
+  var material = new THREE.MeshBasicMaterial({
+      color: 0xff0000,
+      wireframe: true
+    });
+  return new THREE.Mesh(geometry, material);
+}
 
-THREE.EllipseCurve.prototype = new THREE.Curve();
-THREE.EllipseCurve.prototype.constructor = THREE.EllipseCurve;
-THREE.EllipseCurve.prototype.getPoint = function (t) {
-
-  var deltaAngle = this.aEndAngle - this.aStartAngle;
-
-  if (!this.aClockwise) {
-    t = 1 - t;
+// Lod Sphere.
+function lodSphere(radius, material) {
+  radius = radius || 1;
+  var lod = new THREE.LOD();
+  var geoms = 
+    [[getSphereGeom(128), radius],
+     [getSphereGeom(32), radius * 10],
+     [getSphereGeom(16), radius * 100],
+     [getSphereGeom(8), radius * 300]];
+  for (var i = 0; i < geoms.length; i++) {
+    var mesh = new THREE.Mesh(geoms[i][0], material);
+    mesh.scale.set(radius, radius, radius);
+    mesh.updateMatrix();
+    mesh.matrixAutoUpdate = false;
+    lod.addLevel(mesh, geoms[i][1]);
   }
+  lod.updateMatrix();
+  lod.matrixAutoUpdate = false;
+  var obj = new THREE.Object3D;
+  obj.add(lod);
+  return obj;
+}
 
-  var angle = this.aStartAngle + t * deltaAngle;
+var _sphereGeoms = new Array();
+function getSphereGeom(segmentSize) {
+  var geom = _sphereGeoms[segmentSize];
+  if (!geom) {
+    geom = _sphereGeoms[segmentSize] = new THREE.SphereGeometry(1, segmentSize, segmentSize / 2);
+    geom.computeTangents();
+  }
+  return geom;
+}
 
-  var tx = this.aX + this.aRadius * Math.cos(angle);
-  var ty = this.aY + this.bRadius * Math.sin(angle);
+function atmos(radius) {
+  // from http://data-arts.appspot.com/globe/globe.js
+  var Shaders = {
+    'atmosphere' : {
+      uniforms: {},
+      vertexShader: ['varying vec3 vNormal;',
+                     'void main() {',
+                     'vNormal = normalize(normalMatrix * normal);',
+                     'gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);',
+        '}'].join('\n'),
+      fragmentShader: ['varying vec3 vNormal;',
+                       'void main() {',
+                       'float intensity = pow(1.1 + dot(vNormal, vec3(0, 0, 1)), 8.0);',
+                       'gl_FragColor = vec4(0.5, 0.5, 1.0, 0.01) * intensity;',
+        '}'].join('\n')
+    }
+  };
 
-  return new THREE.Vector2(tx, ty);
-};
+  var sceneAtmosphere = new THREE.Object3D();
+  var geometry = new THREE.SphereGeometry(1, 128, 64);
+
+  shader = Shaders['atmosphere'];
+  uniforms = THREE.UniformsUtils.clone(shader.uniforms);
+
+  material = new THREE.ShaderMaterial({
+      uniforms: uniforms,
+      vertexShader: shader.vertexShader,
+      fragmentShader: shader.fragmentShader
+    });
+
+  var mesh = new THREE.Mesh(geometry, material);
+  mesh.scale.x = mesh.scale.y = mesh.scale.z = radius;
+  mesh.flipSided = true;
+  mesh.matrixAutoUpdate = false;
+  mesh.updateMatrix();
+  sceneAtmosphere.add(mesh);
+  return sceneAtmosphere;
+}
 
 // GRID
 
-function grid() {
-  var params = {
-    stepSize: 3E8,
-    numSteps: 1E2,
-    color: 0x111155,
-    lineWidth: 1
-  };
+function grid(params) {
+  if (!params) {
+    params = {};
+  }
+  if (!params.stepSize) {
+    params['stepSize'] = 1;
+  }
+  if (!params.numSteps) {
+    params['numSteps'] = 1E2;
+  }
+  if (!params.color) {
+    params['color'] = 0xffffff;
+  }
+  if (!params.lineWidth) {
+    params['lineWidth'] = 1;
+  }
   return lineGrid(params);
 }
 
@@ -133,3 +204,36 @@ function imgGrid(params) {
 
   return meshCanvas;
 }
+
+// Ellipse
+
+THREE.EllipseCurve = function(aX, aY, aRadius, eccentricity,
+                             aStartAngle, aEndAngle,
+                             aClockwise) {
+
+  this.aX = aX;
+  this.aY = aY;
+  this.aRadius = aRadius;
+  this.bRadius = aRadius * Math.sqrt(1.0 - Math.pow(eccentricity, 2.0));
+  this.aStartAngle = aStartAngle;
+  this.aEndAngle = aEndAngle;
+  this.aClockwise = aClockwise;
+};
+
+THREE.EllipseCurve.prototype = new THREE.Curve();
+THREE.EllipseCurve.prototype.constructor = THREE.EllipseCurve;
+THREE.EllipseCurve.prototype.getPoint = function (t) {
+
+  var deltaAngle = this.aEndAngle - this.aStartAngle;
+
+  if (!this.aClockwise) {
+    t = 1 - t;
+  }
+
+  var angle = this.aStartAngle + t * deltaAngle;
+
+  var tx = this.aX + this.aRadius * Math.cos(angle);
+  var ty = this.aY + this.bRadius * Math.sin(angle);
+
+  return new THREE.Vector2(tx, ty);
+};

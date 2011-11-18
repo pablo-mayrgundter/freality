@@ -19,9 +19,9 @@ public class Coordinate {
   }
 
   public StringBuffer toString(StringBuffer buf) {
-    buf.append("{\"ra\":\"").append(ra).append("\",\n");
-    buf.append("\"dec\":\"").append(dec).append("\",\n");
-    buf.append("\"dist\":\"").append(distance).append("\"}");
+    buf.append("{\n\"ra\": ").append(ra);
+    buf.append(",\n\"dec\": ").append(dec);
+    buf.append(",\n\"dist\": ").append(distance.scalar).append("\n}");
     return buf;
   }
 

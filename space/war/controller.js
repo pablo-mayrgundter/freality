@@ -15,10 +15,10 @@ function ObjectCtrl(Object) {
     }
     console.log('Loading: ' + objectName);
     objectName = objectName.toLowerCase().replace(/ */g, '');
-    if (this.sceneNodes[objectName]) {
-      this.select(this.sceneNodes[objectName]);
-      return;
-    }
+    //if (this.sceneNodes[objectName]) {
+    //  this.select(this.sceneNodes[objectName]);
+    //  return;
+    //}
     var me = this;
     return Object.get({name:objectName},
                       function(obj) { me.display(obj); });
@@ -30,39 +30,47 @@ function ObjectCtrl(Object) {
 
   this.select = function(node) {
     console.log('Camera to: ' + node.props.name);
-    camera.position.x = node.position.x + 100;
-    camera.position.y = node.position.y + 100;
-    camera.position.z = node.position.z + 100;
+    targetNode = node;
   };
 
   this.display = function(props) {
     console.log('display: ' + props.name);
     this.object = props;
 
-    // TODO(pablo): shouldn't need this.
-    if (props.type != 'stars') {
-      fixup(props);
-    }
-
     var parentNode = this.sceneNodes[props.parent];
     if (!parentNode) {
       parentNode = scene;
     }
+
     var obj;
     if (props.type == 'galaxy') {
-      obj = createStar(props, scene);
+      obj = new THREE.Object3D; // to be a parent for stars.
+      obj.orbitPosition = obj;
     } else if (props.type == 'stars') {
-      obj = createStars(props);
+      obj = newStars(props);
+      camera.position.z = props.radius * 5;
     } else if (props.type == 'star') {
-      obj = createStar(props, scene);
-      // TODO(pablo): maybe specify camera setup in data configs?
-      camera.position.z = props.radius * 7;
+      //obj = newStar(props);
+      obj = new THREE.Object3D;
+      // TODO(pablo): add light at orbitPosition?
+      scene.add(newPointLight());
     } else if (props.type == 'planet') {
-      obj = createPlanet(parentNode, props);
+      obj = newOrbitingPlanet(props);
+      var orbt = newOrbit(props.orbit);
+      if (parentNode.orbitPosition) {
+        parentNode.orbitPosition.add(orbt);
+      } else {
+        parentNode.add(orbt);
+      }
     }
-    parentNode.add(obj);
 
-    obj.props = props;
+    if (parentNode.orbitPosition) {
+      parentNode.orbitPosition.add(obj);
+    } else {
+      parentNode.add(obj);
+    }
+
+    obj['props'] = props;
     this.sceneNodes[props.name] = obj;
 
     if (props.system) {
@@ -76,18 +84,4 @@ function ObjectCtrl(Object) {
   };
 
   this.$watch('name', 'load(name)');
-}
-
-/**
- * Fix up wire notation.
- * TODO(pablo): shouldn't need to do this.
- */
-function fixup(props) {
-  props.radius = props.radius.match(/\d+(.\d+)?/)[0];
-  props.siderealRotationPeriod = props.siderealRotationPeriod.match(/\d+(.\d+)?/)[0];
-  props.axialInclination = props.axialInclination / 360.0 * 2.0 * Math.PI;
-  if (props.orbit) {
-    props.orbit.semiMajorAxis = parseFloat(props.orbit.semiMajorAxis);
-    props.orbit.siderealOrbitPeriod = parseFloat(props.orbit.siderealOrbitPeriod);
-  }
 }

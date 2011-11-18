@@ -1,21 +1,38 @@
-{"type":"planet",
+{
+"type":"planet",
+
 "name":"triton",
 "parent":"neptune",
-"apparentMagnitude":"1.0",
-"colorIndex":"0.63369966",
-"mass":"2.1400000000000002E22kg",
-"density":"2.054",
-"radius":"1353.0km",
-"siderealRotationPeriod":"508032.0s",
-"axialInclination":"156.83",
-"albedo":"0.7",
-"equatorialGravity":"1.0",
-"escapeVelocity":"1.0",
-"orbit":{"eccentricity":"0.0",
-  "inclination":"1.0",
-  "longitudeOfAscendingNode":"1.0",
-  "longitudeOfPerihelion":"1.0",
-  "meanLongitude":"1.0",
-  "semiMajorAxis":"354760.0km",
-  "siderealOrbitPeriod":"507760.18992s"}
+"apparentMagnitude": "1.0",
+"colorIndex": 0.63369966,
+"mass": 2.1400000000000002E22,
+"density": 2.054,
+"radius": 1353.0,
+"siderealRotationPeriod": 508032.0,
+"axialInclination": 156.83,
+"location": {
+"coord": {
+"ra": 1.0,
+"dec": 1.0,
+"dist": 0.0
+},
+"epoch": {
+"name": "J2000",
+"date": "Sat Jan 01 07:00:00 EST 2000"
+}
+}
+,"albedo": 0.7,
+"equatorialGravity": 1.0,
+"escapeVelocity": 1.0,
+"orbit": {
+"eccentricity": 0.0,
+"inclination": 1.0,
+"longitudeOfAscendingNode": 1.0,
+"longitudeOfPerihelion": 1.0,
+"meanLongitude": 1.0,
+"semiMajorAxis": 354760.0,
+"siderealOrbitPeriod": 507760.18992
+}
+,
+"system": []
 }

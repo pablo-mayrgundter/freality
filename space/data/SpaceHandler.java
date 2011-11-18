@@ -21,10 +21,13 @@ import java.io.FileWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 import javax.xml.parsers.SAXParser;
@@ -43,6 +46,7 @@ import org.xml.sax.helpers.DefaultHandler;
 public class SpaceHandler extends DefaultHandler {
 
   final Map<String,CelestialBody> bodyMap;
+  final Map<String,Set<String>> childMap;
 
   final Stack<StackFrame> frameStack;
   StackFrame curFrame = null;
@@ -66,38 +70,44 @@ public class SpaceHandler extends DefaultHandler {
    */
   SpaceHandler() {
     bodyMap = new LinkedHashMap<String,CelestialBody>();
+    childMap = new LinkedHashMap<String,Set<String>>();
     frameStack = new Stack<StackFrame>();
   }
 
   public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
 
-    if (qName.equalsIgnoreCase("system"))
-
-      frameStack.push(curFrame = new StackFrame(atts.getValue("type").toLowerCase(), atts.getValue("name").toLowerCase(), new HashMap<String,String>()));
-
-    else if (atts.getLength() == 1)
-
+    if (qName.equalsIgnoreCase("system")) {
+      frameStack.push(curFrame = new StackFrame(atts.getValue("type").toLowerCase(),
+                                                atts.getValue("name").toLowerCase(),
+                                                new HashMap<String,String>()));
+    } else if (atts.getLength() == 1) {
       curFrame.params.put(qName.toLowerCase(), atts.getValue("value"));
+    }
   }
 
   double largestOrbit = 0;
 
   public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-
     if (qName.equalsIgnoreCase("system")) {
-
-      if (!frameStack.isEmpty())
+      if (!frameStack.isEmpty()) {
         curFrame = frameStack.pop();
+      }
 
-      final CelestialBody body = makeBody();
-
+      CelestialBody body = makeBody();
       if (body != null) {
-        bodyMap.put(curFrame.name, body);
-        if ((body instanceof Planet) && ((Planet) body).orbit.semiMajorAxis.scalar > largestOrbit) // HACK - Add comparable() to Measure.
+        String name = curFrame.name;
+        bodyMap.put(name, body);
+        Set<String> children = childMap.get(body.parent);
+        if (children == null) {
+          childMap.put(body.parent, children = new LinkedHashSet<String>());
+        }
+        children.add(name);
+        if ((body instanceof Planet) 
+            && ((Planet) body).orbit.semiMajorAxis.scalar > largestOrbit) { // HACK - Add comparable() to Measure.
           largestOrbit = ((Planet) body).orbit.semiMajorAxis.scalar;
+        }
       }
     }
-
   }
 
   CelestialBody makeBody() {
@@ -173,9 +183,13 @@ public class SpaceHandler extends DefaultHandler {
 
   public static class DataAndExtents {
     public final Map<String, ? extends CelestialBody> bodies;
+    public final Map<String, Set<String>> childMap;
     public final double largestOrbit;
-    DataAndExtents(final Map<String, ? extends CelestialBody> bodies, final double largestOrbit) {
+    DataAndExtents(final Map<String, ? extends CelestialBody> bodies,
+                   final Map<String,Set<String>> childMap,
+                   final double largestOrbit) {
       this.bodies = bodies;
+      this.childMap = childMap;
       this.largestOrbit = largestOrbit;
     }
   }
@@ -196,19 +210,21 @@ public class SpaceHandler extends DefaultHandler {
 
     // Reverse ordering so parents come before children in iterator.
     final ArrayList<String> bodyNames = new ArrayList<String>();
-    for (final String bodyName : handler.bodyMap.keySet())
+    for (final String bodyName : handler.bodyMap.keySet()) {
       bodyNames.add(bodyName);
+    }
     final LinkedHashMap<String, CelestialBody> reversedMap = new LinkedHashMap<String, CelestialBody>();
-    for (int i = bodyNames.size() - 1; i >= 0; i--)
+    for (int i = bodyNames.size() - 1; i >= 0; i--) {
       reversedMap.put(bodyNames.get(i), handler.bodyMap.get(bodyNames.get(i)));
-    return new DataAndExtents(reversedMap, handler.largestOrbit);
+    }
+    return new DataAndExtents(reversedMap, handler.childMap, handler.largestOrbit);
   }
 
   static {
     org.freality.io.loader.java.Handler.register();
   }
   public static void main(String [] args) throws Exception {
-    final DataAndExtents dae = SpaceHandler.parseToBodyMap("java:vr/cpack/space/data/solarSystem.xml");
+    final DataAndExtents dae = SpaceHandler.parseToBodyMap("java:space/data/solarSystem.xml");
     final Map<String,? extends CelestialBody> bodyMap = dae.bodies;
     if (args.length == 1) {
       System.out.println((CelestialBody) bodyMap.get(args[0]));
@@ -228,7 +244,24 @@ public class SpaceHandler extends DefaultHandler {
         } else {
           continue;
         }
-        json = "{\"type\":" + type + ",\n" + json;
+        Set<String> children = dae.childMap.get(bodyName);
+        String childStr = "[]";
+        if (children != null) {
+          childStr = "[";
+          int i = 0, n = children.size();
+          for (String child : children) {
+            childStr += "\"" + child + "\"";
+            if (i < n - 1) {
+              childStr += ",";
+            }
+            i++;
+          }
+          childStr += "]";
+        }
+        json = "{\n\"type\":" + type + ",\n"
+          + json
+          + ",\n\"system\": " + childStr
+          + "\n}\n";
         w.write(json);
         w.close();
         f.renameTo(new File(bodyName+".json"));

@@ -15,7 +15,8 @@ public class ObservedLocation {
   }
 
   public StringBuffer toString(StringBuffer buf) {
-    buf.append("{\"coord\":").append(coordinate).append(",\n\"epoch\":").append(epoch).append("}");
+    buf.append("{\n\"coord\": ").append(coordinate);
+    buf.append(",\n\"epoch\": ").append(epoch).append("\n}");
     return buf;
   }
 
