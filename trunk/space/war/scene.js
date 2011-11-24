@@ -92,6 +92,7 @@ function newOrbitingPlanet(planetProps) {
 
   var orbitPosition = new THREE.Object3D;
   orbitPlane.add(orbitPosition);
+
   // Attaching this property triggers orbit of planet during animation.
   orbitPosition.orbit = planetProps.orbit;
 
@@ -190,7 +191,7 @@ function newOrbit(orbit) {
   var ellipseGeometry = ellipseCurvePath.createPointsGeometry(100);
   ellipseGeometry.computeTangents();
   var orbitMaterial = new THREE.LineBasicMaterial({
-      color: 0x000033,
+      color: 0x0000ff,
       blending: THREE.AdditiveBlending,
       depthTest: true,
       transparent: true

@@ -2,8 +2,6 @@
 <html>
   <head>
     <script type="text/javascript" src="Three.js"></script>
-    <script type="text/javascript" src="Detector.js"></script>
-    <script type="text/javascript" src="RequestAnimationFrame.js"></script>
     <script type="text/javascript" src="shared.js"></script>
     <script type="text/javascript" src="material.js"></script>
     <script type="text/javascript" src="scene.js"></script>
@@ -20,19 +18,25 @@
 
         scene.add(grid({stepSize: 1E2}));
 
-        scene.add(s=newStars(starsObj, stars));
+        //scene.add(s=newStars(starsObj, stars));
 
         scene.add(l=newPointLight());
         //scene.add(sun = newStar(sunObj));
         scene.add(sun = new THREE.Object3D);
+
         l.position.x = 10;
         l.position.z = 10;
 
-        sun.add(earth=newOrbitingPlanet(earthObj));
+        sun.add(earth = newOrbitingPlanet(earthObj));
         sun.add(newOrbit(earthObj.orbit));
 
         //earth.orbitPosition.add(moon=newOrbitingPlanet(moonObj));
         //earth.orbitPosition.add(newOrbit(moonObj.orbit));
+
+        //sun.add(c = cube());
+
+        //c.position.x = 3;
+        //sun.position.y = 1;
 
         camera.position.z = 10;
       }
