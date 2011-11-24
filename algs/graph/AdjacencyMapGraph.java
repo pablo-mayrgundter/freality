@@ -2,6 +2,7 @@ package algs.graph;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -66,7 +67,7 @@ public class AdjacencyMapGraph<T> implements Graph<T> {
     return edges.get(node);
   }
 
-  public BreadthFirstIterator<T> breadthFirstIterator() {
+  public Iterator<T> bfs() {
     return new BreadthFirstIterator<T>(this);
   }
 
