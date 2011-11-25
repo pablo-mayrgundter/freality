@@ -1,8 +1,9 @@
 var starsObj = {
-  type: 'stars',
-  name: 'stars',
-  parent: 'milky way',
-  radius: 1E3
+  type: "stars",
+  name: "stars",
+  parent: "milkyway",
+  count: 1000,
+  radius: 6.9424800E7
 }
 
 var sunObj = {
@@ -43,8 +44,8 @@ var earthObj = {
     siderealOrbitPeriod: 31536000
   },
   system: [ 'moon' ],
-  texture_atmosphere: true,
-  texture_hydrosphere: true,
+  texture_atmosphere: false,
+  texture_hydrosphere: false,
   texture_terrain: true
 }
 

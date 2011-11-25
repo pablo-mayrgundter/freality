@@ -1,5 +1,5 @@
 var
-  radiusScale = 1E-6,
+  radiusScale = 1E-7,
   atmosScale = radiusScale * 1.005,
   atmosUpperScale = atmosScale,
   orbitScale = 1E-7;
@@ -18,8 +18,8 @@ function newStars(starProps, stars) {
   starsGeometry.vertices.push(new THREE.Vertex(new THREE.Vector3()));
   for (var i = 0; i < stars.length; i++) {
     var s = stars[i];
-    var ra = s[0] * toRad;
-    var dec = s[1] * toRad;
+    var ra = s[0] * toDeg; // why not toRad?
+    var dec = s[1] * toDeg;
     var dist = s[2] * orbitScale;
     var vec = new THREE.Vector3(dist * Math.sin(ra) * Math.cos(dec),
                                 dist * Math.sin(ra) * Math.sin(dec),
@@ -30,11 +30,12 @@ function newStars(starProps, stars) {
   var starImage = pathTexture('star_glow', '.png');
   var starGlowMaterial =
     new THREE.ParticleBasicMaterial({ color: 0xffffff,
-                                      size: starProps.radius * 1E1 * radiusScale,
+                                      size: starProps.radius * radiusScale,
                                       map: starImage,
                                       sizeAttenuation: true,
+                                      blending: THREE.AdditiveBlending,
                                       depthTest: false,
-                                      transparent: false });
+                                      transparent: true });
 
   var starMiniMaterial =
     new THREE.ParticleBasicMaterial({ color: 0xffffff,
@@ -42,7 +43,7 @@ function newStars(starProps, stars) {
                                       map: starImage,
                                       sizeAttenuation: false,
                                       blending: THREE.AdditiveBlending,
-                                      depthTest: false,
+                                      depthTest: true,
                                       transparent: true });
 
   var shape = new THREE.Object3D();
@@ -97,7 +98,7 @@ function newOrbitingPlanet(planetProps) {
   orbitPosition.orbit = planetProps.orbit;
 
   var planet = newPlanet(planetProps);
-  planet.rotation.x -= halfPi;
+  //planet.rotation.x -= halfPi;
   orbitPosition.add(planet);
 
   // Children centered at this planet's orbit position.
@@ -124,7 +125,7 @@ function newPlanet(planetProps) {
 
   // Tilt could be set in orbit configuration, but for the moment
   // seems more intrinsic.
-  planet.rotation.z = planetProps.axialInclination * toDeg;
+  planet.rotation.z = planetProps.axialInclination * toRad;
   //planet.rotation.x += planetProps.axialInclination * toDeg;
 
   // Attaching this property triggers rotation of planet during animation.
@@ -164,7 +165,7 @@ function newSurface(planetProps) {
         fragmentShader: shader.fragmentShader,
         vertexShader: shader.vertexShader,
         uniforms: uniforms,
-        // wireframe: true,
+        wireframe: false,
         lights: true
       });
   }
@@ -191,19 +192,21 @@ function newOrbit(orbit) {
   var ellipseGeometry = ellipseCurvePath.createPointsGeometry(100);
   ellipseGeometry.computeTangents();
   var orbitMaterial = new THREE.LineBasicMaterial({
-      color: 0x0000ff,
+      color: 0x000077,
       blending: THREE.AdditiveBlending,
       depthTest: true,
-      transparent: true
+      depthWrite: false,
+      transparent: false
     });
   
   var line = new THREE.Line(ellipseGeometry, orbitMaterial);
+  line.rotation.x = halfPi;
   doRot(line, orbit);
   return line;
 }
 
 function doRot(obj, orbit) {
-  //obj.rotation.z = orbit.longitudeOfPerihelion; // Add true anomaly here.
-  obj.rotation.x = halfPi + orbit.inclination * toDeg;
-  //obj.rotation.y = orbit.longitudeOfAscendingNode;
+  obj.rotation.x += orbit.inclination * toRad;
+  //obj.rotation.z += orbit.longitudeOfPerihelion * toRad; // Add true anomaly here.
+  //obj.rotation.y += orbit.longitudeOfAscendingNode * toRad;
 }

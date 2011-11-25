@@ -29,7 +29,7 @@ function initCanvas(container, bgColor) {
   renderer = new THREE.WebGLRenderer({ clearAlpha: 1, clearColor: bgColor });
   renderer.setSize(width, height);
   renderer.sortObjects = true;
-  renderer.autoClear = false;
+  renderer.autoClear = true;
   container.appendChild(renderer.domElement);
   var scene = new THREE.Scene(); // in shared.js
   var cameraAndControls = init(renderer, scene); // in scene.js
@@ -39,24 +39,20 @@ function initCanvas(container, bgColor) {
 
 function init(renderer, scene) {
   // TODO(pablo): pass these as method args
-  var near = 0.001;
-  var far = 1e7 * 1000;
   var width = renderer.domElement.clientWidth;
   var height = renderer.domElement.clientHeight;
   // TODO(pablo): should not be global.
-  camera = new THREE.PerspectiveCamera(0.1, width / height, near, far);
+  camera = new THREE.PerspectiveCamera(25, width / height, 1, 1E13);
   camera.rotationAutoUpdate = true;
 
   var controls = new THREE.TrackballControls(camera, renderer.domElement);
-  controls.rotateSpeed = 1.0;
-  controls.zoomSpeed = 1.2;
-  controls.panSpeed = 0.2;
+  controls.rotateSpeed = 0.1;
+  controls.zoomSpeed = 0.1;
+  controls.panSpeed = 0.1;
   controls.noZoom = false;
   controls.noPan = false;
   controls.staticMoving = false;
-  controls.dynamicDampingFactor = 0.3;
-  controls.minDistance = near;
-  //controls.maxDistance = far;
+  controls.dynamicDampingFactor = 0.2;
   controls.keys = [ 65, 83, 68 ]; // [ rotateKey, zoomKey, panKey ]
   window.addEventListener('resize',
                           function() { onWindowResize(renderer, camera, controls); },
