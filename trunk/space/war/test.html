@@ -8,7 +8,7 @@
     <script type="text/javascript" src="shapes.js"></script>
     <script type="text/javascript" src="animation.js"></script>
     <script type="text/javascript" src="testJson.js"></script>
-    <script type="text/javascript" src="t-10000.js"></script>
+    <script type="text/javascript" src="t-1000.js"></script>
     <script type="text/javascript" src="index.js"></script>
     <script>
       test_hook = function(){
@@ -18,22 +18,20 @@
 
         scene.add(grid({stepSize: 1E2}));
 
-        //scene.add(s=newStars(starsObj, stars));
-
+        scene.add(stars = newStars(starsObj, stars));
         scene.add(l=newPointLight());
-        //scene.add(sun = newStar(sunObj));
         scene.add(sun = new THREE.Object3D);
 
         l.position.x = 10;
         l.position.z = 10;
 
         sun.add(earth = newOrbitingPlanet(earthObj));
-        sun.add(newOrbit(earthObj.orbit));
+        sun.add(orbit = newOrbit(earthObj.orbit));
 
         //earth.orbitPosition.add(moon=newOrbitingPlanet(moonObj));
         //earth.orbitPosition.add(newOrbit(moonObj.orbit));
 
-        //sun.add(c = cube());
+        sun.add(c = cube());
 
         //c.position.x = 3;
         //sun.position.y = 1;

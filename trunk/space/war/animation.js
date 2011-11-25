@@ -12,8 +12,8 @@ function animateSystem(system, time) {
     var bRadius = aRadius * Math.sqrt(1.0 - Math.pow(eccentricity, 2.0));
     var t = twoPiTime / system.orbit.siderealOrbitPeriod;
     system.position.set(aRadius * Math.cos(t),
-                        bRadius * Math.sin(t),
-                        0);
+                        0,
+                        bRadius * Math.sin(t));
   }
 
   for (ndx in system.children) {

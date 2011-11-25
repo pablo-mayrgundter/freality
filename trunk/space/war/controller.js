@@ -13,12 +13,12 @@ function ObjectCtrl(Object) {
       console.log('ObjectCtrl: load: ERROR, missing object name.');
       return;
     }
-    console.log('Loading: ' + objectName);
     objectName = objectName.toLowerCase().replace(/ */g, '');
-    //if (this.sceneNodes[objectName]) {
-    //  this.select(this.sceneNodes[objectName]);
-    //  return;
-    //}
+    if (this.sceneNodes[objectName]) {
+      this.select(this.sceneNodes[objectName]);
+      return;
+    }
+    console.log('Loading: ' + objectName);
     var me = this;
     return Object.get({name:objectName},
                       function(obj) { me.display(obj); });
@@ -30,12 +30,25 @@ function ObjectCtrl(Object) {
 
   this.select = function(node) {
     console.log('Camera to: ' + node.props.name);
-    targetNode = node;
+    this.object = node.props;
+    targetObj = n[node.props.name].orbitPosition;
+        targetObjLoc.identity();
+        var curObj = targetObj;
+        var objs = [];
+        while (curObj.parent != scene) {
+          objs.push(curObj);
+          curObj = curObj.parent;
+        }
+        for (var i = objs.length - 1; i >= 0; i--) {
+          var o = objs[i];
+          targetObjLoc.multiplySelf(o.matrix);
+        }
+    tpos = targetObjLoc.getPosition();
+    tpos.multiplyScalar(0.999);
+    setTimeout('camera.position.set('+ tpos.x +', '+ tpos.y +', '+ tpos.z +')', 1000);
   };
 
   this.display = function(props) {
-    console.log('display: ' + props.name);
-    this.object = props;
 
     var parentNode = this.sceneNodes[props.parent];
     if (!parentNode) {
