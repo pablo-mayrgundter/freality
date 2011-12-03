@@ -7,7 +7,7 @@ function Canvas(elt, board, cellSize) {
     for (var x = 0; x < board.getWidth(); x++) {
       try {
         this.board.set(x, y, 'age', 0);
-        this.drawBorder(x, y, light);
+        this.drawBorder(x, y, dark);
       } catch(e) {
         alert(x+','+y);
         return;
@@ -19,19 +19,19 @@ function Canvas(elt, board, cellSize) {
 Canvas.prototype.draw = function() {
   for (var y = 0; y < this.board.getHeight(); y++) {
     for (var x = 0; x < this.board.getWidth(); x++) {
-      var fillColor = white;
+      var fillColor = black;
       if (this.board.isOn(x, y)) {
         this.board.set(x, y, 'age', 4);
-        fillColor = black;
+        fillColor = white;
       } else {
         this.board.set(x, y, 'age', this.board.isSet(x, y, 'age') - 1);
       }
 
       switch(this.board.isSet(x, y, 'age')) {
-      case 4: fillColor = black; break;
-      case 3: fillColor = dark; break;
-      case 2: fillColor = medium; break;
-      case 1: fillColor = light;
+      case 4: fillColor = light; break;
+      case 3: fillColor = medium; break;
+      case 2: fillColor = dark; break;
+      case 1: fillColor = black;
       }
       this.drawCell(x, y, fillColor);
     }
@@ -41,7 +41,7 @@ Canvas.prototype.draw = function() {
 Canvas.prototype.drawCell = function(x, y, color) {
   this.canvas.fillStyle = color;
   this.canvas.fillRect(x * this.cellSize, y * this.cellSize, this.cellSize, this.cellSize);
-  this.drawBorder(x, y, light);
+  this.drawBorder(x, y, dark);
 };
 
 Canvas.prototype.drawBorder = function(x, y, color) {
@@ -74,10 +74,10 @@ Canvas.prototype.clickHandler = function() {
   if (me.board.isOn(bX, bY)) {
     me.board.turnCurOff(bX, bY);
     me.board.turnOff(bX, bY);
-    me.drawCell(bX, bY, white);
+    me.drawCell(bX, bY, black);
   } else {
     me.board.turnCurOn(bX, bY);
     me.board.turnOn(bX, bY);
-    me.drawCell(bX, bY, black);
+    me.drawCell(bX, bY, white);
   }
 };
