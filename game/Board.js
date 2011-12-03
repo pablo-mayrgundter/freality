@@ -1,3 +1,11 @@
+/**
+ * The Board class is used to store the logical state of the board.
+ * Two arrays are kept, one for the current state of the board, and
+ * one as a workspace to setup the new state of the board, e.g. based
+ * on the current state.
+ *
+ * @author Pablo Mayrgundter
+ */
 function Board(width, height) {
   this.width = width;
   this.height = height;
@@ -54,11 +62,16 @@ Board.prototype.setCur = function(x, y, name, value) {
 
 Board.prototype.isSet = function(x, y, name) {
   //this.checkBoard('isSet', x, y, name);
-  if (!this.curCells[y][x][name])
+  if (!this.curCells[y][x][name]) {
     return false;
+  }
   return this.curCells[y][x][name];
 };
 
+/**
+ * Swaps in the next board for the current, and then clears the next
+ * board (which was current).
+ */
 Board.prototype.next = function() {
   // Swap.
   var tmp = this.curCells;
