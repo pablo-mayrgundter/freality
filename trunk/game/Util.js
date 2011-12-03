@@ -1,5 +1,5 @@
 // Generic dom utils.
-function get(id) {
+function getPageElement(id) {
   return document.getElementById(id);
 }
 

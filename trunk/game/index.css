@@ -1,16 +1,18 @@
 body {
-  margin: 0;
   background-color: black;
 }
 
-#game, #ruleIn, #ruleOut {
+#gameCanvas, #ruleIn, #ruleOut {
   cursor: crosshair;
   border: none;
   margin: 0 auto;
 }
 
-#game {
+#gameCanvas {
   display: block;
+  width: 800px;
+  height: 600px;
+  margin: 5% auto;
 }
 
 #controls {
