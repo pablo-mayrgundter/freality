@@ -10,8 +10,6 @@ body {
 
 #gameCanvas {
   display: block;
-  width: 800px;
-  height: 600px;
   margin: 5% auto;
 }
 
