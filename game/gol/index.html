@@ -7,12 +7,7 @@
     <script src="../Game.js"></script>
     <link rel="stylesheet" href="../index.css"/>
   </head>
-  <body onload="init()">
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
-<!--    <div id="controls">
-      <canvas id="ruleIn" width="75" height="75"></canvas>
-      <span id="arrow">-&gt;</span>
-      <canvas id="ruleOut" width="75" height="75"></canvas>
-    </div> -->
+  <body onload="game = new Game(new GOL(), getPageElement('gameCanvas'))">
+    <canvas id="gameCanvas" width="600" height="600"></canvas>
   </body>
 </html>
