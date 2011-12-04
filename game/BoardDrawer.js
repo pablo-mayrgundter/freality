@@ -1,3 +1,9 @@
+var white = 'rgb(255,255,255)';
+var light = 'rgb(192,192,255)';
+var medium = 'rgb(255,192,128)';
+var dark = 'rgb(0,64,128)';
+var black = 'rgb(0,0,0)';
+
 /**
  * The BoardDrawer class draws the logical board to the given HTML
  * canvas.  This class handles user interaction, translating mouse
@@ -7,14 +13,15 @@
  *
  * @author Pablo Mayrgundter
  */
-function BoardDrawer(canvasElt, cellSize) {
+function BoardDrawer(board, canvasElt) {
 
-  this.canvasElt = canvasElt;
-  this.width = canvasElt.offsetWidth / cellSize;
-  this.height = canvasElt.offsetHeight / cellSize;
-  this.board = new Board(this.width, this.height);
-  this.cellSize = cellSize;
-  this.canvas = this.canvasElt.getContext('2d');
+  this.board = board;
+  this.canvas = canvasElt.getContext('2d');
+  this.canvas.width = canvasElt.offsetWidth;
+  this.canvas.height = canvasElt.offsetHeight;
+  this.canvas.offsetLeft = canvasElt.offsetLeft;
+  this.canvas.offsetTop = canvasElt.offsetTop;
+  this.cellSize = this.canvas.width / this.board.width;
   this.animIntervalId = null;
 
   for (var y = 0; y < this.board.getHeight(); y++) {
@@ -29,9 +36,8 @@ function BoardDrawer(canvasElt, cellSize) {
     }
   }
 
-  addEvent(this.canvasElt, 'click', func(this, this.clickHandler));
-
-};
+  canvasElt.onclick = func(this, this.clickHandler);
+}
 
 BoardDrawer.prototype.draw = function() {
   for (var y = 0; y < this.board.getHeight(); y++) {
@@ -53,36 +59,34 @@ BoardDrawer.prototype.draw = function() {
       this.drawCell(x, y, fillColor);
     }
   }
-};
+}
 
 BoardDrawer.prototype.drawCell = function(x, y, color) {
   this.canvas.fillStyle = color;
   this.canvas.fillRect(x * this.cellSize, y * this.cellSize, this.cellSize, this.cellSize);
   this.drawBorder(x, y, dark);
-};
+}
 
 BoardDrawer.prototype.drawBorder = function(x, y, color) {
   this.canvas.strokeStyle = color;
   this.canvas.strokeRect(x * this.cellSize, y * this.cellSize, this.cellSize, this.cellSize);
-};
+}
 
-BoardDrawer.prototype.clickHandler = function() {
-  if (window.event.altKey) {
-    if (running) {
-      running = false;
+BoardDrawer.prototype.clickHandler = function(ev) {
+  ev = ev || window.event;
+  if (ev.altKey) {
+    if (this.animIntervalId) {
       clearInterval(this.animIntervalId);
     } else {
-      running = true;
-      this.animIntervalId = setInterval('animate()', 20);
+      this.animIntervalId = go();
     }
     return;
   }
   var me = this;
-  var evt = window.event;
-  var cX = evt.x - me.canvasElt.offsetLeft;
-  var cY = evt.y - me.canvasElt.offsetTop;
-  var cW = me.canvasElt.offsetWidth;
-  var cH = me.canvasElt.offsetHeight;
+  var cX = ev.x - me.canvas.offsetLeft;
+  var cY = ev.y - me.canvas.offsetTop;
+  var cW = me.canvas.width;
+  var cH = me.canvas.height;
   var dX = cX / cW;
   var dY = cY / cH;
   var bW = me.board.getWidth();
@@ -98,4 +102,4 @@ BoardDrawer.prototype.clickHandler = function() {
     me.board.turnOn(bX, bY);
     me.drawCell(bX, bY, white);
   }
-};
+}

@@ -3,7 +3,13 @@
  * Any.js will contain the generic rule system for which GOL is a
  * special case.
  */
-function GOL(board) {
+function GOL() {
+  this.width = 10;
+  this.height = 10;
+  this.board = null;
+}
+
+GOL.prototype.setBoard = function(board) {
   this.board = board;
 }
 
