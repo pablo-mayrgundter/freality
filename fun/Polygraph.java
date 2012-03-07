@@ -5,6 +5,8 @@ import java.awt.*;
 
 class Polygraph extends FullScreenableFrame {
 
+  static final long serialVersionUID = 3896239845753004157L;
+
   static final int SLEEP = Integer.parseInt(System.getProperty("sleep", "10"));
 
   Graphics2D g;
