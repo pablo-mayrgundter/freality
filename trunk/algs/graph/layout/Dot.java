@@ -28,7 +28,7 @@ class Dot {
     for (final String node : graph.nodes())
       for (final String neighbor : graph.getNeighbors(node))
         System.out.println(node +" -> "+ neighbor);
-    final BreadthFirstIterator<String> bfs = graph.breadthFirstIterator();
+    final BreadthFirstIterator<String> bfs = graph.bfs();
     bfs.setStart("Pablo");
     while (bfs.hasNext())
       System.out.println(bfs.next());

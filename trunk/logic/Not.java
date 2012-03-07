@@ -10,6 +10,8 @@ import java.util.Collection;
  */
 public class Not extends Operator {
 
+  static final long serialVersionUID = -6823975371274852602L;
+
   public Not() {
     super(1);
   }

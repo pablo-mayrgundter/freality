@@ -16,7 +16,7 @@ class Test {
     g.addEdge("b", "c");
     g.addEdge("b", "e");
     g.addEdge("c", "d");
-    final BreadthFirstIterator<String> itr = g.breadthFirstIterator();
+    final BreadthFirstIterator<String> itr = g.bfs();
     String start = "a";
     itr.setStart(start);
     Set<String> neigh = g.getNeighbors(start);
