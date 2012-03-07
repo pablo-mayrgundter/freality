@@ -61,20 +61,14 @@ function ObjectCtrl(Object) {
       obj.orbitPosition = obj;
     } else if (props.type == 'stars') {
       obj = newStars(props, stars); // TODO(pablo): get rid of global for stars.
-      camera.position.z = props.radius * radiusScale * 5;
     } else if (props.type == 'star') {
-      //obj = newStar(props);
       obj = new THREE.Object3D;
+      //obj = newStar(props);
+      camera.position.z = props.radius * radiusScale * 1E1;
       // TODO(pablo): add light at orbitPosition?
       scene.add(newPointLight());
     } else if (props.type == 'planet') {
       obj = newOrbitingPlanet(props);
-      var orbt = newOrbit(props.orbit);
-      if (parentNode.orbitPosition) {
-        parentNode.orbitPosition.add(orbt);
-      } else {
-        parentNode.add(orbt);
-      }
     }
 
     if (parentNode.orbitPosition) {

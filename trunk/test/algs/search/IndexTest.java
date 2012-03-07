@@ -22,10 +22,10 @@ public class IndexTest extends TestCase {
   public void testSearch() {
     String [] docs = new String[]{"a", "b", "c"};
     for (String s : docs) {
-      index.put(s);
+      index.putSimple(s);
     }
     for (String s : docs) {
-      Set<String> matches = index.lookup(s);
+      Set matches = index.lookupSimple(s);
       assertTrue("Index should contain indexed doc", matches.contains(s));
       assertEquals(1, matches.size());
     }
@@ -61,14 +61,14 @@ public class IndexTest extends TestCase {
     i = 0;
     time = System.currentTimeMillis();
     for (String doc : docs) {
-      index.put(doc);
+      index.putSimple(doc);
     }
     time = System.currentTimeMillis() - time;
     System.err.println("Indexing time: "+ time);
 
     time = System.currentTimeMillis();
     for (i = 0; i < numQueries; i++) {
-      index.lookup("d");
+      index.lookupSimple("d");
     }
     time = System.currentTimeMillis() - time;
     System.err.println("Search time: "+ time);

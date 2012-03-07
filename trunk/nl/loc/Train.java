@@ -73,11 +73,15 @@ class Train {
           }
         }
       }
-      System.out.println("Practice the ones you missed. Type each of these in 3 times:");
-      for (String transPair : practiceList) {
-        System.out.println(transPair + ":");
-        for (int i = 0; i < 3; i++) {
-          r.readLine();
+      if (practiceList.isEmpty()) {
+        System.out.println("Perfect!");
+      } else {
+        System.out.println("Practice the ones you missed. Type each of these in 3 times:");
+        for (String transPair : practiceList) {
+          System.out.println(transPair + ":");
+          for (int i = 0; i < 3; i++) {
+            r.readLine();
+          }
         }
       }
       practiceList.clear();
