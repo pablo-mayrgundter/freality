@@ -1,6 +1,7 @@
 var time = new Date().getTime();
 
 var test_hook = null;
+var animationDelegate = animation;
 
 window.onload = function() {
   if (!Detector.webgl) {
@@ -26,7 +27,10 @@ function initCanvas(container, bgColor) {
     width = window.innerWidth;
     height = window.innerHeight;
   }
-  renderer = new THREE.WebGLRenderer({ clearAlpha: 1, clearColor: bgColor });
+  renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      clearAlpha: 1,
+      clearColor: bgColor });
   renderer.setSize(width, height);
   renderer.sortObjects = true;
   renderer.autoClear = true;
@@ -52,7 +56,7 @@ function init(renderer, scene) {
   controls.noZoom = false;
   controls.noPan = false;
   controls.staticMoving = false;
-  controls.dynamicDampingFactor = 0.2;
+  controls.dynamicDampingFactor = 0.5;
   controls.keys = [ 65, 83, 68 ]; // [ rotateKey, zoomKey, panKey ]
   window.addEventListener('resize',
                           function() { onWindowResize(renderer, camera, controls); },
@@ -71,8 +75,17 @@ function onWindowResize(renderer, camera, controls) {
   camera.updateProjectionMatrix();
   camera.radius = (width + height) / 4;
 
-  controls.screen.width = width;
-  controls.screen.height = height;
+  if (controls) {
+    controls.screen.width = width;
+    controls.screen.height = height;
+  }
+
+  if (box1) {
+    var testBoxWidth = findBoxExtent();
+    if (testBoxWidth != -1) {
+      box1.scale.x = testBoxWidth * 1.05;
+    }
+  }
 }
 
 function animate(renderer, camera, controls, scene) {
@@ -88,25 +101,12 @@ function render(renderer, camera, controls, scene) {
   var dt = t - time;
   var time = t;
 
-  animateSystem(scene, time); // in animation.js
-
   if (controls) {
     controls.update();
   }
 
-  if (targetObj) {
-    targetObjLoc.identity();
-    var curObj = targetObj;
-    var objs = []; // TODO(pablo)
-    while (curObj.parent != scene) {
-      objs.push(curObj);
-      curObj = curObj.parent;
-    }
-    for (var i = objs.length - 1; i >= 0; i--) {
-      var o = objs[i];
-      targetObjLoc.multiplySelf(o.matrix);
-    }
-    camera.lookAt(targetObjLoc.getPosition());
+  if (animationDelegate) {
+    animationDelegate(renderer, camera, controls, scene);
   }
 
   renderer.clear();

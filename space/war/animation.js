@@ -1,3 +1,8 @@
+function animation(renderer, camera, controls, scene) {
+  animateSystem(scene, time);
+  updateView(scene, time);
+}
+
 function animateSystem(system, time) {
   
   twoPiTime = twoPi * time;
@@ -19,5 +24,22 @@ function animateSystem(system, time) {
   for (ndx in system.children) {
     var child = system.children[ndx];
     animateSystem(child, time);
+  }
+}
+
+function updateView() {
+  if (targetObj) {
+    targetObjLoc.identity();
+    var curObj = targetObj;
+    var objs = []; // TODO(pablo)
+    while (curObj.parent != scene) {
+      objs.push(curObj);
+      curObj = curObj.parent;
+    }
+    for (var i = objs.length - 1; i >= 0; i--) {
+      var o = objs[i];
+      targetObjLoc.multiplySelf(o.matrix);
+    }
+    camera.lookAt(targetObjLoc.getPosition());
   }
 }

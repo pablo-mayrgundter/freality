@@ -14,7 +14,7 @@ public class FullScreenableFrame extends JFrame {
   static final int HEIGHT = Integer.parseInt(System.getProperty("height", "400"));
   static final Boolean FULLSCREEN = Boolean.getBoolean("fs");
 
-  int width, height;
+  protected int width, height;
   Graphics2D drawGraphics;
 
   public FullScreenableFrame() {

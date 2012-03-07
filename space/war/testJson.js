@@ -44,8 +44,8 @@ var earthObj = {
     siderealOrbitPeriod: 31536000
   },
   system: [ 'moon' ],
-  texture_atmosphere: false,
-  texture_hydrosphere: false,
+  texture_atmosphere: true,
+  texture_hydrosphere: true,
   texture_terrain: true
 }
 
@@ -65,7 +65,7 @@ var moonObj = {
   escapeVelocity: 2.38,
   orbit:{
     eccentricity: 0.0554,
-    inclination: 90.0,
+    inclination: 5.14,
     longitudeOfAscendingNode: 125.08,
     longitudeOfPerihelion: 0.0,
     meanLongitude: 0.0,

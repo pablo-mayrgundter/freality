@@ -12,17 +12,30 @@
     <script type="text/javascript" src="index.js"></script>
     <script>
       test_hook = function(){
-        scene = initCanvas(document.getElementById('scene'), 0);
+        var scene = initCanvas(document.getElementById('scene'), 0);
         timeScale = 1E2;
 
-        camera.position.z = 10;
+        scene.add(l=newPointLight());
+        l.position.x = 0;
+        l.position.z = 0;
 
-        scene.add(l = newPointLight());
-        l.position.x = 5;
-        l.position.y = 10;
-        l.position.z = 10;
+        scene.add(grid({stepSize: 1E2}));
 
-        //scene.add(s = sphere());
+        //scene.add(stars = newStars(starsObj, stars));
+        scene.add(sun = new THREE.Object3D);
+
+        earthObj.orbit.eccentricity = 0.9;
+        earthObj.orbit.inclination = 10;
+        earthObj.orbit.semiMajorAxis = 5E7;
+        sun.add(earth = newOrbitingPlanet(earthObj));
+
+        moonObj.orbit.eccentricity = 0.9;
+        moonObj.orbit.semiMajorAxis = 3E7;
+        earth.orbitPosition.add(moon = newOrbitingPlanet(moonObj));
+
+        camera.position.x = 5;
+        camera.position.y = 5;
+        camera.position.z = 20;
       }
     </script>
   </head>

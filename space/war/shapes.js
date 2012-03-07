@@ -1,22 +1,34 @@
 // Simple cube for testing.
-function cube() {
-  var geometry = new THREE.CubeGeometry(1, 1, 1);
-  var material = new THREE.MeshBasicMaterial({
-      color: 0xff0000,
-      wireframe: true
-    });
-  return new THREE.Mesh(geometry, material);
+function cube(size) {
+  size = size || 1;
+  return box(size, size, size);
 }
 
-// Simple sphere for testing.
-function sphere(segmentSize) {
-  segmentSize = segmentSize || 10;
-  var geometry = new THREE.SphereGeometry(1, segmentSize, segmentSize / 2);
-  var material = new THREE.MeshBasicMaterial({
-      color: 0xff0000,
-      wireframe: true
-    });
-  return new THREE.Mesh(geometry, material);
+function box(width, height, depth, opts) {
+  width = width || 1;
+  height = height || 1;
+  depth = depth || 1;
+  opts = opts || {};
+  opts.color = opts.color || 0xff0000;
+  var geom = new THREE.CubeGeometry(width, height, depth);
+  var matr = new THREE.MeshBasicMaterial(opts);
+  return new THREE.Mesh(geom, matr);
+}
+
+function sphere(opts) {
+  opts = opts || {};
+  opts.radius = opts.radius || 1;
+  opts.segmentSize = opts.segmentSize || 50;
+  opts.color = opts.color || 0xff0000;
+  opts.basic = opts.basic || true;
+  var geom = new THREE.SphereGeometry(opts.radius, opts.segmentSize, opts.segmentSize / 2);
+  var matr;
+  if (opts.basic) {
+    matr = new THREE.MeshPhongMaterial(opts);
+  } else {
+    matr = new THREE.MeshBasicMaterial(opts);
+  }
+  return new THREE.Mesh(geom, matr);
 }
 
 // Lod Sphere.
@@ -92,6 +104,15 @@ function atmos(radius) {
   return sceneAtmosphere;
 }
 
+// LINE
+
+function line(vec1, vec2) {
+  var geom = new THREE.Geometry();
+  geom.vertices.push(new THREE.Vertex(vec1));
+  geom.vertices.push(new THREE.Vertex(vec2));
+  return new THREE.Line(geom, lineMaterial());
+}
+
 // GRID
 
 function grid(params) {
@@ -103,12 +124,6 @@ function grid(params) {
   }
   if (!params.numSteps) {
     params['numSteps'] = 1E2;
-  }
-  if (!params.color) {
-    params['color'] = 0xffffff;
-  }
-  if (!params.lineWidth) {
-    params['lineWidth'] = 1;
   }
   return lineGrid(params);
 }
@@ -123,10 +138,8 @@ function lineGrid(params) {
   var grids = new THREE.Object3D();
 
   var size = params.stepSize * params.numSteps;
-  var mat = new THREE.LineBasicMaterial({color: params.color,
-                                         lineWidth: params.lineWidth,
-                                         blending: THREE.AdditiveBlending,
-                                         transparent: true});
+
+  var mat = lineMaterial(params);
 
   var xyGrid = new THREE.Line(gridGeometry(params), mat);
   xyGrid.position.x -= size / 2;
@@ -207,10 +220,45 @@ function imgGrid(params) {
 }
 
 // Ellipse
+function port(rad, height, startAngle, angle) {
+  var curveGen = new THREE.EllipseCurve(0, 0, rad, 0, startAngle, angle);
+  var path = new THREE.CurvePath();
+  path.add(curveGen);
+  var geom = path.createPointsGeometry(100);
+  geom.computeTangents();
+  var mat = new THREE.LineBasicMaterial({
+      color: 0xc0c0c0,
+      blending: THREE.AdditiveBlending,
+      depthTest: true,
+      depthWrite: false,
+      transparent: false
+    });
+  
+  var portTop = new THREE.Line(geom, mat);
+  var portBottom = new THREE.Line(geom, mat);
+  portTop.position.z += height / 2;
+  portBottom.position.z -= height / 2;
+  
+  var shape = new THREE.Object3D();
+  shape.add(portTop);
+  shape.add(portBottom);
+
+  shape.rotation.z = Math.PI * 0.5 + startAngle * deg;
+  shape.rotation.x = Math.PI * 0.5;
+  return shape;
+}
 
 THREE.EllipseCurve = function(aX, aY, aRadius, eccentricity,
                              aStartAngle, aEndAngle,
                              aClockwise) {
+
+  aX = aX || 0;
+  aY = aY || 0;
+  aRadius = aRadius || 1;
+  eccentricity = eccentricity || 0;
+  aStartAngle = aStartAngle || 0;
+  aEndAngle = aEndAngle || Math.PI * 2.0;
+  aClockwise = aClockwise || true;
 
   this.aX = aX;
   this.aY = aY;
