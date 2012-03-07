@@ -5,6 +5,8 @@ import java.util.Collection;
 
 class Xor extends Operator {
 
+  static final long serialVersionUID = -8443001770289569943L;
+
   public Xor() {
   }
 

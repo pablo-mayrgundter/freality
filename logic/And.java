@@ -12,6 +12,8 @@ import java.util.ListIterator;
  */
 public class And extends Operator {
 
+  static final long serialVersionUID = 7934299397464692116L;
+
   public And() {
   }
 
