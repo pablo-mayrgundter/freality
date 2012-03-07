@@ -1,7 +1,56 @@
 package logic;
 
-class And extends BinaryOp {
-  And (final Expr e1, final Expr e2) {
-    super("&", e1, e2);
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.ListIterator;
+
+/**
+ * The And class represents the Boolean binary conjunction (AND, &)
+ * operation.
+ *
+ * @author Pablo Mayrgundter
+ */
+public class And extends Operator {
+
+  public And() {
+  }
+
+  public And(Proposition ... args) {
+    this(Arrays.asList(args));
+  }
+
+  public And(Collection<? extends Proposition> c) {
+    super(c);
+  }
+
+  public And(int initialCapacity) {
+    super(initialCapacity);
+  }
+
+  public boolean isTrue() {
+    for (Proposition p : this)
+      if (!p.isTrue())
+        return false;
+    return true;
+  }
+
+  public Proposition reduce() {
+    boolean t = false;
+    ListIterator<Proposition> argItr = this.listIterator();
+    while (argItr.hasNext()) {
+      Proposition arg = argItr.next().reduce();
+      if (arg.isBound()) {
+        if (!arg.isTrue())
+          return False.VALUE;
+        argItr.remove();
+        t = true;
+      } else {
+        argItr.set(arg);
+      }
+    }
+
+    if (!isEmpty())
+      return this;
+    return t ? True.VALUE : False.VALUE;
   }
 }
