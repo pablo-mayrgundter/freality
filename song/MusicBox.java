@@ -148,10 +148,11 @@ final class MusicBox implements Runnable {
   public static void main (final String [] args) {
     final MusicBox mb = new MusicBox();
     new Thread(mb).start();
+    final CLI cli = new CLI();
     new Thread(new Runnable() {
         public void run() {
           while (true) {
-            if (CLI.promptYesNo())
+            if (cli.promptYesNo(""))
               mb.mSongPool.bless();
             else
               mb.mSongPool.curse();
