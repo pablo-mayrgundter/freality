@@ -1,6 +1,5 @@
 package algs.graph;
 
-import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -17,5 +16,5 @@ public interface Graph<T> {
   boolean hasEdge(T a, T b);
   Set<T> nodes();
   Set<T> getNeighbors(T node);
-  Iterator<T> bfs();
+  BreadthFirstIterator<T> bfs();
 }

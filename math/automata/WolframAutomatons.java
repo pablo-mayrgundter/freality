@@ -22,7 +22,7 @@ class WolframAutomatons {
 
   public static void main(String [] args){
     FullScreenableFrame f = new FullScreenableFrame();
-    f.show();
+    f.setVisible(true);
     Graphics g = f.getDrawGraphics();
     AutomatonDrawer drawer = new AutomatonDrawer(g, f.getWidth(), f.getHeight());
 
