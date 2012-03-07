@@ -1,21 +1,50 @@
 package logic;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * An Operator has a truth value that is conditioned on the truth
- * values of its sub-statements.
+ * values of its arguments.
  *
  * @author Pablo Mayrgundter
  */
-public abstract class Operator extends Predicate {
+public abstract class Operator
+  extends ArrayList<Proposition>
+  implements Proposition, List<Proposition> {
 
-  protected final Proposition [] _propositions;
-
-  Operator(Proposition [] propositions) {
-    _propositions = propositions;
+  /**
+   * Equivalent to Operator(2);
+   */
+  public Operator() {
+    super(2);
   }
 
-  public int numPropositions() { return _propositions.length; }
+  public Operator(Collection<? extends Proposition> c) {
+    super(c);
+  }
 
-  public Proposition getProposition(int index) { return _propositions[index]; }
+  public Operator(int initialCapacity) {
+    super(initialCapacity);
+  }
+
+  public boolean isBound() {
+    for (Proposition p : this)
+      if (!p.isBound())
+        return false;
+    return true;
+  }
+
+  public String toString() {
+    final StringBuffer buf = new StringBuffer();
+    String opStr = " "+ getClass().getSimpleName().toUpperCase() +" ";
+    for (int i = 0; i < size(); i++) {
+      if (i > 0)
+        buf.append(opStr);
+      buf.append(get(i));
+    }
+    return buf.toString();
+  }
 }
     

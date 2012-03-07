@@ -1,10 +1,12 @@
 package logic;
 
 /**
- * A Proposition is any statement that has a certain truth value.
+ * A Proposition represents an object that has a Boolean truth value.
  *
  * @author Pablo Mayrgundter
  */
-public abstract class Proposition {
-  public abstract boolean isTrue();
+interface Proposition {
+  public boolean isBound();
+  public boolean isTrue();
+  public Proposition reduce();
 }
