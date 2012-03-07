@@ -67,7 +67,7 @@ public class AdjacencyMapGraph<T> implements Graph<T> {
     return edges.get(node);
   }
 
-  public Iterator<T> bfs() {
+  public BreadthFirstIterator<T> bfs() {
     return new BreadthFirstIterator<T>(this);
   }
 

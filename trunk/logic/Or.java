@@ -12,6 +12,8 @@ import java.util.ListIterator;
  */
 public class Or extends Operator {
 
+  static final long serialVersionUID = -2758062749416762167L;
+
   public Or() {
   }
 

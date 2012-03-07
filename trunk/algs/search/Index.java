@@ -8,7 +8,10 @@ import util.Shell;
  *
  * @author Pablo Mayrgundter
  */
+@SuppressWarnings("unchecked")
 public class Index extends HashMap<Object, Set<Map>> {
+
+  static final long serialVersionUID = 2912424671023552687L;
 
   public void putSimple(Object doc) {
     Map m = new HashMap(1);

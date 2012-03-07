@@ -8,13 +8,15 @@ import java.util.Collection;
  *
  * @author Pablo Mayrgundter
  */
-class Equals extends Operator {
+public class Equals extends Operator {
+
+  static final long serialVersionUID = 2683223947022712112L;
+
+  public Equals() {
+  }
 
   public Equals(Proposition ... args) {
     this(Arrays.asList(args));
-  }
-
-  public Equals() {
   }
 
   public Equals(Collection<? extends Proposition> c) {
