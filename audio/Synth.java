@@ -5,7 +5,6 @@ import javax.sound.midi.*;
 
 public class Synth {
 
-  // SEt
   static {
     if (System.getProperty("java.awt.headless") == null)
       System.setProperty("java.awt.headless", "true");
@@ -46,8 +45,9 @@ public class Synth {
     time = 0;
   }
 
+  int count = 1;
   public void randNote() {
-    addNote(rand.nextInt(256), rand.nextInt(127), rand.nextInt(tempo));
+    addNote(rand.nextInt(count++), rand.nextInt(count), rand.nextInt(count));
   }
   public void addNote(final int note, final int velo, final int dura) {
     try {
@@ -95,7 +95,8 @@ public class Synth {
     noteEvent(t, time + dura, note, velo, false);
   }
 
-  static void noteEvent(final Track t, final long time, final int note, final int velo, final boolean on) throws InvalidMidiDataException {
+  static void noteEvent(final Track t, final long time, final int note,
+                        final int velo, final boolean on) throws InvalidMidiDataException {
     System.err.print(on ? "O" : "x");
     final ShortMessage msg = new ShortMessage();
     msg.setMessage(on ? ShortMessage.NOTE_ON : ShortMessage.NOTE_OFF, 0, note, velo);
@@ -110,9 +111,9 @@ public class Synth {
 
     final Synth synth = new Synth();
     synth.recordSong();
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 127; i++) {
       synth.randNote();
-      synth.timeForward(5000);
+      synth.timeForward(500);
     }
     synth.playSong();
 

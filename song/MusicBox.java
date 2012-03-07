@@ -116,13 +116,17 @@ final class MusicBox implements Runnable {
         Wolfram.apply(mCur, j, mNext, j, mSongPool.mSong.rules[mCurMeasure][j]);
         boolean on = mCur.get(j) == 1;
         boolean onNext = mNext.get(j) == 1;
-        int bits = 4*mCur.get(j == 0 ? n - 1 : j-1) + 2*mCur.get(j) + mCur.get(j == n - 1 ? 0 : j+1);
+        int bits =
+            4 * mCur.get(j == 0 ? n - 1 : j-1)
+          + 2 * mCur.get(j)
+          + mCur.get(j == n - 1 ? 0 : j + 1);
         int note = 8 * j + mLowestNote + bits;
         if (on && y == 0) {
-          if (onNext)
+          if (onNext) {
             mSynth.startNote(note);
-          else
+          } else {
             System.err.print(".");
+          }
         } else if (!on && onNext)
           mSynth.startNote(note);
         else if (on && !onNext)
