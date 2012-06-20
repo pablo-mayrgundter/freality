@@ -2,10 +2,43 @@
   <head>
     <script src="turing.js"></script>
   </head>
-  <body>
+  <body onload="init()">
     <h1>A Turing Machine in Javascript, programmed with JSON</h1>
 
-    <p>The following English description is an example task a
+    <form onsubmit="run('program')" action="#">
+      <table style="height: 300px">
+        <tr>
+          <th>Turing JSON Program</th>
+          <th>Turing Machine Tape Log</th>
+          <th>Turing Machine Debug Log</th>
+        </tr>
+        <tr>
+          <td valign="top">
+<textarea id="program" cols="80" rows="20">({
+  start:
+    {read:
+      {0: {write: 1},
+       1: {shift: 'right', newState: 'daisy'}}
+    },
+  daisy:
+    {read:
+      {0: {write: 1, newState: 'cow'},
+       1: {newState: 2}}
+    },
+  cow: {write: 1, newState: 'end'},
+  end: 'stop'
+})</textarea>
+          </td>
+          <td width="30%" valign="top">
+            <pre id="tape" style="height: 100%; overflow-y: scroll; white-space: pre"></pre>
+          </td>
+          <td valign="top" id="log" style="overflow-y: scroll; white-space: pre"></td>
+        </tr>
+      </table>
+      <input type="Submit" value="Run"/>
+    </form>
+
+    <p>The program above is a transliteration of an example task a
     classical
     <em>human</em> computer could follow to perform a precise
     computation, formalized and styled according
@@ -33,68 +66,43 @@ to state <b>end</b>; in state <b>end</b> stop"</pre>
     could automatically run the program of instructions to carry out
     the computation.  He hypothesized a particular form for
     this <a href="http://en.wikipedia.org/wiki/Turing_machine">"automatic
-    machine"</a>, with a ticker tape and a computer interacting with
-    it, as described above.  This idealized computer turned out to be
-    able to represet a stunning variety of computational and
-    algorithmic processes, and so became the model for successive
-    attempts to actually build one.</p>
+    machine"</a>, with a ticker tape and a mechanical processor
+    interacting with it, as described above.  This idealized computer
+    turned out to be able to represet a stunning variety of
+    computational and algorithmic processes, and so became the model
+    for successive attempts to actually build one, which famously
+    succeeded.</p>
 
     <p>As the descendent computers and computer systems have
     developed, a wide variety of "languages" have also been developed
-    to tranliterate the human program specification into a symbolic
-    form with which the computer can be configured.</p>
+    to tranliterate program specifications created by humans into
+    symbolic/material forms that can be stored and processed directly
+    by computers.</p>
 
-    <p>A langauge known
+    <p>After many generations and manifestations, a langauge known
     as <a href="http://en.wikipedia.org/wiki/Javascript">JavaScript</a>
     (named for a type of programming called "scripting", and for an
     influential predecessor
     language <a href="http://en.wikipedia.org/wiki/Java">Java</a>),
     and an
     associated <a href="http://en.wikipedia.org/wiki/JSON">JavaScript
-    Object Notation</a> (JSON), have emerged on the communications
-    system known as the World Wide Web.</p>
+    Object Notation</a> (JSON), have emerged as popular programming
+    and data description languages (respectively) for the
+    inter-networked computing and communication system known as the
+    InterWebz.</p>
 
     <p>And so, as a celebration of Alan Turing's 100th birthday and in
     recognition of one of the greatest outcomes of his work, here is a
     JSON programming interface to a Turing Machine written in
-    JavaScript.  The program above is transliterated to get you
-    started, but you can edit the program as you want to manipulate
-    the tape as you want and, in principle, construct a program that
-    is equivalent to any software running in the world if the tape is
-    long enough, and your patience boundless.</p>
+    JavaScript (see the linked <a href="turing.js">turing.js</a>).</p>
 
-    <form onsubmit="run('program')" action="#">
-      <table>
-        <tr>
-          <th>JSON Program</th><th>Machine Tape (Log)</th>
-        </tr>
-        <tr>
-          <td>
-<textarea id="program" cols="80" rows="20">({
-  start:
-    {read:
-      {0: {write: 1},
-       1: {shift: 'right', newState: 'daisy'}}
-    },
-  daisy:
-    {read:
-      {0: {write: 1, newState: 'cow'},
-       1: {newState: 2}}
-    },
-  cow: {write: 1, newState: 'end'},
-  end: 'stop'
-})</textarea>
-          </td>
-          <td width="50%">
-<pre id="tape">
-</pre>
-          </td>
-        </tr>
-      </table>
-      <input type="Submit" value="Run"/>
-    </form>
+    <p>The program above is transliterated to get you started, but you
+    can edit the program as you want to manipulate the tape as you
+    want and, in principle, construct a program that is equivalent to
+    any software running in the world if the tape is long enough, and
+    your patience boundless.</p>
 
-    <p>Debug Log:
-      <pre id="log"></pre></p>
+    <p>Cheers,<br/>
+      Pablo</p>
   </body>
 </html>

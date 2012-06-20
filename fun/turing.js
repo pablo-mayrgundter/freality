@@ -1,25 +1,19 @@
-function elt(id) {
-  return document.getElementById(id);
-}
+/**
+ * A Turing Machine.
+ *
+ * @author Pablo Mayrgundter <pablo.mayrgundter@gmail.com>
+ */
 
-function log(msg) {
-  elt('log').innerHTML += msg + '\n';
-}
+var state = 'start';
+var tapeNdx = 0;
+var instCount;
+var tape = new Array(10);
+var hasRun = false;
 
-function logTape(msg) {
-  elt('tape').innerHTML += msg + '\n';
-}
+function init() {
 
-function run(programId) {
-
-  // A few lines to make debugging output useful.
-  var e = elt(programId);
-  var txt = e.value;
-  var prog = eval(txt);
-
-  var state = 'start';
-  var tapeNdx = 0;
-  var tape = new Array(10);
+  instCount = 0;
+  tapeNdx = 0;
 
   // Set tape vals to 0.
   for (var i = 0; i < tape.length; i++) {
@@ -29,11 +23,25 @@ function run(programId) {
   elt('log').innerHTML = '';
   elt('tape').innerHTML = '';
 
-  logTape('START: '+ tape +'\n');
-  while (true) {
+  logTape('INITIAL TAPE:\n  '+ tape +'\n');
+}
 
+function run(programId) {
+
+  if (hasRun) {
+    init();
+  }
+
+  // A few lines to make debugging output useful.
+  var e = elt(programId);
+  var txt = e.value;
+  var prog = eval(txt);
+
+  /* Will this loop ever break? */
+  while (true) {
+    instCount++;
     // Parse instructions.
-    logTape('state('+ state +'): '+ tape);
+    logTape(instCount + ': before operation the tape is:\n    '+ tape);
     var inst = prog[state];
     if (inst == 'stop') {
       break;
@@ -43,11 +51,12 @@ function run(programId) {
                   ', no instruction found' + inst);
     }
     var val = tape[tapeNdx];
-    log('tape['+ tapeNdx +'] val: ' + val);
+    log('read tape['+ tapeNdx +'], got: ' + val);
 
     var write = null;
     var shift = null;
     var newState = null;
+
     if (inst.write) {
       write = inst.write;
       if (inst.shift)
@@ -77,29 +86,45 @@ function run(programId) {
 
     if (shift) {
       if (shift == 'left') {
-        log('moving left');
         tapeNdx--;
+        log('moving left, new index: ' + tapeNdx);
       } else if (shift == 'right') {
-        log('moving right');
         tapeNdx++;
+        log('moving right, new index: ' + tapeNdx);
       }
     }
 
-    if (newState)
+    if (newState) {
+      log('change state from "'+ state +'" to "' + newState + '"');
       state = newState;
+    }
 
     // Basic bounds checking.
     if (tapeNdx < 0) {
-      log('underflow');
+      log('underflow, tape index: ' + tapeNdx);
       break;
     }
     if (tapeNdx >= tape.length) {
-      log('overflow');
+      log('overflow, tape index: ' + tapeNdx);
       break;
     }
-    logTape('          '+ tape +'\n');
+    logTape('  after operation it is:\n    '+ tape +'\n');
   }
-  log('done');
-  logTape('\nFINAL: ' + tape);
-  return false;
+  log('stop');
+  logTape('\nFINAL TAPE:\n  ' + tape);
+
+  hasRun = true;
+}
+
+// Helpers.
+function elt(id) {
+  return document.getElementById(id);
+}
+
+function log(msg) {
+  elt('log').innerHTML += msg + '\n';
+}
+
+function logTape(msg) {
+  elt('tape').innerHTML += msg + '\n';
 }
