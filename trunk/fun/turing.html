@@ -5,15 +5,14 @@
   <body onload="init()">
     <h1>A Turing Machine in Javascript, programmed with JSON</h1>
 
-    <form onsubmit="run('program')" action="#">
-      <table style="height: 300px">
-        <tr>
-          <th>Turing JSON Program</th>
-          <th>Turing Machine Tape Log</th>
-          <th>Turing Machine Debug Log</th>
-        </tr>
-        <tr>
-          <td valign="top">
+    <table style="height: 300px">
+      <tr>
+        <th>Turing JSON Program</th>
+        <th>Turing Machine Tape Log</th>
+        <th>Turing Machine Debug Log</th>
+      </tr>
+      <tr>
+        <td valign="top">
 <textarea id="program" cols="80" rows="20">({
   start:
     {read:
@@ -28,15 +27,14 @@
   cow: {write: 1, newState: 'end'},
   end: 'stop'
 })</textarea>
-          </td>
-          <td width="30%" valign="top">
-            <pre id="tape" style="height: 100%; overflow-y: scroll; white-space: pre"></pre>
-          </td>
-          <td valign="top" id="log" style="overflow-y: scroll; white-space: pre"></td>
-        </tr>
-      </table>
-      <input type="Submit" value="Run"/>
-    </form>
+        </td>
+        <td width="30%" valign="top">
+          <pre id="tape" style="height: 100%; overflow-y: scroll; white-space: pre"></pre>
+        </td>
+        <td valign="top" id="log" style="overflow-y: scroll; white-space: pre"></td>
+      </tr>
+    </table>
+    <input type="Submit" value="Run" onclick="run('program')"/>
 
     <p>The program above is a transliteration of an example task a
     classical
@@ -80,10 +78,10 @@ to state <b>end</b>; in state <b>end</b> stop"</pre>
     by computers.</p>
 
     <p>After many generations and manifestations, a langauge known
-    as <a href="http://en.wikipedia.org/wiki/Javascript">JavaScript</a>
+    as <a href="http://en.wikipedia.org/wiki/JavaScript">JavaScript</a>
     (named for a type of programming called "scripting", and for an
     influential predecessor
-    language <a href="http://en.wikipedia.org/wiki/Java">Java</a>),
+    language <a href="http://en.wikipedia.org/wiki/Java_(programming_language)">Java</a>),
     and an
     associated <a href="http://en.wikipedia.org/wiki/JSON">JavaScript
     Object Notation</a> (JSON), have emerged as popular programming
