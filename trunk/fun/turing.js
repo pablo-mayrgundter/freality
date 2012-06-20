@@ -4,16 +4,18 @@
  * @author Pablo Mayrgundter <pablo.mayrgundter@gmail.com>
  */
 
-var state = 'start';
-var tapeNdx = 0;
+var state;
+var tapeNdx;
 var instCount;
+var hasRun;
 var tape = new Array(10);
-var hasRun = false;
 
 function init() {
 
-  instCount = 0;
+  state = 'start';
   tapeNdx = 0;
+  instCount = 0;
+  hasRun = false;
 
   // Set tape vals to 0.
   for (var i = 0; i < tape.length; i++) {
@@ -24,8 +26,6 @@ function init() {
   elt('tape').innerHTML = '';
 
   logTape('INITIAL TAPE:\n  '+ tape +'\n');
-
-  hasRun = false;
 }
 
 function run(programId) {
