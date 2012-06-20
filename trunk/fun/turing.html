@@ -1,0 +1,100 @@
+<html>
+  <head>
+    <script src="turing.js"></script>
+  </head>
+  <body>
+    <h1>A Turing Machine in Javascript, programmed with JSON</h1>
+
+    <p>The following English description is an example task a
+    classical
+    <em>human</em> computer could follow to perform a precise
+    computation, formalized and styled according
+    to <a href="http://en.wikipedia.org/wiki/Alan_Turing">Alan
+    Turing</a>'s method:</p>
+
+<pre>"You are given a long paper/ticker tape with boxes drawn on it,
+and within each one you can read or write symbols.  All boxes start
+with 0 (zero) written in them.  To perform a computation, you maintain
+a state of interaction with the tape in your head, starting with
+the <b>start</b> state and then follow a "program" of instructions
+that exactly specifies the calculation.  Like this:
+
+In state <b>start</b>, if the symbol seen is 0, write a 1; now if the
+symbol seen is 1, shift to the right, and change into
+state <b>daisy</b>; in state <b>daisy</b>, if the symbol seen is 0,
+write a 1 and change to state <b>cow</b>; if the symbol seen is a 1,
+change to state <b>end</b>; in state <b>cow</b>, write a 1 and change
+to state <b>end</b>; in state <b>end</b> stop"</pre>
+    </p>
+
+    <p>While this may seem obtuse, Turing supposed that by breaking
+    down computations, even complex ones, into the simplest of parts,
+    it might be possible to build a machine out of these parts, that
+    could automatically run the program of instructions to carry out
+    the computation.  He hypothesized a particular form for
+    this <a href="http://en.wikipedia.org/wiki/Turing_machine">"automatic
+    machine"</a>, with a ticker tape and a computer interacting with
+    it, as described above.  This idealized computer turned out to be
+    able to represet a stunning variety of computational and
+    algorithmic processes, and so became the model for successive
+    attempts to actually build one.</p>
+
+    <p>As the descendent computers and computer systems have
+    developed, a wide variety of "languages" have also been developed
+    to tranliterate the human program specification into a symbolic
+    form with which the computer can be configured.</p>
+
+    <p>A langauge known
+    as <a href="http://en.wikipedia.org/wiki/Javascript">JavaScript</a>
+    (named for a type of programming called "scripting", and for an
+    influential predecessor
+    language <a href="http://en.wikipedia.org/wiki/Java">Java</a>),
+    and an
+    associated <a href="http://en.wikipedia.org/wiki/JSON">JavaScript
+    Object Notation</a> (JSON), have emerged on the communications
+    system known as the World Wide Web.</p>
+
+    <p>And so, as a celebration of Alan Turing's 100th birthday and in
+    recognition of one of the greatest outcomes of his work, here is a
+    JSON programming interface to a Turing Machine written in
+    JavaScript.  The program above is transliterated to get you
+    started, but you can edit the program as you want to manipulate
+    the tape as you want and, in principle, construct a program that
+    is equivalent to any software running in the world if the tape is
+    long enough, and your patience boundless.</p>
+
+    <form onsubmit="run('program')" action="#">
+      <table>
+        <tr>
+          <th>JSON Program</th><th>Machine Tape (Log)</th>
+        </tr>
+        <tr>
+          <td>
+<textarea id="program" cols="80" rows="20">({
+  start:
+    {read:
+      {0: {write: 1},
+       1: {shift: 'right', newState: 'daisy'}}
+    },
+  daisy:
+    {read:
+      {0: {write: 1, newState: 'cow'},
+       1: {newState: 2}}
+    },
+  cow: {write: 1, newState: 'end'},
+  end: 'stop'
+})</textarea>
+          </td>
+          <td width="50%">
+<pre id="tape">
+</pre>
+          </td>
+        </tr>
+      </table>
+      <input type="Submit" value="Run"/>
+    </form>
+
+    <p>Debug Log:
+      <pre id="log"></pre></p>
+  </body>
+</html>
