@@ -24,6 +24,8 @@ function init() {
   elt('tape').innerHTML = '';
 
   logTape('INITIAL TAPE:\n  '+ tape +'\n');
+
+  hasRun = false;
 }
 
 function run(programId) {
