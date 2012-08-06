@@ -24,15 +24,15 @@ import util.Bits;
  * 
  * 1*2^0 + 1*2^1 + 1*2^2 + 1*2^3 + 0*2^4 + 0*2^5 + 0*2^6 + 1*2^7 = 158
  *
- * @author Pablo Mayrgundter
+ * @author Pablo Mayrgundter <pablo.mayrgundter@gmail.com>
  */
-public final class Wolfram {
+public class Wolfram {
 
   /**
    * Applies the given rule to the input buffer, setting the result
    * in the destination buffer.
    */
-  public static void apply (final BitBuffer src, final BitBuffer dst, final byte rule) {
+  public static void apply(final BitBuffer src, final BitBuffer dst, final byte rule) {
     int l, c, r, from = src.position();
     for (int i = from, to = src.limit() - 1; i <= to; i++) {
       l = src.get(i == from ? to : (i - 1)) * 4;
@@ -42,9 +42,9 @@ public final class Wolfram {
     }
   }
 
-  public static void apply (final Bits src, final int srcNdx,
-                            final Bits dst, final int dstNdx,
-                            final byte rule) {
+  public static void apply(final Bits src, final int srcNdx,
+                           final Bits dst, final int dstNdx,
+                           final byte rule) {
     final int l = srcNdx == 0 ? src.get(src.getLength() - 1) : src.get(srcNdx - 1);
     final int c = src.get(srcNdx);
     final int r = srcNdx == src.getLength() - 1 ? src.get(0) : src.get(srcNdx + 1);
