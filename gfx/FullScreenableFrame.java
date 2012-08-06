@@ -1,5 +1,8 @@
 package gfx;
 
+import util.Flags;
+
+import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
@@ -7,18 +10,27 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsConfiguration;
 import javax.swing.JFrame;
 
-@SuppressWarnings(value="serial")
+/**
+ * Utility class for creating a full-screen frame.
+ *
+ * @author Pablo Mayrgundter
+ */
 public class FullScreenableFrame extends JFrame {
 
-  static final int WIDTH = Integer.parseInt(System.getProperty("width", "400"));
-  static final int HEIGHT = Integer.parseInt(System.getProperty("height", "400"));
-  static final Boolean FULLSCREEN = Boolean.getBoolean("fs");
+  static Flags flags = new Flags(FullScreenableFrame.class);
+  static final int WIDTH = flags.get("width", "w", 400);
+  static final int HEIGHT = flags.get("height", "h", 400);
+  static final boolean FULL_SCREEN = flags.get("fullScreen", "fs", false);
 
   protected int width, height;
   Graphics2D drawGraphics;
 
   public FullScreenableFrame() {
-    this(WIDTH, HEIGHT, FULLSCREEN);
+    this(WIDTH, HEIGHT);
+  }
+
+  public FullScreenableFrame(final int width, final int height) {
+    this(width, height, FULL_SCREEN);
   }
 
   public FullScreenableFrame(final int width, final int height, final boolean fullscreen) {
@@ -49,19 +61,27 @@ public class FullScreenableFrame extends JFrame {
   }
 
   public Graphics2D getDrawGraphics() {
-    return getDrawGraphics(Color.BLACK);
+    return getDrawGraphics(null);
+  }
+
+  public Graphics2D getDrawGraphics(final Color bgColor) {
+    return getDrawGraphics(bgColor, true);
   }
 
   @SuppressWarnings(value="unchecked")
-  public Graphics2D getDrawGraphics(final Color bgColor) {
+  public Graphics2D getDrawGraphics(final Color bgColor, boolean antialias) {
     if (drawGraphics == null) {
       drawGraphics = (Graphics2D) getContentPane().getGraphics();
-      final java.util.Map hints = new java.util.HashMap();
-      hints.put(java.awt.RenderingHints.KEY_ANTIALIASING,
-                java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
-      drawGraphics.setRenderingHints(hints);
-      drawGraphics.setColor(bgColor);
-      drawGraphics.fillRect(0, 0, width, height);
+      if (antialias) {
+        final java.util.Map hints = new java.util.HashMap();
+        hints.put(java.awt.RenderingHints.KEY_ANTIALIASING,
+                  java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
+        drawGraphics.setRenderingHints(hints);
+      }
+      if (bgColor != null) {
+        drawGraphics.setColor(bgColor);
+        drawGraphics.fillRect(0, 0, width, height);
+      }
     }
     return drawGraphics;
   }
@@ -71,4 +91,11 @@ public class FullScreenableFrame extends JFrame {
                          this.getClass().getName(),
                          System.identityHashCode(this), width, height);
   }
+
+
+  /**
+   * Dummy value to quiet serialization checks.  This class should
+   * not be serialized.
+   */
+  private static final long serialVersionUID = 1L;
 }
