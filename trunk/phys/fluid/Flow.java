@@ -1,10 +1,26 @@
 package phys.fluid;
 
+import gfx.FullScreenableFrame;
+import gfx.TextGraphics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Polygon;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import phys.Space;
 import phys.Space2D;
+import phys.Force;
+import util.Flags;
+
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import javax.swing.JFrame;
 
 /**
  * Wolfram models a fluid as particle interactions on a hexagonal
- * field:
+ * field (p. 378):
  *
  * \ /
  * -x-
@@ -13,118 +29,238 @@ import phys.Space2D;
  * Each cell has incident forces to it at the beginning of each step.
  * The evolution rule specifies how the cell transfers these forces
  * outwards by the end of the step.  Wolfram seems to pick a
- * particular rule which transfers the foces most symmetrically for
+ * particular rule which transfers the forces most symmetrically for
  * this configuration, and assumes that the count of incident fields
  * is half, or 3/6.
  *
- * To start simply, I will use a grid:
+ * To start simply, I will use a 2-dimensional square grid:
  *
  *  |
  * -x-
  *  |
  *
- * the possible states are encoded as the OR of 4 possible operations,
- * UP(1), RIGHT(2), DOWN(4), LEFT(8):
+ * where each node interacts with 4 neighbors.  At a given step, each
+ * node has 4 possible states of incoming force per dimension, for a
+ * total of 8 incoming states, e.g. for left-right for is either not
+ * coming in or coming in from the left only, from the right only, or
+ * from both left and right.  Similarly for the up-down dimension.
+ * This set of incoming states is encoded as the disjuntion (OR) of
+ * those force vectors.  To progress to the next step, absent force is
+ * left as absent force, incoming left is propagated to the right, and
+ * similarly right to the left, and in the case of both left and right
+ * incoming at once, the force is reflected (or doubly passed
+ * through).  The full set of states for left-right, before and after,
+ * is represented in this table:
  *
- *  3   5   6   9   10  12
- *  ^   ^   v   ^   v   v
- * >x> >x< >x> <x< <x> <x<
- *  ^   v   v   ^   ^   v
+ * <pre>Force propagation state transition rules, with encodings for
+ * left-right (similarly for up-down):
  *
- * e.g. state 10 means force going outwards inte the RIGHT | LEFT
- * directions, and then implicitly, force coming inwards from UP and
- * DOWN.  A cell's state is transformed by applying the incident
- * forces of its neighbors.  There should be 2 incoming force vectors
- * and 2 outgoing for each cell at each step.  However, I have not yet
- * figured out how to handle the case of a solid within the flow.. I
- * currently model it as having now outgoing force vectors, but this
- * presents the problem that cells next to the solid may not have the
- * 2:2 in/out ratio guaranteed in the other cells.
+ *  IN  | OUT | Code
+ *  ----------------
+ *  -x- | -x- |   00   None
+ *  -x< | <x- |   01   Left
+ *  >x- | -x> |   10   Right
+ *  >x< | <x> |   11   Left OR Right
+ * </pre>
  *
- * @author Pablo Mayrgundter
+ * Solids within the flow are represented with an additional ...
+ *
+ * @author Pablo Mayrgundter <pablo.mayrgundter@gmail.com>
  */
-class Flow {
+final class Flow {
 
-  /**
-   * Encode states as a 4-bit number.  Mask each bit with following
-   * masks to determine if it is inwards (0) or outwards (1).
-   *
-   * Masks:
-   * 0001 1  |
-   * 0010 2  -
-   * 0100 4  |
-   * 1000 8  -
-   *
-   * States:
-   * 0011 3  /
-   * 0101 5  -
-   * 0110 6  \
-   * 1001 9  \
-   * 1010 10 |
-   * 1100 12 /
-   */
-  static final int UP = 1, RIGHT = 2, DOWN = 4, LEFT = 8;
-  static final int [] STATES = {3, 5, 6, 9, 10, 12};
-  static final String [] ART = new String[13];
-  static {
-    ART[0] = "#";
-    ART[3] = "/";
-    ART[5] = "-";
-    ART[6] = "\\";
-    ART[9] = "\\";
-    ART[10] = "|";
-    ART[12] = "/";
+  static Flags flags = new Flags(Flow.class);
+  static final boolean SCREEN_GFX = flags.get("gfx", "gfx", true);
+  static final int WIDTH = flags.get("width", "w", 80);
+  static final int NUM = flags.get("num", 100);
+  static final int SLEEP = flags.get("sleep", 100);
+  static final int HEX_SIZE = flags.get("hexSize", 5);
+  static final int COMPARE_STEP = flags.get("compare", -1);
+
+  final int radius, gridScale;
+  Space2D space, next;
+  Force force;
+  FullScreenableFrame frame = null;
+  Graphics2D graphics;
+  Color [] palette;
+  HexGrid hexGrid;
+
+  Flow(int num, int width) {
+    this(num, width, HEX_SIZE);
   }
 
-  final int mWidth, mHeight;
-  Space2D mCur, mNext;
+  /**
+   * @param gridScale of hexagons, for use with hex grid.
+   */
+  Flow(int num, int width, int gridScale) {
 
-  Flow (final int width, final int height) {
-    mWidth = width;
-    mHeight = height;
-    mCur = new Space2D(width, height);
-    final java.util.Random r = new java.util.Random();
-    for (int y = 0; y < mHeight; y++)
-      for (int x = 0; x < mWidth; x++) {
-        if (x == mWidth / 2 && y > 5 && y < mHeight - 5) {
-          mCur.set(x, y, 0);
-          continue;
-        }
-        //        mCur.set(x, y, STATES[r.nextInt(STATES.length)]);
-        mCur.set(x, y, 3);
+    this.gridScale = gridScale;
+
+    // Setup gfx first to get possible full-screen dimensions.
+    if (SCREEN_GFX) {
+      palette = new Color[64];
+      for (int i = 0; i < 64; i++) {
+        float val = (float)i / 63f;
+        palette[i] = new Color(val, val, val);
       }
-    mNext = new Space2D(width, height);
+      radius = width;
+      hexGrid = new HexGrid(radius, radius, gridScale);
+      frame = new FullScreenableFrame(hexGrid.img.getWidth(),
+                                      hexGrid.img.getHeight());
+      graphics = frame.getDrawGraphics();
+    } else {
+      palette = new Color[7];
+      palette[0] = Color.BLACK;
+      palette[1] = Color.BLUE;
+      palette[2] = Color.GREEN;
+      palette[3] = Color.YELLOW;
+      palette[4] = Color.RED;
+      palette[5] = Color.MAGENTA;
+      palette[6] = Color.WHITE;
+      graphics = new TextGraphics(width, width);
+      radius = width;
+    }
+
+    space = new Space2D(radius);
+    next = new Space2D(radius);
+    force = new HexForce();
+
+    final java.util.Random r = new java.util.Random();
+    if (NUM == -1) {
+      for (int y = 0; y < radius; y++) {
+        for (int x = 0; x < radius; x++) {
+          space.set(r.nextInt(64), x, y);
+        }
+      }
+    } else if (NUM > 0) {
+      for (int i = 0; i < NUM; i++) {
+        space.set(r.nextInt(64), r.nextInt(radius), r.nextInt(radius));
+      }
+    }
   }
 
   public void run () {
-    System.out.print(gfx.vt.VT100.CURSOR_HOME);
-    for (int y = 1; y < mHeight - 1; y++) {
-      for (int x = 1; x < mWidth - 1; x++) {
-        final int curForce = mCur.pos(x, y);
-        System.out.print(ART[curForce] == null ? curForce : ART[curForce]);
-        if (curForce == 0)
-          continue;
-        int force = 0;
-        force += mCur.up() & DOWN;
-        force += mCur.right() & LEFT;
-        force += mCur.down() & UP;
-        force += mCur.left() & RIGHT;
-        mNext.set(x, y, force);
+    graphics.setBackground(Color.BLACK);
+    int wallLeft = (int)((float) radius * 0.8f);
+    int wallLo = (int)((float) radius * 0.25f);
+    int wallHi = (int)((float) radius * 0.75f);
+    int forceRight =
+      HexForce.R |
+      HexForce.UR |
+      HexForce.DR,
+      forceWall =
+      HexForce.L |
+      HexForce.UL |
+      HexForce.DL;
+
+    int stepCount = 0;
+    while (true) {
+      for (int y = 0; y < radius; y++) {
+        for (int x = 0; x < radius; x++) {
+          final int curForce = space.get(x, y);
+          if (SCREEN_GFX) {
+            hexGrid.next(palette[curForce]);
+          } else {
+            int popCount = util.Bits.popCount(curForce);
+            graphics.setBackground(palette[popCount]);
+            graphics.drawLine(x, y, x + 1, y + 1);
+          }
+        }
+        if (SCREEN_GFX) {
+          hexGrid.line();
+        }
       }
-      System.out.println();
+      if (SCREEN_GFX) {
+        hexGrid.reset();
+      }
+
+      force.apply(space, next);
+
+      for (int y = 0; y < radius; y++) {
+        // Continuous left-to-right feed from the left side.
+        next.set(forceRight, 0, y);
+
+        // wall should bounce back.
+        if (y > wallLo && y < wallHi) {
+          /*
+          for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+              if (i == 0 || ) {
+                continue;
+              }
+            }
+          }
+          */
+          next.set(forceWall, wallLeft, y);
+        }
+      }
+
+      if (stepCount == COMPARE_STEP) {
+        Space other = (Space) load("flow-" + stepCount + ".obj");
+        if (other != null) {
+          if (!space.equals(other)) {
+            System.out.println(space.diff(other));
+          } else {
+            System.out.println("Systems the same at step " + stepCount);
+          }
+        } else {
+          save(this.space, "flow-" + stepCount + ".obj");
+          System.out.println("Saved system at step " + stepCount);
+        }
+      }
+
+      Space2D tmp = space;
+      space = next;
+      next = tmp;
+
+      if (SCREEN_GFX) {
+        graphics.drawImage(hexGrid.img, 0, 0, frame);
+      } else {
+        graphics.setBackground(Color.WHITE);
+      }
+      // System.out.println(force);
+      try { Thread.sleep(SLEEP); } catch (InterruptedException e) { break; }
+
+      stepCount++;
     }
-    Space2D tmp = mCur;
-    mCur = mNext;
-    mNext = tmp;
+  }
+
+  Object load(String filename) {
+    ObjectInputStream is = null;
+    try {
+      return (is = new ObjectInputStream(new FileInputStream(filename))).readObject();
+    } catch (Exception e) {
+      return null;
+    } finally {
+      if (is != null) {
+        try {
+          is.close();
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
+      }
+    }
+  }
+
+  void save(Object o, String filename) {
+    ObjectOutputStream os = null;
+    try {
+      (os = new ObjectOutputStream(new FileOutputStream(filename))).writeObject(space);
+    } catch (Exception e) {
+    throw new RuntimeException(e);
+    } finally {
+      if (os != null) {
+        try {
+          os.close();
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
+      }
+    }
   }
 
   public static void main (final String [] args) {
-    final int width = Integer.parseInt(System.getProperty("width", "80"));
-    final int height = Integer.parseInt(System.getProperty("height", "40"));
-    final Flow f = new Flow(width, height);
-    while (true) {
-      f.run();
-      //      try { Thread.sleep(500); } catch (InterruptedException e) { break; }
-    }
+    final Flow f = new Flow(NUM, WIDTH);
+    f.run();
   }
 }
