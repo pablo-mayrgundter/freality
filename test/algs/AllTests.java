@@ -4,9 +4,9 @@ import junit.framework.TestSuite;
 
 /**
  * This is a convenient target for the build system to invoke all of
- * the unit tests.
+ * the unit tests for this package and its sub-packages.
  *
- * @author Pablo Mayrgundter
+ * @author Pablo Mayrgundter <pablo.mayrgundter@gmail.com>
  */
 public class AllTests {
 
