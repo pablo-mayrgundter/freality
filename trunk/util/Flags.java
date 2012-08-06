@@ -12,15 +12,16 @@ package util;
  *   String middle = Flags.getOpt("middle", null);
  *   if (!Flags.check("Must specify first and last name.")) { return; }
  *
+ * NOTE: See static init for shorthand definitions.
+ *
  * @author Pablo Mayrgundter
- * @version Sat Aug 13 18:46:32 EDT 2011
  */
 public class Flags {
 
   static boolean flagsOk = true;
 
   public static void clear() {
-    flagsOk =true;
+    flagsOk = true;
   }
 
   public static boolean check(String msg) {
@@ -29,6 +30,15 @@ public class Flags {
     }
     System.err.println(msg);
     return false;
+  }
+
+  static String propName(Class clazz, String name) {
+    return clazz.getName() + "." + name;
+  }
+
+  // Boolean.
+  public static boolean bool(Class clazz, String name) {
+    return Boolean.getBoolean(propName(clazz, name));
   }
 
   // String flags.
@@ -71,5 +81,41 @@ public class Flags {
       return Boolean.parseBoolean(strVal);
     }
     return defaultVal;
+  }
+
+  Class clazz;
+
+  public Flags(Class clazz) {
+    this.clazz = clazz;
+  }
+
+  public <T> T get(String propName, T defVal) {
+    return get(propName, null, defVal);
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T> T get(String propName, String abbrevPropName, T defVal) {
+    String qName = clazz.getName() + "." + propName;
+    String val = System.getProperty(qName);
+
+    if (val == null && abbrevPropName != null) {
+      val = System.getProperty(abbrevPropName);
+    }
+
+    if (val == null) {
+      val = defVal + "";
+    }
+
+    System.out.println(qName + "=" + val);
+
+    if (val == null)
+      return defVal;
+    else if (defVal instanceof Integer)
+      return (T) new Integer(val);
+    else if (defVal instanceof Boolean)
+      return (T) new Boolean(val);
+    //      if (!(val instanceof defVal))
+    //        throw new IllegalArgumentException("Illegal value for flag: " + val);
+    return (T) val;
   }
 }
