@@ -33,7 +33,7 @@ public final class VT100 {
     public static final String FG_BLUE    = "\033[0;34m";
     public static final String FG_MAGENTA = "\033[0;35m";
     public static final String FG_CYAN    = "\033[0;36m";
-    public static final String FG_WHITE   = "\033[0;37m";
+    public static final String FG_GRAY    = "\033[0;37m";
 
     public static final String BG_BLACK   = "\033[0;40m";
     public static final String BG_RED     = "\033[0;41m";
@@ -42,7 +42,8 @@ public final class VT100 {
     public static final String BG_BLUE    = "\033[0;44m";
     public static final String BG_MAGENTA = "\033[0;45m";
     public static final String BG_CYAN    = "\033[0;46m";
-    public static final String BG_WHITE   = "\033[0;47m";
+    public static final String BG_GRAY    = "\033[0;47m";
+    public static final String BG_WHITE   = "\033[0;48m";
 
     public static String cursorUp(final int count) {
         return "\033["+count+"A";
