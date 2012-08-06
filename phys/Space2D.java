@@ -1,46 +1,34 @@
 package phys;
 
-public class Space2D {
+/**
+ * A square grid of integer values with convenience methods for
+ * accessing the value of neighbors above, below, left and to the
+ * right.
+ *
+ * TODO(pablo): generalize the convenience methods and push them up
+ * into Space.
+ *
+ * @author Pablo Mayrgundter <pablo.mayrgundter@gmail.com>
+ */
+public class Space2D extends Space {
 
-  final int [] mSpace;
-
-  int mWidth, mHeight, mPos;
-
-  public Space2D (final int width, final int height) {
-    mSpace = new int[width * height];
-    mWidth = width;
-    mHeight = height;
+  public Space2D(final int width) {
+    super(2, width);
   }
 
-  public int pos (final int x, final int y) {
-    return mSpace[mPos = y * mWidth + x];
+  public int above() {
+    return get(pos[0], pos[1] + 1);
   }
 
-  public int up () {
-    return mSpace[mPos - mWidth];
+  public int below() {
+    return get(pos[0], pos[1] - 1);
   }
 
-  public int right () {
-    return mSpace[mPos + 1];
+  public int right() {
+    return get(pos[0] + 1, pos[1]);
   }
 
-  public int down () {
-    return mSpace[mPos + mWidth];
-  }
-
-  public int left () {
-    return mSpace[mPos - 1];
-  }
-
-  public int get () {
-    return mSpace[mPos];
-  }
-
-  public int get (final int x, final int y) {
-    return mSpace[y * mWidth + x];
-  }
-
-  public void set (final int x, final int y, final int state) {
-    mSpace[y * mWidth + x] = state;
+  public int left() {
+    return get(pos[0] - 1, pos[1]);
   }
 }
