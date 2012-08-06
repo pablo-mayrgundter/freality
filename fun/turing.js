@@ -5,7 +5,13 @@
  */
 
 var state;
-var tapeNdx;
+/**
+ * Javascript conveniently allows for overflow and underflow of
+ * arrays, so while an initial size of 10 is allocated, min/max bounds
+ * are recorded as the tape is visited, and the invariant of initial
+ * zero values is always maintained.
+ */
+var tapeNdx, minIndex, maxIndex;
 var instCount;
 var hasRun;
 var tape = new Array(10);
@@ -13,19 +19,20 @@ var tape = new Array(10);
 function init() {
 
   state = 'start';
-  tapeNdx = 0;
+  minIndex = tapeNdx = 0;
+  maxIndex = 10;
   instCount = 0;
   hasRun = false;
 
   // Set tape vals to 0.
-  for (var i = 0; i < tape.length; i++) {
+  for (var i = 0; i < maxIndex; i++) {
     tape[i] = 0;
   }
 
   elt('log').innerHTML = '';
   elt('tape').innerHTML = '';
 
-  logTape('INITIAL TAPE:\n  '+ tape +'\n');
+  logTape('INITIAL TAPE:\n  ...,'+ tape +',...\n');
 }
 
 function run(programId) {
@@ -90,9 +97,17 @@ function run(programId) {
       if (shift == 'left') {
         tapeNdx--;
         log('moving left, new index: ' + tapeNdx);
+        if (tapeNdx < minIndex) {
+          tap[tapeNdx] = 0;
+          minIndex = tapeNdx;
+        }
       } else if (shift == 'right') {
         tapeNdx++;
         log('moving right, new index: ' + tapeNdx);
+        if (tapeNdx > maxIndex) {
+          tap[tapeNdx] = 0;
+          maxIndex = tapeNdx;
+        }
       }
     }
 
@@ -101,19 +116,10 @@ function run(programId) {
       state = newState;
     }
 
-    // Basic bounds checking.
-    if (tapeNdx < 0) {
-      log('underflow, tape index: ' + tapeNdx);
-      break;
-    }
-    if (tapeNdx >= tape.length) {
-      log('overflow, tape index: ' + tapeNdx);
-      break;
-    }
     logTape('  after operation it is:\n    '+ tape +'\n');
   }
   log('stop');
-  logTape('\nFINAL TAPE:\n  ' + tape);
+  logTape('\nFINAL TAPE:\n  ...,' + tape +',...');
 
   hasRun = true;
 }
