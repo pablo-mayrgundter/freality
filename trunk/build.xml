@@ -53,6 +53,19 @@
     </junit>
   </target>
 
+  <!-- TODO(pablo): move this to a sub-package include. -->
+  <target name="Notes.jar" depends="test">
+    <jar destfile="build/Notes.jar" basedir="${classes}" includes="os/**">
+      <manifest>
+        <attribute name="Main-Class" value="os.desktop.Notes"/>
+        <attribute name="Built-By" value="${user.name}"/>
+        <attribute name="Implementation-Vendor" value="code.google.com/p/freality"/>
+        <attribute name="Implementation-Title" value="Notes"/>
+        <attribute name="Implementation-Version" value="0.1"/>
+      </manifest>
+    </jar>
+  </target>
+
   <target name="jar" depends="test">
     <jar destfile="build/${project}.jar" basedir="${classes}" includes="${project}/**">
       <manifest>
