@@ -3,24 +3,17 @@ package phys;
 import java.awt.Graphics2D;
 import gfx.Display;
 import gfx.Display2D;
-import gfx.Display3D;
-import gfx.Graphics3D;
 
 final class GravSim implements Runnable, Display.Renderer {
 
   static final int BLOBS = Integer.parseInt(System.getProperty("num", "100"));
-  static final boolean THREE = Boolean.getBoolean("three");
 
   final Display display;
   final ColoredBlob [] blobs;
   final int width, height, depth;
 
   GravSim() {
-    if (THREE) {
-      this.display = new Display3D(null, this);
-    } else {
-      this.display = new Display2D(this);
-    }
+    this.display = new Display2D(this);
     this.width = display.getFrameWidth();
     this.height = display.getFrameHeight();
     this.depth = Math.min(width,height);
@@ -45,19 +38,6 @@ final class GravSim implements Runnable, Display.Renderer {
       grid(blobs);
     if (Boolean.getBoolean("tracer"))
       blobs[blobs.length - 1].color = new java.awt.Color(0, 0, 1f);
-    if (THREE) {
-      final Graphics3D g = ((Display3D)display).getGraphics();
-      // dark blue.
-      g.setBackground(0.05f, 0.05f, 0.1f);
-      // blue light at center.
-      g.addLight(0, 0, 1, // color
-                 0, 0, 0, // center
-                 0, 1, 0); // attenuation: constant.
-      for (int i = 0; i < blobs.length; i++) {
-        final Blob b = blobs[i];
-        g.addObject(i+"", b.coord.x, b.coord.y, b.coord.z);
-      }
-    }
     display.setVisible();
   }
 
@@ -85,11 +65,9 @@ final class GravSim implements Runnable, Display.Renderer {
 
   void randomize(final ColoredBlob [] blobs) {
     float offsetX = 0, offsetY = 0, offsetZ = 0;
-    if (!THREE) {
-      offsetX = width/2f;
-      offsetY = height/2f;
-      offsetZ = depth/2f;
-    }
+    offsetX = width/2f;
+    offsetY = height/2f;
+    offsetZ = depth/2f;
     for (final ColoredBlob b : blobs) {
       b.coord.x = offsetX + width * (float)Math.random() - offsetX;
       b.coord.y = offsetY + height * (float)Math.random() - offsetY;
@@ -134,20 +112,13 @@ final class GravSim implements Runnable, Display.Renderer {
   }
 
   public void render(final Display d) {
-    if (THREE) {
-      for (int i = 0; i < blobs.length; i++) {
-        final Blob b = blobs[i];
-        ((Display3D)display).getGraphics().moveObject(i+"", b.coord.x, b.coord.y, b.coord.z);
-      }
-    } else {
-      int halfWidth = width/2;
-      int halfHeight = height/2;
-      final Graphics2D g = ((Display2D)display).getGraphics();
-      for (final ColoredBlob b : blobs) {
-        g.setColor(b.color);
-        int halfRadius = b.radius / 2;
-        g.fillOval((int)b.coord.x - halfRadius, (int)b.coord.y - halfRadius, b.radius, b.radius);
-      }
+    int halfWidth = width/2;
+    int halfHeight = height/2;
+    final Graphics2D g = ((Display2D)display).getGraphics();
+    for (final ColoredBlob b : blobs) {
+      g.setColor(b.color);
+      int halfRadius = b.radius / 2;
+      g.fillOval((int)b.coord.x - halfRadius, (int)b.coord.y - halfRadius, b.radius, b.radius);
     }
   }
 
