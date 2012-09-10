@@ -1,11 +1,11 @@
-package jos.desktop;
+package os.desktop;
 
 import java.awt.event.*;
 import java.lang.reflect.*;
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
-import jos.util.Debug;
+import os.util.Debug;
 
 public class Utils {
 
@@ -71,7 +71,7 @@ public class Utils {
 
     // May phase this out as resources become more numerous and default makes less sense.
     public static String getRsrcProp(String propertyName) {
-        final ResourceBundle resources = ResourceBundle.getBundle("jos/desktop/DefaultResources",
+        final ResourceBundle resources = ResourceBundle.getBundle("os/desktop/DefaultResources",
                                                                   Locale.getDefault());
         if (resources != null) {
             return resources.getString(propertyName);

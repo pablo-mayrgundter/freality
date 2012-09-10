@@ -1,16 +1,16 @@
-package jos.desktop;
+package os.desktop;
 
 import java.awt.event.*;
 import java.io.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
-import jos.util.Debug;
+import os.util.Debug;
 
 /**
  * A simple terminal that invokes Bash.
  *
- * To run standalone: java jos.desktop.Terminal
+ * To run standalone: java os.desktop.Terminal
  *
  * @author <a href="pablo@freality.com">Pablo Mayrgundter</a>.
  * @version $Revision: 1.1.1.1 $
