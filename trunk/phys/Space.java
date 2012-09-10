@@ -41,7 +41,9 @@ public class Space implements java.io.Serializable {
   protected int dimension;
   protected int radius;
 
-  public boolean equals(Space other) {
+  public boolean equals(Object other) {
+    if (!(other instanceof Space))
+      return false;
     final Space o = (Space) other;
     return Arrays.equals(this.space, o.space)
       && this.dimension == o.dimension

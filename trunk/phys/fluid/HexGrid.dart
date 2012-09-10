@@ -1,4 +1,4 @@
-#library('phys/fluid/HexGrid');
+#library('/phys/fluid/HexGrid');
 //#import('../../util/Flags.dart');
 
 /**
