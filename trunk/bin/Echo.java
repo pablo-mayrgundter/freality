@@ -36,6 +36,7 @@ public class Echo {
       "There is NO WARRANTY, to the extent permitted by law.\n\n" +
       "Written by Brian Fox and Chet Ramey.";
 
+  @SuppressWarnings("fallthrough")
   public static void main(String [] args) {
     boolean flags = true, newline = true, escapes = false;
     int i = 0, words = 0;
