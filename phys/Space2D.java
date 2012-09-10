@@ -10,6 +10,7 @@ package phys;
  *
  * @author Pablo Mayrgundter <pablo.mayrgundter@gmail.com>
  */
+@SuppressWarnings("serial")
 public class Space2D extends Space {
 
   public Space2D(final int width) {
