@@ -11,15 +11,15 @@ public class Space1DBinaryRing {
 
   Bits mStateSpace;
 
-  public Space1DBinaryRing (final int extent) {
+  public Space1DBinaryRing(final int extent) {
     mStateSpace = new Bits(extent);
   }
 
-  public final int get (final int ndx) {
+  public final int get(final int ndx) {
     return mStateSpace.get(ndx);
   }
 
-  public final int getExtent () {
+  public final int getExtent() {
     return mStateSpace.getLength();
   }
 }

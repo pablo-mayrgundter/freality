@@ -1,4 +1,6 @@
-package phys;
+#library('phys/Space2D');
+
+#import('Space.dart');
 
 /**
  * A square grid of integer values with convenience methods for
@@ -10,26 +12,28 @@ package phys;
  *
  * @author Pablo Mayrgundter <pablo.mayrgundter@gmail.com>
  */
-@SuppressWarnings("serial")
-public class Space2D extends Space {
+class Space2D extends Space {
 
-  public Space2D(final int width) {
-    super(2, width);
+  Space2D(width) : super(2, width) {
   }
 
-  public int above() {
+  int get2(int x, int y) {
+    return get([x, y]);
+  }
+
+  int above() {
     return get(pos[0], pos[1] + 1);
   }
 
-  public int below() {
+  int below() {
     return get(pos[0], pos[1] - 1);
   }
 
-  public int right() {
+  int right() {
     return get(pos[0] + 1, pos[1]);
   }
 
-  public int left() {
+  int left() {
     return get(pos[0] - 1, pos[1]);
   }
 }
