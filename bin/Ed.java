@@ -1,4 +1,4 @@
-package os.bin;
+package bin;
 
 import gfx.vt.VT100;
 
@@ -11,7 +11,12 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Random;
 
-class Edit implements Runnable {
+/**
+ * A simple command-line text editor.  Not really based on /bin/ed.
+ *
+ * @author Pablo Maygundter
+ */
+class Ed implements Runnable {
 
   final InputStream mIn;
   final PrintStream mOut;
@@ -23,7 +28,7 @@ class Edit implements Runnable {
   int mL;
   int mC;
 
-  Edit(final int lines, final int colums) throws UnsupportedEncodingException {
+  Ed(final int lines, final int colums) throws UnsupportedEncodingException {
     mLines = lines;
     mCols = colums;
     mIn = System.in;
@@ -114,7 +119,7 @@ class Edit implements Runnable {
     String s;
     final int lines = Integer.parseInt(System.getProperty("LINES", "38"));
     final int cols = Integer.parseInt(System.getProperty("COLUMNS", "125"));
-    final Edit e = new Edit(lines, cols);
+    final Ed e = new Ed(lines, cols);
     //        System.out.println("System.in.getClass(): " + System.in.getClass());
     //        if (true)
     //            return;
