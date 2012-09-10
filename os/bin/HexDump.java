@@ -1,4 +1,4 @@
-package jos.bin;
+package os.bin;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
-import jos.util.HexCharset;
+import os.util.HexCharset;
 
 /**
  * Simple HexDump implementation using Java Integer.toHexString()

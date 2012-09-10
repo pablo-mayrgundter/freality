@@ -1,4 +1,4 @@
-package jos.desktop.people;
+package os.desktop.people;
 
 import java.util.HashMap;
 import java.util.Map;

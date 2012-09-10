@@ -1,4 +1,4 @@
-package jos.desktop.people;
+package os.desktop.people;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -12,13 +12,13 @@ import java.util.Map;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import jos.desktop.Application;
-import jos.desktop.Desktop;
+import os.desktop.Application;
+import os.desktop.Desktop;
 
 /**
  * A simple instant messenger.  Uses the TOC network view Jaimlib.
  *
- * To run standalone: java jos.desktop.people.Groups
+ * To run standalone: java os.desktop.people.Groups
  *
  * @author <a href="mailto:pablo@freality.com">Pablo Mayrgundter</a>
  * @version $Revision: 1.1.1.1 $

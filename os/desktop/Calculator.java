@@ -1,4 +1,4 @@
-package jos.desktop;
+package os.desktop;
 
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * A simple calculator.
  *
- * To run standalone: java jos.desktop.Calculator
+ * To run standalone: java os.desktop.Calculator
  *
  * @author <a href="pablo@freality.com">Pablo Mayrgundter</a>.
  * @version $Revision: 1.1.1.1 $

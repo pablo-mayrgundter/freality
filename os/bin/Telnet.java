@@ -1,4 +1,4 @@
-package jos.bin;
+package os.bin;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,10 +1,10 @@
-package jos.net;
+package os.net;
 
 import java.net.*;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
-import jos.util.Debug;
+import os.util.Debug;
 
 /**
  * The ChatServer maintains a list of online buddies.  Here is the protocol:
@@ -33,8 +33,8 @@ import jos.util.Debug;
  */
 public class ChatServer {
 
-  public static final String DEFAULT_HOST = System.getProperty("jos.net.ChatServer.host", "freality.org");
-  public static final int DEFAULT_PORT = Integer.parseInt(System.getProperty("jos.net.ChatServer.port", "13337"));
+  public static final String DEFAULT_HOST = System.getProperty("os.net.ChatServer.host", "freality.org");
+  public static final int DEFAULT_PORT = Integer.parseInt(System.getProperty("os.net.ChatServer.port", "13337"));
 
   /** exactly "CHAT PROTOCOL VERSION 1.0" */
   public static final String PROTO_VERSION = "CHAT PROTOCOL VERSION 1.0";
