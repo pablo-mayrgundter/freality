@@ -1,3 +1,5 @@
+package slang;
+
 import java.io.*;
 import java.net.URI;
 import java.util.Arrays;
@@ -31,12 +33,12 @@ class Eval {
     }
   }
 
-  static boolean run (String className, String src)
+  static boolean run(String className, String src)
     throws IOException,
            ClassNotFoundException,
            InstantiationException,
            IllegalAccessException {
-    src = String.format("class %s implements Runnable {\n  public void run() {\n    %s\n  }\n}\n",
+    src = String.format("public class %s implements Runnable {\n  public void run() {\n    %s\n  }\n}\n",
                         className, src);
     return compile(className, src);
   }
@@ -46,30 +48,22 @@ class Eval {
            ClassNotFoundException,
            InstantiationException,
            IllegalAccessException {
-    System.err.println("Compiling: "+ className);
     Iterable<? extends JavaFileObject> compilationUnits = Arrays.asList(new JavaSourceFromString(className, src));
     JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
     DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
     boolean success = compiler.getTask(null, null, diagnostics, null, null, compilationUnits).call();
 
-    for (Diagnostic diagnostic : diagnostics.getDiagnostics())
-      System.out.format("Error on line %d in %d%n",
+    for (Diagnostic diagnostic : diagnostics.getDiagnostics()) {
+      System.err.format("Error on line %d in %d%n",
                         diagnostic.getLineNumber());
+    }
 
     if (success) {
-      System.err.println("Running...");
-      final Runnable r = (Runnable)Class.forName(className).newInstance();
+      final Runnable r = (Runnable) Class.forName(className).newInstance();
       r.run();
       return true;
     }
     System.err.println("Failed!");
     return false;
-  }
-  public static void main(String [] args)
-    throws IOException,
-           ClassNotFoundException,
-           InstantiationException,
-           IllegalAccessException {
-    Eval.run("Class", args[0]);
   }
 }
