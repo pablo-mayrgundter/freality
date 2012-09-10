@@ -1,4 +1,4 @@
-package lang;
+package slang;
 
 class ClassFactory {
 
@@ -9,43 +9,44 @@ class ClassFactory {
     this.name = name;
   }
 
-  void beginWrite(StringBuffer programBuf){
+  void beginWrite(StringBuffer programBuf) {
     classBeginStr(programBuf);
   }
 
-  void endWrite(StringBuffer programBuf){
-    if(Boolean.getBoolean("main")) 
+  void endWrite(StringBuffer programBuf) {
+    if(Boolean.getBoolean("main")) {
       mainStr(programBuf);
+    }
     classEndStr(programBuf);
   }
 
-  void write(StringBuffer programBuf){
+  void write(StringBuffer programBuf) {
     beginWrite(programBuf);
     endWrite(programBuf);
   }
 
-  void classBeginStr(StringBuffer programBuf){
+  void classBeginStr(StringBuffer programBuf) {
     programBuf.append("class ");
     programBuf.append(name);
     programBuf.append(" {\n");
   }
 
-  void classEndStr(StringBuffer programBuf){
+  void classEndStr(StringBuffer programBuf) {
     programBuf.append("}");
   }
 
-  void mainStr(StringBuffer programBuf){
-    programBuf.append("public static void main(String [] args){\n}\n");
+  void mainStr(StringBuffer programBuf) {
+    programBuf.append("public static void main(String [] args) {\n}\n");
   }
 
-  static void indent(StringBuffer buf){
+  static void indent(StringBuffer buf) {
     String tmp = buf.toString();
     tmp = tmp.replaceAll("^","  ");
     buf.setLength(0);
     buf.append(tmp);
   }
 
-  public static void main(String [] args){
+  public static void main(String [] args) {
     //    if(Boolean.get("main") == true)
     ClassFactory cf = new ClassFactory(args[0]);
     StringBuffer programBuf = new StringBuffer();
