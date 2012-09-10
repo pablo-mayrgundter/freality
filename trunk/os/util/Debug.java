@@ -1,4 +1,4 @@
-package jos.util;
+package os.util;
 
 public class Debug {
 

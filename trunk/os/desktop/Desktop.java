@@ -1,4 +1,4 @@
-package jos.desktop;
+package os.desktop;
 
 import gfx.FullScreenableFrame;
 import java.awt.event.*;
@@ -6,13 +6,13 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.plaf.metal.*;
 import javax.swing.plaf.FontUIResource;
-import jos.desktop.people.*;
-import jos.util.Debug;
+import os.desktop.people.*;
+import os.util.Debug;
 
 /**
  * A simple desktop environment.
  *
- * To run: java jos.desktop.Desktop
+ * To run: java os.desktop.Desktop
  *
  * @author <a href="pablo@freality.com">Pablo Mayrgundter</a>.
  * @version $Revision: 1.1.1.1 $
@@ -21,13 +21,15 @@ import jos.util.Debug;
 public class Desktop extends FullScreenableFrame implements ActionListener {
 
   final String BROWSER = Utils.getRsrcProp("browser.name");
-  final String MAIL = Utils.getRsrcProp("mail.name");
-  final String GROUPS = Utils.getRsrcProp("people.name");
-  final String PLAYER = Utils.getRsrcProp("player.name");
-  final String TERMINAL = Utils.getRsrcProp("term.name");
   final String CALC = Utils.getRsrcProp("calc.name");
-  final String SCREENSHOT = Utils.getRsrcProp("desktop.screenshot.name");
+  final String GROUPS = Utils.getRsrcProp("people.name");
+  final String MAIL = Utils.getRsrcProp("mail.name");
+  final String MEMORY = Utils.getRsrcProp("memory.name");
+  final String NOTES = Utils.getRsrcProp("notes.name");
+  final String PLAYER = Utils.getRsrcProp("player.name");
   final String QUIT = Utils.getRsrcProp("desktop.quit.name");
+  final String SCREENSHOT = Utils.getRsrcProp("desktop.screenshot.name");
+  final String TERMINAL = Utils.getRsrcProp("term.name");
 
   final JDesktopPane mDesktop;
 
@@ -74,18 +76,21 @@ public class Desktop extends FullScreenableFrame implements ActionListener {
     mb.add(m);
 
     addMenuItem(m, BROWSER, (int) Utils.getRsrcProp("browser.shortcutKey").charAt(0));
+    addMenuItem(m, CALC, (int) Utils.getRsrcProp("calc.shortcutKey").charAt(0));
+    addMenuItem(m, MEMORY, (int) Utils.getRsrcProp("memory.shortcutKey").charAt(0));
+    addMenuItem(m, NOTES, (int) Utils.getRsrcProp("notes.shortcutKey").charAt(0));
+    addMenuItem(m, QUIT, (int) Utils.getRsrcProp("desktop.quit.shortcutKey").charAt(0));
+    addMenuItem(m, SCREENSHOT, (int) Utils.getRsrcProp("desktop.screenshot.shortcutKey").charAt(0));
+    addMenuItem(m, TERMINAL, (int) Utils.getRsrcProp("term.shortcutKey").charAt(0));
+
     //    addMenuItem(m, MAIL, (int) Utils.getRsrcProp("mail.shortcutKey").charAt(0));
     //    addMenuItem(m, GROUPS, (int) Utils.getRsrcProp("people.shortcutKey").charAt(0));
     //    try {
-    //      Class.forName("jos.desktop.Chat"); // no-op to load the class and so connect to chat network.
+    //      Class.forName("os.desktop.Chat"); // no-op to load the class and so connect to chat network.
     //    } catch (Exception e) {
     //      assert Debug.trace(e);
     //    }
     //    addMenuItem(m, PLAYER, (int) Utils.getRsrcProp("player.shortcutKey").charAt(0));
-    addMenuItem(m, TERMINAL, (int) Utils.getRsrcProp("term.shortcutKey").charAt(0));
-    addMenuItem(m, CALC, (int) Utils.getRsrcProp("calc.shortcutKey").charAt(0));
-    addMenuItem(m, SCREENSHOT, (int) Utils.getRsrcProp("desktop.screenshot.shortcutKey").charAt(0));
-    addMenuItem(m, QUIT, (int) Utils.getRsrcProp("desktop.quit.shortcutKey").charAt(0));
 
     final Box b = new Box(BoxLayout.X_AXIS);
     final Clock clock = new Clock();
@@ -115,33 +120,25 @@ public class Desktop extends FullScreenableFrame implements ActionListener {
    * applications.
    */
   Application launchApp(String appName) {
-    Application app = null;
-    if (appName.equals(BROWSER)) {
-      addApp(app = new Browser());
-      //    } else if (appName.equals(MAIL)) {
-      //      addApp(app = new Mail());
-      //    } else if (appName.equals(PLAYER)) {
-      //      addApp(app = new MediaPlayer());
-      //    } else if (appName.equals(GROUPS)) {
-      //      addApp(app = new Groups());
-    } else if (appName.equals(TERMINAL)) {
-      addApp(app = new Terminal());
-    } else if (appName.equals(CALC)) {
-      addApp(app = new Calculator());
-    } else if (appName.equals(SCREENSHOT)) {
-      screenshot();
-    } else if (appName.equals(QUIT)) {
-      dispose();
+    appName = "os.desktop." + appName;
+    try {
+      return addApp((Application) Class.forName(appName).newInstance());
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new IllegalArgumentException("Could not start application: "
+                                         + appName + " (" + e + ")");
     }
-    return app;
   }
 
-  public void addApp(JInternalFrame f) {
-    f.setVisible(true);
-    mDesktop.add(f);
+  public Application addApp(Application app) {
+    app.setVisible(true);
+    mDesktop.add(app);
     try {
-      f.setSelected(true);
-    } catch(java.beans.PropertyVetoException e) { }
+      app.setSelected(true);
+    } catch(java.beans.PropertyVetoException e) {
+      // Ignore
+    }
+    return app;
   }
 
   void screenshot() {

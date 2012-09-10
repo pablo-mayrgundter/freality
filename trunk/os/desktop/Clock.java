@@ -1,4 +1,4 @@
-package jos.desktop;
+package os.desktop;
 
 import javax.swing.JLabel;
 

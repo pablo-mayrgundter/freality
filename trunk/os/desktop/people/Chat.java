@@ -1,4 +1,4 @@
-package jos.desktop.people;
+package os.desktop.people;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -7,10 +7,10 @@ import java.net.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
-import jos.desktop.Application;
-import jos.desktop.Desktop;
-import jos.desktop.Utils;
-import jos.util.Debug;
+import os.desktop.Application;
+import os.desktop.Desktop;
+import os.desktop.Utils;
+import os.util.Debug;
 
 /**
  * A chat with a person.

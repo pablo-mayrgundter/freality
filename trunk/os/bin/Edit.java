@@ -1,4 +1,4 @@
-package jos.bin;
+package os.bin;
 
 import gfx.vt.VT100;
 

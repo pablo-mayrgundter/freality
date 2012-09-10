@@ -1,4 +1,4 @@
-package jos.desktop;
+package os.desktop;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -12,12 +12,12 @@ import javax.imageio.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.text.html.*;
-import jos.util.Debug;
+import os.util.Debug;
 
 /**
  * A simple web browser.
  *
- * To run standalone: java jos.desktop.Browser
+ * To run standalone: java os.desktop.Browser
  *
  * @author <a href="pablo@freality.com">Pablo Mayrgundter</a>.
  * @version $Revision: 1.1.1.1 $
