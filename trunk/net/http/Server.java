@@ -27,17 +27,24 @@ public class Server {
 
   static final class Handler implements Runnable {
 
-    Socket socket;
+    final OutputStream os;
+    final BufferedReader r;
+    final byte [] buf;
 
-    Handler(Socket s) {
+    Handler(Socket s) throws IOException {
       assert debug("Handling connection: " + s);
-      socket = s;
+      buf = new byte[1024];
+      r = new BufferedReader(new InputStreamReader(s.getInputStream()));
+      try {
+        os = s.getOutputStream();
+      } catch(IOException e) {
+        r.close();
+        throw e;
+      }
     }
 
     public void run() {
-      BufferedReader r = null;
       try {
-        r = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         String line, hdr = "";
         while ((line = r.readLine()) != null) {
           if (line.trim().equals("")) {
@@ -45,42 +52,59 @@ public class Server {
           }
           hdr += line + "\n";
         }
+
         assert debug("Got header: " + hdr);
         if (hdr.startsWith("GET")) {
           String [] parts = hdr.split(" ");
-          final String filename = parts[1];
-          sendFile(socket, filename);
+          if (parts.length < 3) {
+            responseHeader(400);
+            return;
+          }
+          sendFile(parts[1]);
         }
-        r.close();
       } catch (IOException e) {
-        logger.warning(""+ e);
+        e.printStackTrace();
+        logger.warning("Connection service failed: " + e);
       } finally {
-        if (r != null) {
+        try {
           try {
             r.close();
-          } catch (IOException e) {}
+          } finally {
+            os.close();
+          }
+        } catch(IOException e) {
+          logger.warning("Connection close failed: " + e);
         }
       }
     }
 
-    void sendFile(Socket s, String filename) throws IOException {
+    void responseHeader(int code) throws IOException {
+      String msg = "HTTP/1.0 " + code + " ";
+      switch(code) {
+        case 200: msg += "OK"; break;
+        case 400: msg += "Client error"; break;
+        case 404: msg += "File not found"; break;
+      }
+      msg = msg += "\r\n\r\n";
+      os.write(msg.getBytes());
+    }
+
+    void sendFile(String filename) throws IOException {
       filename = translateFilename(filename);
       assert debug("Serving file: " + filename);
-      byte [] buf = new byte[1024];
       FileInputStream fr = null;
-      OutputStream os = null;
       try {
         fr = new FileInputStream(filename);
-        os = socket.getOutputStream();
+        responseHeader(200);
         int len;
         while ((len = fr.read(buf)) != -1) {
           os.write(buf, 0, len);
         }
+      } catch(FileNotFoundException e) {
+        responseHeader(404);
       } finally {
         if (fr != null)
           fr.close();
-        if (os != null)
-          os.close();
       }
     }
 
