@@ -16,6 +16,25 @@ import util.Flags;
  *
  *   java -Dport=8080 net.http.Server
  *
+ * Loadtest:
+ *
+ *   > cat /proc/cpuinfo
+ *   ... Intel(R) Xeon(R) CPU           X5679  @ 3.20GHz ...
+ *   ... Intel(R) Xeon(R) CPU           X5679  @ 3.20GHz ...
+ *   ... Intel(R) Xeon(R) CPU           X5679  @ 3.20GHz ...
+ *   > dd if=/dev/zero of=10k.dat bs=1024 count=10
+ *   > echo "http://localhost:8080/10k.dat" > test.url
+ *   > ./http_load -p 10 -f 10000 test.url
+ *   # Throwaway
+ *   > ./http_load -p 10 -f 100000 test.url
+ *   100000 fetches, 10 max parallel, 1.024e+09 bytes, in 34.9176 seconds
+ *   10240 mean bytes/connection
+ *   2863.88 fetches/sec, 2.93262e+07 bytes/sec
+ *   msecs/connect: 0.0995282 mean, 2.717 max, 0.037 min
+ *   msecs/first-response: 3.18724 mean, 202.23 max, 0.315 min
+ *   HTTP response codes:
+ *     code 200 -- 100000
+ *
  * @author Pablo Mayrgundter
  */
 public class Server {
