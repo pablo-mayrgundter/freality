@@ -14,7 +14,7 @@ import util.Flags;
  *
  * To run:
  *
- *   java -Dport=8080 net.http.Server
+ *   java -Dport=8080 -server net.http.Server
  *
  * Loadtest:
  *
