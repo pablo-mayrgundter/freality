@@ -8,41 +8,45 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Random;
+import util.Flags;
 
 /**
  * Some good ones:
  *
- *  java -Dfs=true -Xmx200m -Dseed=1316996499948 -Diterations=100000000 -Doversample=3 -Dscale=2 math/Explorer
+ *  java -Dfs=true -Xmx200m -Dseed=1316996499948 -Ditr=100000000 -Doversample=3 -Dscale=2 math/Explorer
  *
  * @author Pablo Mayrgundter
  */
-class Explorer {
+public class Explorer extends FullScreenableFrame {
 
-  static final int ITERATIONS = Integer.parseInt(System.getProperty("iterations", "1000000"));
-  static final int NUM_PROCESSORS = Integer.parseInt(System.getProperty("cpus", "2"));
-  static final int NUM_FRAMES = Integer.parseInt(System.getProperty("frames", "1"));
-  static final int OVERSAMPLE = Integer.parseInt(System.getProperty("oversample", "1"));
-  static final String OUT_FILE = System.getProperty("out_file", null);
-  static final int SCALE = Integer.parseInt(System.getProperty("scale", "1"));
-  static long SEED = Long.parseLong(System.getProperty("seed", System.currentTimeMillis() + ""));
+  static Flags flags = new Flags(Explorer.class);
+  static final int ITERATIONS = flags.get("iterations", "itr", 1000000);
+  static final int NUM_FRAMES = flags.get("frames", "frames", 1);
+  static long SEED = flags.get("seed", "seed", System.currentTimeMillis());
+  static final int OVERSAMPLE = flags.get("oversample", "oversample", 1);
+  static final int SCALE = flags.get("scale", "scale", 1);
+  static final int NUM_PROCESSORS = flags.get("cpus", 2);
+  static final String OUT_FILE = flags.get("out_file", (String)null);
 
-  public static void main(final String [] args) throws Exception {
-    System.out.println("random seed: " + SEED);
+  final Grapher grapher;
+  final ChaosGame flame;
+  final Drawer drawer;
 
-    final FullScreenableFrame frame = new FullScreenableFrame();
-    final Grapher grapher = new Grapher(frame.getWidth() * OVERSAMPLE,
-                                        frame.getHeight() * OVERSAMPLE,
-                                        SCALE);
-    final ChaosGame flame = new ChaosGame(grapher, ITERATIONS / NUM_PROCESSORS, 1f);
-    final Drawer drawer = new Drawer(frame.getWidth(),
-                                     frame.getHeight(),
-                                     OVERSAMPLE);
-
-    flame.setSeed(SEED);
-    flame.init();
+  public Explorer() {
+    grapher = new Grapher(getWidth() * OVERSAMPLE,
+                          getHeight() * OVERSAMPLE,
+                          SCALE);
+    //flame = new Fern(grapher, ITERATIONS / NUM_PROCESSORS, 1f);
+    flame = new SierpenskisGasket(grapher, ITERATIONS / NUM_PROCESSORS, 1f);
+    //flame = new ChaosGame(grapher, ITERATIONS / NUM_PROCESSORS, 1f, SEED);
+    drawer = new Drawer(getWidth(), getHeight(), OVERSAMPLE);
     grapher.setSeed(SEED);
     grapher.init();
+  }
+
+  public void run() {
 
     if (Boolean.getBoolean("obj")) {
       //byte [] buf = util.Streams.readFully(new FileInputStream(new File(SEED + ".obj")));
@@ -70,17 +74,21 @@ class Explorer {
       }
       synchronized (numRunning) {
         while (numRunning.val > 0) {
-          numRunning.wait();
+          try {
+            numRunning.wait();
+          } catch (InterruptedException e) {
+            break;
+          }
         }
       }
 
       theta += Math.PI * 2.0 / NUM_FRAMES;
       flame.rotate(theta);
 
-      //System.out.println(flame.getFunctionXml());
+      System.out.println(flame.getFunctionXml());
       final Image image = drawer.render(grapher);
-      //((java.awt.Graphics2D) frame.getGraphics()).clearRect(0,0, frame.getWidth(), frame.getHeight());
-      ((java.awt.Graphics2D) frame.getGraphics()).drawImage(image,0,0,null);
+      //((java.awt.Graphics2D) getGraphics()).clearRect(0,0, getWidth(), getHeight());
+      ((java.awt.Graphics2D) getGraphics()).drawImage(image,0,0,null);
 
       if (Boolean.getBoolean("obj")) {
         //FileOutputStream fos = new FileOutputStream(new File(SEED + ".obj"));
@@ -89,14 +97,26 @@ class Explorer {
 
       if (Boolean.getBoolean("png")) {
         java.awt.image.BufferedImage bi =
-          new BufferedImage(frame.getWidth() * OVERSAMPLE,
-                            frame.getHeight() * OVERSAMPLE,
+          new BufferedImage(getWidth() * OVERSAMPLE,
+                            getHeight() * OVERSAMPLE,
                             BufferedImage.TYPE_INT_ARGB);
         bi.setAccelerationPriority(1);
         grapher.toImage(bi);
-        javax.imageio.ImageIO.write(bi, "PNG", new java.io.File(SEED + ".png"));
+        try {
+          javax.imageio.ImageIO.write(bi, "PNG", new java.io.File(SEED + ".png"));
+        } catch (IOException e) {
+          System.err.println(e);
+        }
       }
     }
+    // Many IFSes don't generate visible output, so explicitly say
+    // we're done.
+    System.out.println("Done.");
+  }
+
+  public static void main(final String [] args) {
+    System.out.println("random seed: " + SEED);
+    new Explorer().run();
   }
 
   static class Counter {
