@@ -23,7 +23,7 @@ public class FullScreenableFrame extends JFrame {
   static final boolean FULL_SCREEN = flags.get("fullScreen", "fs", false);
 
   protected int width, height;
-  Graphics2D drawGraphics;
+  protected Graphics2D drawGraphics;
 
   public FullScreenableFrame() {
     this(WIDTH, HEIGHT);
@@ -60,6 +60,8 @@ public class FullScreenableFrame extends JFrame {
     return height;
   }
 
+  // TODO(pablo): why are these public, instead of just accessing the
+  // graphics as a protected member?
   public Graphics2D getDrawGraphics() {
     return getDrawGraphics(null);
   }

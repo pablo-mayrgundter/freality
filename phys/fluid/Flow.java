@@ -72,7 +72,7 @@ final class Flow {
   static Flags flags = new Flags(Flow.class);
   static final boolean SCREEN_GFX = flags.get("gfx", "gfx", true);
   static final int WIDTH = flags.get("width", "w", 80);
-  static final int NUM = flags.get("num", 100);
+  static final int NUM = flags.get("num", "num", 100);
   static final int SLEEP = flags.get("sleep", 100);
   static final int HEX_SIZE = flags.get("hexSize", 5);
   static final int COMPARE_STEP = flags.get("compare", -1);

@@ -112,6 +112,8 @@ public class Flags {
       return defVal;
     else if (defVal instanceof Integer)
       return (T) new Integer(val);
+    else if (defVal instanceof Long)
+      return (T) new Long(val);
     else if (defVal instanceof Boolean)
       return (T) new Boolean(val);
     //      if (!(val instanceof defVal))
