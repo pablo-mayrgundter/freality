@@ -7,7 +7,7 @@
  * - Q/A against Celestia.
  *   - Add actual epoch-based locations.
  *   - Add actual epoch-based locations.
- * - Incremental scene-graph loading.
+ * - LRU scene-graph un-loading.
  * - View options, e.g. toggle orbits.
  * - Finish support for permalinks.
  * - Stars and Galaxies.
@@ -60,6 +60,7 @@ function initCanvas(container, bgColor) {
   animate(renderer, cameraAndControls[0], cameraAndControls[1], scene);
   // This starts the scene loading process..
   ctrl = new Controller();
+  ctrl.load('milkyway,stars,sun');
   return scene;
 }
 
