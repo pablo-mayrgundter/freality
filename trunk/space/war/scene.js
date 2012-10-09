@@ -1,3 +1,5 @@
+'use strict';
+
 var
   radiusScale = 1E-7,
   atmosScale = radiusScale * 1.005,
@@ -7,15 +9,17 @@ var
 var globe;
 var starImage, starGlowMaterial;
 
-function newStars(starProps, stars) {
+function newStars(starProps, stars, s) {
   var orbitPlane = new THREE.Object3D;
   var orbitPosition = new THREE.Object3D;
   orbitPlane.add(orbitPosition);
 
   var starsGeometry = new THREE.Geometry();
 
-  // For the sun.
-  starsGeometry.vertices.push(new THREE.Vertex(new THREE.Vector3()));
+  // Fist one is at 0,0,0 for the sun.
+  starsGeometry.vertices.push(new THREE.Vector3());
+
+  // Then the stars from the data file.
   for (var i = 0; i < stars.length; i++) {
     var s = stars[i];
     var ra = s[0] * toDeg; // why not toRad?
@@ -24,7 +28,7 @@ function newStars(starProps, stars) {
     var vec = new THREE.Vector3(dist * Math.sin(ra) * Math.cos(dec),
                                 dist * Math.sin(ra) * Math.sin(dec),
                                 dist * Math.cos(ra));
-    starsGeometry.vertices.push(new THREE.Vertex(vec));
+    starsGeometry.vertices.push(vec);
   }
 
   var starImage = pathTexture('star_glow', '.png');
@@ -35,7 +39,7 @@ function newStars(starProps, stars) {
                                       sizeAttenuation: true,
                                       blending: THREE.AdditiveBlending,
                                       depthTest: false,
-                                      transparent: true });
+                                      transparent: true }); 
 
   var starMiniMaterial =
     new THREE.ParticleBasicMaterial({ color: 0xffffff,
@@ -71,18 +75,10 @@ function newStar(starProps) {
   orbitPlane.add(orbitPosition);
 
   // TODO(pablo): add back in 'sun-white' sunspot texture.
-  var star = lodSphere(starProps.radius * radiusScale,
-                       new THREE.MeshBasicMaterial({color: 0xffffff,
-                                                    depthTest: false,
-                                                    wireframe: false,
-                                                    transparent: true }));
-  orbitPosition.add(star);
-
+  orbitPosition.add(sphere({radius: starProps.radius * radiusScale}));
   orbitPlane.orbitPosition = orbitPosition;
   return orbitPlane;
 }
-
-var n = {};
 
 function newOrbitingPlanet(planetProps) {
 
@@ -110,7 +106,7 @@ function newOrbitingPlanet(planetProps) {
   referencePlane.rotation.y = orbit.longitudeOfAscendingNode * toRad;
   // Children centered at this planet's orbit position.
   referencePlane.orbitPosition = orbitPosition;
-  n[planetProps.name] = referencePlane;
+
   return referencePlane;
 };
 
@@ -119,7 +115,7 @@ function newPlanet(planetProps) {
   // TODO(pablo): put these in near LOD only.
   if (planetProps.texture_atmosphere) {
     planet.add(newAtmosphere(planetProps));
-    planet.add(atmos(planetProps.radius * atmosUpperScale));
+    //planet.add(atmos(planetProps.radius * atmosUpperScale));
   }
 
   // TODO(pablo): if underlying planet is a BasicMeshMaterial, order
@@ -140,29 +136,36 @@ function newPlanet(planetProps) {
   return planet;
 }
 
+// TODO(pablo): get shaders working again.
 function newSurface(planetProps) {
   var planetMaterial;
-  if (!(planetProps.texture_hydrosphere || planetProps.texture_terrain)) {
+  if (true || !(planetProps.texture_hydrosphere || planetProps.texture_terrain)) {
     planetMaterial = cacheMaterial(planetProps.name);
   } else {
+
     // Fancy planets.
     var shader = THREE.ShaderUtils.lib['normal'];
     var uniforms = THREE.UniformsUtils.clone(shader.uniforms);
 
-    uniforms['tDiffuse'].texture = pathTexture(planetProps.name);
+    var tex = pathTexture(planetProps.name);
+    console.log(tex);
+    uniforms['tDiffuse'].texture = tex;
     uniforms['enableAO'].value = false;
     uniforms['enableDiffuse'].value = true;
     uniforms['uDiffuseColor'].value.setHex(0xffffff);
-    uniforms['uAmbientColor'].value.setHex(0);
+    uniforms['uAmbientColor'].value.setHex(0x000000);
     uniforms['uShininess'].value = 100.0 * planetProps.albedo;
+    uniforms['uDiffuseColor'].value.convertGammaToLinear();
+    uniforms['uAmbientColor'].value.convertGammaToLinear();
 
-    if (planetProps.texture_hydrosphere) {
+    if (false && planetProps.texture_hydrosphere) {
       uniforms['enableSpecular'].value = true;
       uniforms['tSpecular'].texture = pathTexture(planetProps.name, '_hydro.jpg');
       uniforms['uSpecularColor'].value.setHex(0xffffff);
+      uniforms['uSpecularColor'].value.convertGammaToLinear();
     }
 
-    if (planetProps.texture_terrain) {
+    if (false && planetProps.texture_terrain) {
       uniforms['tNormal'].texture = pathTexture(planetProps.name, '_terrain.jpg');
       uniforms['uNormalScale'].value = 0.1;
     }
@@ -171,7 +174,6 @@ function newSurface(planetProps) {
         fragmentShader: shader.fragmentShader,
         vertexShader: shader.vertexShader,
         uniforms: uniforms,
-        wireframe: false,
         lights: true
       });
   }
