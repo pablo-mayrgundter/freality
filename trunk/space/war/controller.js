@@ -12,14 +12,28 @@ var Controller = function() {
   this.sceneLive = false;
   this.sunLoaded = false;
 
-  console.log('Controller: init');
-  // This fetches the first resource and invokes a callback to
-  // display below. TODO(pablo): filename is milkyway, but scene
-  // node name is milky_way.
-  var me = this;
-  new Resource('milkyway').get(function(obj) {
-      me.display(obj);
-  });
+  this.load = function(systemNamesList){
+    console.log('loading: ' + systemNamesList);
+    var systemNames = systemNamesList.split(',');
+    var systemName = systemNames.shift();
+    if (this.sceneNodes[systemName]) {
+      this.select(systemName);
+      return;
+    }
+    // This fetches the first resource and invokes a callback to
+    // display below.
+    var me = this;
+    new Resource(systemName).get(function(obj) {
+        me.display(obj);
+        if (systemNames.length > 0) {
+          setTimeout('ctrl.load("'+ systemNames.join(',') +'")', 0);
+        } else {
+          // Have to delay to give a chance to the object to animate
+          // and gain its position in the scene.
+          setTimeout('ctrl.select("'+ systemName +'")', 100);
+        }
+    });
+  };
 
   this.display = function(props) {
 
@@ -54,39 +68,18 @@ var Controller = function() {
     if (parentNode.orbitPosition) {
       parentNode.orbitPosition.add(obj);
     } else {
-      console.log('parent has no orbit position!');
+      // Should only happen for milkyway.
+      console.log('Parent has no orbit position: ' + props.name);
       parentNode.add(obj);
-    }
-
-    if (parentNode == scene) {
-      this.sceneLive = true;
-      console.log('trySelectSun from scene live');
-      this.trySelectSun();
     }
 
     // This must happen before sub-systems loaded.
     obj['props'] = props;
     this.sceneNodes[props.name] = obj;
-
-    // Load sub-systems.
-    if (props.system) {
-      for (var i in props.system) {
-        var subSystemName = props.system[i];
-        var me = this;
-        new Resource(subSystemName).get(function(props){
-            me.display(props);
-            if (subSystemName == 'sun') {
-              me.sunLoaded = true;
-              console.log('trySelectSun from sun load');
-              me.trySelectSun();
-            }
-        });
-      }
-    }
   };
 
   this.select = function(name) {
-    name = name.toLowerCase();
+    console.log('selecting: ' + name);
     var node = this.sceneNodes[name];
     if (!node) {
       console.log('No such object: ' + name);
@@ -118,7 +111,7 @@ var Controller = function() {
       }
       tStepBack.setLength(node.props.radius * orbitScale * 10.0);
       tPos.addSelf(tStepBack);
-      setTimeout('camera.position.set('+ tPos.x +', '+ tPos.y +', '+ tPos.z +')', 1000);
+      camera.position.set(tPos.x, tPos.y, tPos.z);
     }
 
     var path = '';
@@ -128,7 +121,7 @@ var Controller = function() {
       if (curName == 'milky_way') {
         break;
       }
-      path = '<a href="#' + curName + '" onclick="ctrl.select(\''+ curName +'\')">' + curName + '</a> &gt; ' + path;
+      path = '<a href="#' + curName + '" onclick="ctrl.load(\''+ curName +'\')">' + curName + '</a> &gt; ' + path;
       var next = this.sceneNodes[cur.props.parent];
       if (next == cur) {
         break;
@@ -182,7 +175,7 @@ var Controller = function() {
           html += '</ul>\n';
         } else {
           if (isSystem) {
-            html += '<a href="#' + val + '" onclick="ctrl.select(this.innerHTML)">';
+            html += '<a href="#' + val + '" onclick="ctrl.load(this.innerHTML)">';
           }
           html += val;
           if (isSystem) {
