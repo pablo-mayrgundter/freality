@@ -9,10 +9,11 @@
  *   - Add actual epoch-based locations.
  * - LRU scene-graph un-loading.
  * - View options, e.g. toggle orbits.
- * - Finish support for permalinks.
  * - Stars and Galaxies.
  * - Time slider.
  * - Zoom in.
+ * BUGS:
+ * - Scene select race before objects gain location in anim.
  *
  * @see http://shatters.net/celestia/
  * @see http://mrdoob.github.com/three.js/
@@ -60,7 +61,9 @@ function initCanvas(container, bgColor) {
   animate(renderer, cameraAndControls[0], cameraAndControls[1], scene);
   // This starts the scene loading process..
   ctrl = new Controller();
-  ctrl.load('milkyway,stars,sun');
+  if (location.hash) {
+    ctrl.load(location.hash.substring(1).split(','));
+  }
   return scene;
 }
 
@@ -84,6 +87,15 @@ function initCameraAndControls(renderer) {
   controls.keys = [ 65, 83, 68 ]; // [ rotateKey, zoomKey, panKey ]
   window.addEventListener('resize',
                           function() { onWindowResize(renderer, camera, controls); },
+                          false);
+  window.addEventListener('hashchange',
+                          function(e) { 
+                            var hash = (location.hash || '#').substring(1);
+                            console.log('hashchange: ' + hash);
+                            hash = hash.split(',');
+                            console.log('hashchange(array): ' + hash.join(','));
+                            ctrl.load(hash);
+                          },
                           false);
 
   return [camera, controls];
