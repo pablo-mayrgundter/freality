@@ -9,32 +9,57 @@
 var Controller = function() {
 
   this.sceneNodes = {};
-  this.sceneLive = false;
-  this.sunLoaded = false;
 
-  this.load = function(systemNamesList){
-    console.log('loading: ' + systemNamesList);
-    var systemNames = systemNamesList.split(',');
-    var systemName = systemNames.shift();
+  this.initPath = ['milkyway','stars','sun'];
+  this.curPath = [];
+
+  this.loadSystem = function(systemName, select) {
     if (this.sceneNodes[systemName]) {
-      this.select(systemName);
+      if (select) {
+        this.select(systemName);
+      }
       return;
     }
-    // This fetches the first resource and invokes a callback to
-    // display below.
     var me = this;
     new Resource(systemName).get(function(obj) {
         me.display(obj);
-        if (systemNames.length > 0) {
-          setTimeout('ctrl.load("'+ systemNames.join(',') +'")', 0);
-        } else {
-          // Have to delay to give a chance to the object to animate
-          // and gain its position in the scene.
-          setTimeout('ctrl.select("'+ systemName +'")', 100);
+        if (select) {
+          console.log('async select: ' + systemName);
+          setTimeout('ctrl.select("'+ systemName +'")', 200);
         }
     });
   };
 
+  this.loadRecursive = function(path) {
+    console.log('loadRecursive: ' + path.join(','));
+    if (path.length == 0) {
+      return;
+    }
+
+    var system = path.shift();
+    // length == 0: means select the last system in the path.
+    this.loadSystem(system, path.length == 0);
+    // Recurse on the remaining.
+    this.loadRecursive(path);
+  };
+
+  this.load = function(path) {
+    // TODO(pablo): messy to handle different paths in.
+    if (!path || path.length == 0 || path[0] == '') {
+      this.curPath = [];
+      this.select('sun');
+      return;
+    }
+    this.curPath = path;
+    this.loadRecursive(this.curPath.slice());
+  };
+
+  this.loadRecursive(this.initPath);
+
+  /**
+   * Create the scene object, add it to the scene graph and to
+   * this.sceneNodes.
+   */
   this.display = function(props) {
 
     // Find a parent or add directly to scene.  TODO(pablo): this is
@@ -73,7 +98,6 @@ var Controller = function() {
       parentNode.add(obj);
     }
 
-    // This must happen before sub-systems loaded.
     obj['props'] = props;
     this.sceneNodes[props.name] = obj;
   };
@@ -114,22 +138,16 @@ var Controller = function() {
       camera.position.set(tPos.x, tPos.y, tPos.z);
     }
 
-    var path = '';
-    var cur = this.sceneNodes[node.props.parent];
-    while (cur) {
-      var curName = cur.props.name;
-      if (curName == 'milky_way') {
-        break;
-      }
-      path = '<a href="#' + curName + '" onclick="ctrl.load(\''+ curName +'\')">' + curName + '</a> &gt; ' + path;
-      var next = this.sceneNodes[cur.props.parent];
-      if (next == cur) {
-        break;
-      }
-      cur = next;
+    var links = this.curPath.length == 0 ? '' : '<a href="#">sun</a> &gt; ';
+    for (var i = 0; i < this.curPath.length - 1; i++) {
+      var hash = this.curPath.slice(0,i+1).join(',');
+      links += '<a href="#'+ hash +'">' + this.curPath[i] + '</a> &gt; ';
     }
-    var html = path + name + ' <ul>\n';
-    html += this.showInfoRecursive(node.props, false, false);
+
+    var html = links + name + ' <ul>\n';
+    var pathPrefix = this.curPath.join(',');
+    console.log('pathPrefix: ' + pathPrefix);
+    html += this.showInfoRecursive(node.props, pathPrefix, false, false);
     html += '</ul>\n';
     var infoElt = document.getElementById('info');
     infoElt.innerHTML = html;
@@ -137,22 +155,7 @@ var Controller = function() {
     makeTagsCollapsable(infoElt);
   };
 
-  /**
-   * Tries to select the sun as the active scene target.  This is
-   * required because there are two async conditions that must be met
-   * for the sun to be ready to show: 1) the sun needs to have been
-   * loaded from the server and added to the scene graph (via
-   * display()), 2) the milkyway node also needs to be loaded, and it
-   * is the scene graph root, so attaching it to the scene makes the
-   * sun visible.
-   */
-  this.trySelectSun = function() {
-    if (this.sceneLive && this.sunLoaded) {
-      this.select('sun');
-    }
-  };
-
-  this.showInfoRecursive = function(obj, isArray, isSystem) {
+  this.showInfoRecursive = function(obj, pathPrefix, isArray, isSystem) {
     var html = '';
     for (var prop in obj) {
       if (obj.hasOwnProperty(prop)) {
@@ -167,15 +170,20 @@ var Controller = function() {
           } else {
             html += '<ol class="collapsed">\n';
           }
-          html += this.showInfoRecursive(val, true, prop == 'system');
+          html += this.showInfoRecursive(val, pathPrefix, true, prop == 'system');
           html += '</ol>\n';
         } else if (val instanceof Object) {
           html += '<ul class="collapsed">\n';
-          html += this.showInfoRecursive(val, false, false);
+          html += this.showInfoRecursive(val, pathPrefix, false, false);
           html += '</ul>\n';
         } else {
           if (isSystem) {
-            html += '<a href="#' + val + '" onclick="ctrl.load(this.innerHTML)">';
+            var path = pathPrefix;
+            if (pathPrefix.length > 0) {
+              path += ',';
+            }
+            path += val;
+            html += '<a href="#' + path + '">';
           }
           html += val;
           if (isSystem) {
