@@ -16,6 +16,9 @@ if (typeof XMLHttpRequest == "undefined") {
 var Resource = function(name) {
   this.name = 'data/' + name + '.json';
   this.get = function(func) {
+    if (location.href.startsWith('file')) {
+      return func({type:'star',name:'sun',radius: 6.9424895E8});
+    }
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
       if(xmlhttp.readyState == 4){

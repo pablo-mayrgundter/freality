@@ -69,13 +69,12 @@ function newPointLight() {
   return new THREE.PointLight(0xffffff);
 }
 
-function newStar(starProps) {
+function newStar(props) {
   var orbitPlane = new THREE.Object3D;
   var orbitPosition = new THREE.Object3D;
   orbitPlane.add(orbitPosition);
-
   // TODO(pablo): add back in 'sun-white' sunspot texture.
-  orbitPosition.add(sphere({radius: starProps.radius * radiusScale}));
+  orbitPosition.add(sphere({radius: Measure.parseMeasure(props.radius).scalar * radiusScale}));
   orbitPlane.orbitPosition = orbitPosition;
   return orbitPlane;
 }

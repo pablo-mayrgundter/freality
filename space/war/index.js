@@ -4,6 +4,7 @@
  * Solar System simulator inspired by Celestia using Three.js.
  *
  * TODO:
+ * - Units for measurements.
  * - Q/A against Celestia.
  *   - Add actual epoch-based locations.
  *   - Add actual epoch-based locations.

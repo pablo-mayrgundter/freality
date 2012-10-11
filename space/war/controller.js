@@ -13,49 +13,6 @@ var Controller = function() {
   this.initPath = ['milkyway','stars','sun'];
   this.curPath = [];
 
-  this.loadSystem = function(systemName, select) {
-    if (this.sceneNodes[systemName]) {
-      if (select) {
-        this.select(systemName);
-      }
-      return;
-    }
-    var me = this;
-    new Resource(systemName).get(function(obj) {
-        me.display(obj);
-        if (select) {
-          console.log('async select: ' + systemName);
-          setTimeout('ctrl.select("'+ systemName +'")', 200);
-        }
-    });
-  };
-
-  this.loadRecursive = function(path) {
-    console.log('loadRecursive: ' + path.join(','));
-    if (path.length == 0) {
-      return;
-    }
-
-    var system = path.shift();
-    // length == 0: means select the last system in the path.
-    this.loadSystem(system, path.length == 0);
-    // Recurse on the remaining.
-    this.loadRecursive(path);
-  };
-
-  this.load = function(path) {
-    // TODO(pablo): messy to handle different paths in.
-    if (!path || path.length == 0 || path[0] == '') {
-      this.curPath = [];
-      this.select('sun');
-      return;
-    }
-    this.curPath = path;
-    this.loadRecursive(this.curPath.slice());
-  };
-
-  this.loadRecursive(this.initPath);
-
   /**
    * Create the scene object, add it to the scene graph and to
    * this.sceneNodes.
@@ -82,7 +39,7 @@ var Controller = function() {
     } else if (props.type == 'star') {
       obj = newStar(props);
       obj.add(newPointLight());
-      camera.position.set(0, 0, props.radius * radiusScale * 1E1);
+      camera.position.set(0, 0, Measure.parseMeasure(props.radius).scalar * radiusScale * 1E1);
     } else if (props.type == 'planet') {
       obj = newOrbitingPlanet(props);
     }
@@ -133,7 +90,10 @@ var Controller = function() {
       if (tStepBack.isZero()) {
         tStepBack.set(0,0,1);
       }
-      tStepBack.setLength(node.props.radius * orbitScale * 10.0);
+      var radius = node.props.radius;
+      if (node.props.type == 'star')
+        radius = Measure.parseMeasure(node.props.radius).scalar;
+      tStepBack.setLength(radius * orbitScale * 10.0);
       tPos.addSelf(tStepBack);
       camera.position.set(tPos.x, tPos.y, tPos.z);
     }
@@ -146,7 +106,6 @@ var Controller = function() {
 
     var html = links + name + ' <ul>\n';
     var pathPrefix = this.curPath.join(',');
-    console.log('pathPrefix: ' + pathPrefix);
     html += this.showInfoRecursive(node.props, pathPrefix, false, false);
     html += '</ul>\n';
     var infoElt = document.getElementById('info');
@@ -195,4 +154,63 @@ var Controller = function() {
     }
     return html;
   };
+
+  this.loadSystem = function(systemName, select) {
+    // TODO(pablo): remove duplicate logic below; maybe into expand()
+    // method?
+    if (this.sceneNodes[systemName]) {
+      if (select) {
+        this.select(systemName);
+        var subSys = this.sceneNodes[systemName].props.system;
+        if (subSys) {
+          for (var i in subSys) {
+            var child = subSys[i];
+            console.log('loadSystem: expanding: ' + child);
+            this.loadSystem(child);
+          }
+        }
+      }
+      return;
+    }
+    var me = this;
+    new Resource(systemName).get(function(obj) {
+        me.display(obj);
+        if (select) {
+          setTimeout('ctrl.select("'+ systemName +'")', 200);
+          if (obj.system) {
+            for (var i in obj.system) {
+              var child = obj.system[i];
+              console.log('loadSystem: expanding: ' + child);
+              me.loadSystem(child);
+            }
+          }
+        }
+    });
+  };
+
+  this.loadRecursive = function(path) {
+    console.log('loadRecursive: ' + path.join(','));
+    if (path.length == 0) {
+      return;
+    }
+
+    var system = path.shift();
+    // length == 0: means select the last system in the path.
+    this.loadSystem(system, path.length == 0);
+    // Recurse on the remaining.
+    this.loadRecursive(path);
+  };
+
+  this.load = function(path) {
+    // TODO(pablo): messy to handle different paths in.
+    if (!path || path.length == 0 || path[0] == '') {
+      this.curPath = [];
+      this.select('sun');
+      return;
+    }
+    this.curPath = path;
+    this.loadRecursive(this.curPath.slice());
+  };
+
+  this.loadRecursive(this.initPath);
 };
