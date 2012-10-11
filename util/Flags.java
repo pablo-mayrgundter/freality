@@ -93,6 +93,11 @@ public class Flags {
     return get(propName, null, defVal);
   }
 
+  /**
+   * Return type inference is done on the default value.  For
+   * instance, if you want a long value, the default value must be
+   * or be cast to a long.
+   */
   @SuppressWarnings("unchecked")
   public <T> T get(String propName, String abbrevPropName, T defVal) {
     String qName = clazz.getName() + "." + propName;
@@ -114,6 +119,10 @@ public class Flags {
       return (T) new Integer(val);
     else if (defVal instanceof Long)
       return (T) new Long(val);
+    else if (defVal instanceof Float)
+      return (T) new Float(val);
+    else if (defVal instanceof Double)
+      return (T) new Double(val);
     else if (defVal instanceof Boolean)
       return (T) new Boolean(val);
     //      if (!(val instanceof defVal))
