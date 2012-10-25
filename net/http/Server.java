@@ -14,7 +14,12 @@ import util.Flags;
  *
  * To run:
  *
- *   java -Dport=8080 -server net.http.Server
+ *   java net.http.Server
+ *
+ * or if you can't run on priviledged ports (&lt;1024), pick a high
+ * one:
+ *
+ *   java -Dport=8080 net.http.Server
  *
  * Loadtest:
  *
