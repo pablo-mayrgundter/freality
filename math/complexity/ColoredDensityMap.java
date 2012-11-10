@@ -15,7 +15,7 @@ class ColoredDensityMap extends DensityMap {
   final Random mRand;
   int [] mPalette;
 
-  ColoredDensityMap(final int width, final int height, final int scale) {
+  ColoredDensityMap(final int width, final int height, final float scale) {
     super(width, height, scale);
     mRand = new Random();
     mColor = new float[mWidth * mHeight];
