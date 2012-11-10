@@ -22,11 +22,11 @@ import util.Flags;
 public class Explorer extends FullScreenableFrame {
 
   static Flags flags = new Flags(Explorer.class);
-  static final int ITERATIONS = flags.get("iterations", "itr", 1000000);
+  static final long ITERATIONS = flags.get("iterations", "itr", (long)10000000);
   static final int NUM_FRAMES = flags.get("frames", "frames", 1);
   static long SEED = flags.get("seed", "seed", System.currentTimeMillis());
   static final int OVERSAMPLE = flags.get("oversample", "oversample", 1);
-  static final int SCALE = flags.get("scale", "scale", 1);
+  static final float SCALE = flags.get("scale", "scale", (float)1.0);
   static final int NUM_PROCESSORS = flags.get("cpus", 2);
   static final String OUT_FILE = flags.get("out_file", (String)null);
 
@@ -38,8 +38,8 @@ public class Explorer extends FullScreenableFrame {
     grapher = new Grapher(getWidth() * OVERSAMPLE,
                           getHeight() * OVERSAMPLE,
                           SCALE);
-    //flame = new Fern(grapher, ITERATIONS / NUM_PROCESSORS, 1f);
-    flame = new SierpenskisGasket(grapher, ITERATIONS / NUM_PROCESSORS, 1f);
+    flame = new Fern(grapher, ITERATIONS / NUM_PROCESSORS, 1f);
+    //flame = new SierpenskisGasket(grapher, ITERATIONS / NUM_PROCESSORS, 1f);
     //flame = new ChaosGame(grapher, ITERATIONS / NUM_PROCESSORS, 1f, SEED);
     drawer = new Drawer(getWidth(), getHeight(), OVERSAMPLE);
     grapher.setSeed(SEED);
@@ -85,7 +85,7 @@ public class Explorer extends FullScreenableFrame {
       theta += Math.PI * 2.0 / NUM_FRAMES;
       flame.rotate(theta);
 
-      System.out.println(flame.getFunctionXml());
+      System.out.println(flame);
       final Image image = drawer.render(grapher);
       //((java.awt.Graphics2D) getGraphics()).clearRect(0,0, getWidth(), getHeight());
       ((java.awt.Graphics2D) getGraphics()).drawImage(image,0,0,null);

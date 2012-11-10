@@ -1,10 +1,12 @@
 package math.complexity;
 
+import math.Point;
+
 public class Fern extends ChaosGame {
 
-  public Fern(Grapher g, int iterations, double blend) {
+  public Fern(Grapher g, long iterations, double blend) {
     super(g, iterations, blend, 0);
-    Function [] funcs = new Function[4];
+    Flame [] funcs = new Flame[4];
     funcs[0] = new Linear() {
         public void variation(final Point p) {
           p.x = 0;
@@ -28,13 +30,13 @@ public class Fern extends ChaosGame {
           p.x = 0.85f * p.x + 0.04f * p.y;
           p.y = -0.04f * p.x + 0.85f * p.y + 1.6f;
         }
-      };
+        };
 
     // Simulate randomized functions by pointing to a given function a
     // percentage of the time.
-    mFuncs = new Function[100];
+    mFuncs = new Flame[100];
     for (int i = 0; i < mFuncs.length; i++) {
-      Function f;
+      Flame f;
       if (i <= 1)  {
         f = funcs[0];
       } else if (i <= 7) {
