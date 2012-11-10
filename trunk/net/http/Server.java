@@ -21,7 +21,7 @@ import util.Flags;
  *
  *   java -Dport=8080 net.http.Server
  *
- * Loadtest:
+ * Loadtest using acme.com's http_load:
  *
  *   > cat /proc/cpuinfo
  *   ... Intel(R) Xeon(R) CPU           X5679  @ 3.20GHz ...

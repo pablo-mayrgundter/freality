@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>solar system</title>
+    <title>Celestiary - Solar System Simulator</title>
     <script type="text/javascript" src="rest.js"></script>
     <script type="text/javascript" src="Three-51.js"></script>
     <script type="text/javascript" src="shared.js"></script>
@@ -14,15 +14,10 @@
     <script type="text/javascript" src="t-1000.js"></script>
     <script type="text/javascript" src="collapsor.js"></script>
     <script type="text/javascript" src="index.js"></script>
-    <script>
-      //test_hook = function(){
-      //  scene = initCanvas(document.getElementById('scene'), 0);
-      //}
-    </script>
     <link rel="stylesheet" href="index.css"/>
   </head>
-  <body>
-    <div id="info"></div>
-    <div id="scene"/>
+  <body onload="init(document.getElementById('sceneContainer'))">
+    <div id="sceneContainer"/>
+    <div id="info">Welcome to Celestiary!  Loading...</div>
   </body>
 </html>

@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Modifies the DOM tree rooted at {@param elt} to make the
  * given {@param tagTypes} interactively collapsable/expandable.
@@ -31,7 +33,6 @@ function collapse(ctrl) {
   var target = ctrl.nextSibling;
   if (eltClass(target, 'check', 'collapsed')) {
     eltClass(target, 'remove', 'collapsed');
-    displayState = 'block';
     ctrl.innerHTML = '[-]';
   } else {
     eltClass(target, 'add', 'collapsed');

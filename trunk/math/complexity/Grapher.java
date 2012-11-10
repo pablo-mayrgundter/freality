@@ -11,7 +11,7 @@ import java.awt.image.BufferedImage;
  */
 public final class Grapher extends ColoredDensityMap {
 
-  public Grapher(final int width, final int height, final int scale) {
+  public Grapher(final int width, final int height, final float scale) {
     super(width, height, scale);
   }
 

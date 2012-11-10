@@ -19,9 +19,10 @@ public class DensityMap implements Serializable {
   final int mWidth, mHeight;
   final int mHalfWidth, mHalfHeight;
   final int [] mDensity;
-  int mScale, mMaxDensity;
+  float mScale;
+  int mMaxDensity;
 
-  public DensityMap(final int width, final int height, final int scale) {
+  public DensityMap(final int width, final int height, final float scale) {
     // width and half width (and height) are used for cartesian
     // orientation.
     mWidth = width;
