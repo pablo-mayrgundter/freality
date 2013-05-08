@@ -1,6 +1,7 @@
 package gfx;
 
 import gfx.vt.VT100;
+import util.Flags;
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Font;
@@ -53,13 +54,17 @@ public final class TextGraphics extends Graphics2D {
                                          Color.WHITE})
       SUPPORTED_COLORS.add(color);
   }
+
+  static Flags flags = new Flags(TextGraphics.class);
+  static final int WIDTH = flags.get("width", 80);
+  static final int HEIGHT = flags.get("height", 24);
+
   final Map<Color,String> mFGColors;
   final Map<Color,String> mBGColors;
-  final int mWidth, mHeight;
+  int mWidth, mHeight;
 
   public TextGraphics () {
-    this(Integer.parseInt(System.getenv("COLUMNS")),
-         Integer.parseInt(System.getenv("LINES")));
+    this(WIDTH, HEIGHT);
   }
 
   public TextGraphics (final int width, final int height) {
@@ -87,10 +92,9 @@ public final class TextGraphics extends Graphics2D {
       x2 = Integer.parseInt(args[2]), y2 = Integer.parseInt(args[3]);
     TextGraphics g = new TextGraphics();
     java.util.Random r = new java.util.Random();
-    //        g.setBackground(SUPPORTED_COLORS.get(r.nextInt(SUPPORTED_COLORS.size())));
-    //            g.drawLine(r.nextInt(g.mWidth), r.nextInt(g.mHeight),
-    //                       r.nextInt(g.mWidth), r.nextInt(g.mHeight));
+    g.setBackground(SUPPORTED_COLORS.get(r.nextInt(SUPPORTED_COLORS.size())));
     g.drawLine(x1, y1, x2, y2);
+    g.drawPixel(10, 1);
     g.dispose();
   }
 
