@@ -12,6 +12,10 @@ import util.*;
  */
 class Wolfram2D {
 
+  static Flags flags = new Flags(Wolfram2D.class);
+  static final int WIDTH = flags.get("width", "width", 80);
+  static final int HEIGHT = flags.get("height", "height", 24);
+
   final int mWidth;
   final int mHeight;
   final TextGraphics mGraphics;
@@ -34,7 +38,7 @@ class Wolfram2D {
     mCur.clear().set(mWidth/2, 1);
     BitBuffer tmp;
     mGraphics.clear();
-    mGraphics.setBackground(java.awt.Color.BLACK);
+    mGraphics.setBackground(java.awt.Color.BLUE);
     for (int y = 0; y < mHeight - 1; y++) {
       for (int x = 0; x < mWidth; x++) {
         if (mCur.get(x) != 0) {
@@ -52,8 +56,7 @@ class Wolfram2D {
     final int from = Integer.parseInt(System.getProperty("from", "0"));
     final int to = Integer.parseInt(System.getProperty("to", "255"));
     final int sleep = Integer.parseInt(System.getProperty("sleep", "500"));
-    final Wolfram2D w = new Wolfram2D(Integer.parseInt(System.getProperty("width", "80")),
-                                      Integer.parseInt(System.getProperty("height", "20")));
+    final Wolfram2D w = new Wolfram2D(WIDTH, HEIGHT);
 
     for (int rule = from; rule <= to; rule++) {
       w.renderRule((byte) rule);
