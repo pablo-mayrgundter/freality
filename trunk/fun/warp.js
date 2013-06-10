@@ -14,7 +14,8 @@ var numNodes = 1000;
  * by the development of the system itself), which gives a behavior
  * that "jumps" sequential points from one side of the curve to the
  * other, which are then connected by edges and this provides the nice
- * woven surface.
+ * woven surface.  Thanks to Won Chun for helping to figure out this
+ * behavior!
  *
  * Finally, a morphLevel extrinsic parameter is used to mutate the
  * total system to provide the basis for mutating the system through a
