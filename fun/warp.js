@@ -1,8 +1,6 @@
 var graph;
-var lastNode = null;
 var x, y, z, serial;
-var morphLevel = 0;
-var morphDelta = 0.01;
+var morphLevel = 0, morphDelta = 0.01;
 var numNodes = 1000;
 
 /**
@@ -58,9 +56,7 @@ function renderSystem() {
   for (var i = 0; i < 10; i++) {
     ifs();
   }  
-  graph.iterNodes(function(n){
-      renderNode(n);
-    });
+  graph.iterNodes(renderNode);
 
   // The 2 params tell sigma to use "direct" drawing, which gets rid
   // of flickering in the default approach.
@@ -81,7 +77,7 @@ function frame() {
 }
 
 /**
- * Setup an animation start/top callback for user clicks.
+ * Setup an animation start/stop callback for user clicks.
  */
 var animId;
 function anim() {
@@ -101,6 +97,7 @@ function init() {
   graph = sigma.init(document.getElementById('body'));
 
   // Construct the graph.
+  var lastNode = null;
   for (var i = 0; i < numNodes; i++) {
     graph.addNode(i, {id:i,x:0,y:0,size:3});
     if (lastNode) {
