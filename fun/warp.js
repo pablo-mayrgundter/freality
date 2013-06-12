@@ -1,6 +1,9 @@
 var graph;
 var x, y, z, serial;
-var morphLevel = 0, morphDelta = 0.01;
+var morphLevel = 0,
+  morphSpeed = 0,
+  maxMorphSpeed = 0.005,
+  morphAccel = 0.00001;
 var numNodes = 1000;
 
 /**
@@ -63,8 +66,13 @@ function renderSystem() {
   graph.draw(2, 2, 2, 2);
 
   // Prepare the system for its next morph step. This is what morphs
-  // the system's overall shape.
-  morphLevel += morphDelta;
+  // the system's overall shape.  Use an accelerating delta to slowly
+  // start the system moving or slow it down again.
+  if (morphSpeed < maxMorphSpeed && morphSpeed >= 0) {
+    morphSpeed += morphAccel;
+  }
+
+  morphLevel += morphSpeed;
 }
 
 /**
@@ -73,7 +81,13 @@ function renderSystem() {
  */
 function frame() {
   renderSystem();
-  animId = window.requestAnimationFrame(frame);
+  // Stop rendering if we're at zero speed and currently calling
+  // frames.
+  if (morphSpeed > 0) {
+    animId = window.requestAnimationFrame(frame);
+  } else {
+    animId = null;
+  }
 }
 
 /**
@@ -82,9 +96,25 @@ function frame() {
 var animId;
 function anim() {
   if (animId) {
-    window.cancelAnimationFrame(animId);
-    animId = null;
+    // If we're already animating, flip the direction of acceleration
+    // from speeding up to slowing down or vice-versa.
+    morphAccel *= -1;
+
+    // renderSystem only accelerates while morphSpeed is less than
+    // maxMorphSpeed, so if we're in that case above, we need to tap
+    // the speed down from the limit to engage the conditional again,
+    // decelerating the system
+    if (morphSpeed >= maxMorphSpeed) {
+      morphSpeed = maxMorphSpeed - morphAccel;
+    }
+    // Same for if we're at the bottom end limit.
+    if (morphSpeed <= 0) {
+      morphSpeed = morphAccel;
+    }
   } else {
+    // Start the system forward (maybe again).
+    morphAccel = Math.abs(morphAccel);
+    morphSpeed = morphAccel;
     animId = window.requestAnimationFrame(frame);
   }
 }
