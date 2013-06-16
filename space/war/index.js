@@ -21,66 +21,109 @@
  * @author Pablo Mayrgundter
  */
 
-//var camera;
-//var cameraControls;
+var time = new Date().getTime();
 
-function init(canvasContainerElt) {
-  var width = canvasContainerElt.clientWidth;
-  var height = canvasContainerElt.clientHeight;
+var test_hook = null;
+var animationDelegate = animation;
+var ctrl = null;
+var scene = null;
+var camera = null;
+var targetPos = new THREE.Vector3();
+
+window.onload = function() {
+  scene = initCanvas(document.getElementById('scene'), 0);
+}
+
+function initCanvas(container, bgColor) {
+  if (bgColor == null) {
+    bgColor = 0xffffff;
+  }
+  var width = container.clientWidth;
+  var height = container.clientHeight;
   if (width == 0 || height == 0) {
     width = window.innerWidth;
     height = window.innerHeight;
   }
-  var renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      clearAlpha: 1,
-      clearColor: 0 });
+  var renderer = new THREE.WebGLRenderer({antialias: true});
+  renderer.setClearColor(bgColor, 1);
   renderer.setSize(width, height);
   renderer.sortObjects = true;
   renderer.autoClear = true;
-  canvasContainerElt.appendChild(renderer.domElement);
-
+  container.appendChild(renderer.domElement);
   var scene = new THREE.Scene();
-
-  var camera = new THREE.PerspectiveCamera(80, width / height, 1, 1E13);
-  scene.add(camera);
-  //var cameraControls = null;
-  var cameraControls = new THREE.FlyControls(camera, canvasContainerElt);
-  //cameraControls.domElement = canvasContainerElt;
-  cameraControls.movementSpeed = 5E6;
-  cameraControls.lookSpeed = 1E-1;
-  cameraControls.rollSpeed = Math.PI / 2;
-  cameraControls.autoForward = false;
-  cameraControls.noFly = false;
-  cameraControls.activeLook = false;
-  cameraControls.dragToLook = true;
-
-  // in animation.js
-  renderLoop(renderer, scene, camera, cameraControls);
-
+  var cameraAndControls = initCameraAndControls(renderer);
+  animate(renderer, cameraAndControls[0], cameraAndControls[1], scene);
   // This starts the scene loading process..
-  var ctrl = new Controller(scene);
-
-  // Scene selections are handled through URL hash changes.
+  ctrl = new Controller();
   if (location.hash) {
     ctrl.load(location.hash.substring(1).split(','));
   }
+  return scene;
+}
+
+function initCameraAndControls(renderer) {
+
+  // TODO(pablo): pass these as method args
+  var width = renderer.domElement.clientWidth;
+  var height = renderer.domElement.clientHeight;
+  // TODO(pablo): should not be global.
+  camera = new THREE.PerspectiveCamera(25, width / height, 1, 1E13);
+  camera.rotationAutoUpdate = true;
+
+  var controls = null;
+  window.addEventListener('resize',
+                          function() { onWindowResize(renderer, camera, controls); },
+                          false);
   window.addEventListener('hashchange',
-                          function() {
+                          function(e) { 
                             var hash = (location.hash || '#').substring(1);
+                            console.log('hashchange: ' + hash);
                             hash = hash.split(',');
+                            console.log('hashchange(array): ' + hash.join(','));
                             ctrl.load(hash);
                           },
                           false);
 
-  window.addEventListener('resize',
-                          function() {
-                            var width = window.innerWidth;
-                            var height = window.innerHeight;
-                            renderer.setSize(width, height);
-                            camera.aspect = width / height;
-                            camera.updateProjectionMatrix();
-                            camera.radius = (width + height) / 4;
-                          },
-                          false);
+  return [camera, controls];
+}
+
+function onWindowResize(renderer, camera, controls) {
+  var width = window.innerWidth;
+  var height = window.innerHeight;
+
+  renderer.setSize(width, height);
+
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+  camera.radius = (width + height) / 4;
+
+  if (controls) {
+    controls.screen.width = width;
+    controls.screen.height = height;
+  }
+}
+
+function animate(renderer, camera, controls, scene) {
+  requestAnimationFrame(function() { animate(renderer, camera, controls, scene); } );
+  render(renderer, camera, controls, scene);
+}
+
+var targetObj = null;
+var targetObjLoc = new THREE.Matrix4;
+
+function render(renderer, camera, controls, scene) {
+  var t = new Date().getTime() * timeScale;
+  var dt = t - time;
+  var time = t;
+
+  if (controls) {
+    controls.update();
+  }
+
+  if (animationDelegate) {
+    animationDelegate(scene);
+  }
+
+  renderer.clear();
+  renderer.render(scene, camera);
 }
