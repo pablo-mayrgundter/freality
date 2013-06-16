@@ -1,5 +1,3 @@
-'use strict';
-
 function loadTexture(texPath) {
   return THREE.ImageUtils.loadTexture(texPath);
 }
@@ -24,7 +22,7 @@ function lineMaterial(params, name) {
   params = params || {};
   params.color = params.color || 0xff0000;
   params.lineWidth = params.lineWidth || 1;
-  name = name || ('line-basic' + params.color);
+  name = name || 'line-basic';
   var m = materials[name];
   if (!m) {
     materials[name] = m = new THREE.LineBasicMaterial({

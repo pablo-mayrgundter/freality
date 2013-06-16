@@ -1,17 +1,12 @@
 'use strict';
 
-// TODO(pablo): get rid of this global.  See below setTimeout use.
-var ctrl;
-
 /**
  * The Controller loads the scene.  The scene nodes are fetched from
  * the server, a mapping is created for navigation to current scene
  * node locations based on names, and information is displayed for
  * the selected node.
  */
-var Controller = function(scene) {
-
-  ctrl = this;
+var Controller = function() {
 
   this.sceneNodes = {};
 
@@ -44,6 +39,7 @@ var Controller = function(scene) {
     } else if (props.type == 'star') {
       obj = newStar(props);
       obj.add(newPointLight());
+      camera.position.set(0, 0, Measure.parseMeasure(props.radius).scalar * radiusScale * 1E1);
     } else if (props.type == 'planet') {
       obj = newOrbitingPlanet(props);
     }
@@ -73,7 +69,33 @@ var Controller = function(scene) {
     // TODO(pablo): select is currently called during init, where
     // sceneNodes is not yet populated?
     if (node.orbitPosition)  {
-      scene.targetNode = node;
+      targetObj = node.orbitPosition;
+      targetObjLoc.identity();
+      var curObj = targetObj;
+      var objs = [];
+      while (curObj.parent != scene) {
+        objs.push(curObj);
+        curObj = curObj.parent;
+      }
+      for (var i = objs.length - 1; i >= 0; i--) {
+        var o = objs[i];
+        targetObjLoc.multiply(o.matrix);
+      }
+
+      targetPos.getPositionFromMatrix(targetObjLoc);
+      var tStepBack = targetPos.clone();
+      tStepBack.negate();
+      // TODO(pablo): if the target is at the origin (i.e. the sun),
+      // need some non-zero basis to use as a step-back.
+      if (tStepBack.x == 0 && tStepBack.y == 0) {
+        tStepBack.set(0,0,1);
+      }
+      var radius = node.props.radius;
+      if (node.props.type == 'star')
+        radius = Measure.parseMeasure(node.props.radius).scalar;
+      tStepBack.setLength(radius * orbitScale * 10.0);
+      targetPos.add(tStepBack);
+      camera.position.set(targetPos.x, targetPos.y, targetPos.z);
     }
 
     var links = this.curPath.length == 0 ? '' : '<a href="#">sun</a> &gt; ';
@@ -133,7 +155,6 @@ var Controller = function(scene) {
     return html;
   };
 
-  var expandSubsystems = true;
   this.loadSystem = function(systemName, select) {
     // TODO(pablo): remove duplicate logic below; maybe into expand()
     // method?
@@ -155,9 +176,8 @@ var Controller = function(scene) {
     new Resource(systemName).get(function(obj) {
         me.display(obj);
         if (select) {
-          // TODO(pablo): get rid of this and the global by triggering on anim.
           setTimeout('ctrl.select("'+ systemName +'")', 200);
-          if (expandSubsystems && obj.system) {
+          if (obj.system) {
             for (var i in obj.system) {
               var child = obj.system[i];
               console.log('loadSystem: expanding: ' + child);

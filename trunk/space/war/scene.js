@@ -1,10 +1,13 @@
 'use strict';
 
 var
-  radiusScale = 1E-5,
+  radiusScale = 1E-7,
   atmosScale = radiusScale * 1.005,
   atmosUpperScale = atmosScale,
-  orbitScale = 1E-5;
+  orbitScale = 1E-7;
+
+var globe;
+var starImage, starGlowMaterial;
 
 function newStars(starProps, stars, s) {
   var orbitPlane = new THREE.Object3D;
@@ -28,9 +31,6 @@ function newStars(starProps, stars, s) {
     starsGeometry.vertices.push(vec);
   }
 
-  // Lots of fiddling with the following options to get smooth
-  // rendering of the sun's glow, the mini stars and the orbit lines,
-  // without flicker, overdraw, etc.
   var starImage = pathTexture('star_glow', '.png');
   var starGlowMaterial =
     new THREE.ParticleBasicMaterial({ color: 0xffffff,
@@ -38,17 +38,17 @@ function newStars(starProps, stars, s) {
                                       map: starImage,
                                       sizeAttenuation: true,
                                       blending: THREE.AdditiveBlending,
-                                      depthTest: true,
-                                      depthWrite: false,
+                                      depthTest: false,
                                       transparent: true }); 
 
   var starMiniMaterial =
     new THREE.ParticleBasicMaterial({ color: 0xffffff,
-                                      size: 5,
+                                      size: 4,
                                       map: starImage,
                                       sizeAttenuation: false,
+                                      blending: THREE.AdditiveBlending,
                                       depthTest: true,
-                                      transparent: false });
+                                      transparent: true });
 
   var shape = new THREE.Object3D();
 
@@ -73,53 +73,38 @@ function newStar(props) {
   var orbitPlane = new THREE.Object3D;
   var orbitPosition = new THREE.Object3D;
   orbitPlane.add(orbitPosition);
-  var opts = {radius: Measure.parseMeasure(props.radius).scalar * radiusScale,
-              color: 0xffffff};
-  var matr = new THREE.MeshBasicMaterial({color: 0xffffff,
-                                          map: pathTexture('sun'),
-                                          transparent: false});
-  var starMesh = sphere(opts, matr);
-  orbitPosition.add(starMesh);
+  // TODO(pablo): add back in 'sun-white' sunspot texture.
+  orbitPosition.add(sphere({radius: Measure.parseMeasure(props.radius).scalar * radiusScale}));
   orbitPlane.orbitPosition = orbitPosition;
   return orbitPlane;
 }
 
 function newOrbitingPlanet(planetProps) {
 
-  var debug = planetProps.name == 'earth';
-  var orbitProps = planetProps.orbit;
+  var orbit = planetProps.orbit;
 
-  // The plane of the orbit, centered at the planet's parent position.
   var orbitPlane = new THREE.Object3D;
-  orbitPlane.add(newOrbit(orbitProps));
-  if (debug)
-    orbitPlane.add(grid({stepSize: 1E4, color: 0x0000ff}));
+  orbitPlane.add(newOrbit(orbit));
 
-  orbitPlane.rotation.x = orbitProps.inclination * toRad;
-  orbitPlane.rotation.y = orbitProps.longitudeOfPerihelion * toRad;
+  orbitPlane.rotation.x = orbit.inclination * toRad;
+  orbitPlane.rotation.y = orbit.longitudeOfPerihelion * toRad;
 
-  var l = line(new THREE.Vector3(orbitProps.semiMajorAxis * orbitScale, 0, 0));
-  orbitPlane.add(l);
+  orbitPlane.add(line(new THREE.Vector3(orbit.semiMajorAxis * orbitScale, 0, 0)));
 
-  // Orbit position is where the planet is in the scene, centered at
-  // the parent.
   var orbitPosition = new THREE.Object3D;
   orbitPlane.add(orbitPosition);
 
   // Attaching this property triggers orbit of planet during animation.
-  orbitPosition.orbitProps = orbitProps;
+  orbitPosition.orbit = planetProps.orbit;
 
   var planet = newPlanet(planetProps);
   orbitPosition.add(planet);
 
   var referencePlane = new THREE.Object3D;
   referencePlane.add(orbitPlane);
-  referencePlane.rotation.y = orbitProps.longitudeOfAscendingNode * toRad;
+  referencePlane.rotation.y = orbit.longitudeOfAscendingNode * toRad;
   // Children centered at this planet's orbit position.
   referencePlane.orbitPosition = orbitPosition;
-
-  if (debug)
-    referencePlane.add(grid({stepSize: 1E5}));
 
   return referencePlane;
 };
@@ -128,7 +113,7 @@ function newPlanet(planetProps) {
   var planet = new THREE.Object3D;
   // TODO(pablo): put these in near LOD only.
   if (planetProps.texture_atmosphere) {
-    planet.add(newClouds(planetProps));
+    planet.add(newAtmosphere(planetProps));
     //planet.add(atmos(planetProps.radius * atmosUpperScale));
   }
 
@@ -192,19 +177,15 @@ function newSurface(planetProps) {
       });
   }
 
-  var planetSceneRadius = planetProps.radius * radiusScale;
-  console.log('planetSceneRadius: ' + planetSceneRadius);
-  return lodSphere(planetSceneRadius, planetMaterial);
+  return lodSphere(planetProps.radius * radiusScale, planetMaterial);
 }
 
-function newClouds(planetProps) {
-  var matr =
+function newAtmosphere(planetProps) {
+  var mat =
     new THREE.MeshLambertMaterial({color: 0xffffff,
                                    map: pathTexture(planetProps.name, '_atmos.png'),
                                    transparent: true});
-  var clouds = sphere(planetProps, matr);
-  clouds.scale.set(atmosScale, atmosScale, atmosScale);
-  return clouds;
+  return lodSphere(planetProps.radius * atmosScale, mat);
 }
 
 function newOrbit(orbit) {
@@ -218,11 +199,11 @@ function newOrbit(orbit) {
   var ellipseGeometry = ellipseCurvePath.createPointsGeometry(100);
   ellipseGeometry.computeTangents();
   var orbitMaterial = new THREE.LineBasicMaterial({
-      color: 0x000055,
+      color: 0x0000ff,
       blending: THREE.AdditiveBlending,
       depthTest: true,
       depthWrite: false,
-      transparent: true
+      transparent: false
     });
   
   var line = new THREE.Line(ellipseGeometry, orbitMaterial);
