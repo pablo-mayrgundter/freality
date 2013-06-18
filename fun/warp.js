@@ -3,7 +3,7 @@ var x, y, z, serial;
 var morphLevel = 0,
   morphSpeed = 0,
   maxMorphSpeed = 0.005,
-  morphAccel = 0.00001;
+  morphAccel = 0.0001;
 var numNodes = 1000;
 
 /**
@@ -45,7 +45,7 @@ function renderNode(n) {
   var r = Math.abs(n.x) * 256,
     g = Math.abs(n.y) * 256,
     b = Math.abs(n.x + n.y / 2.0) * 256;
-  n.color = sigma.tools.rgbToHex(r, g, b);
+  n.color = '#' + sigma.tools.rgbToHex(r, g, b);
 }
 
 /**
@@ -59,6 +59,8 @@ function renderSystem() {
   for (var i = 0; i < 10; i++) {
     ifs();
   }  
+
+  // Positions the nodes in the graph.
   graph.iterNodes(renderNode);
 
   // The 2 params tell sigma to use "direct" drawing, which gets rid
@@ -105,7 +107,7 @@ function anim() {
     // the speed down from the limit to engage the conditional again,
     // decelerating the system
     if (morphSpeed >= maxMorphSpeed) {
-      morphSpeed = maxMorphSpeed - morphAccel;
+      morphSpeed = maxMorphSpeed + morphAccel;
     }
     // Same for if we're at the bottom end limit.
     if (morphSpeed <= 0) {
@@ -135,6 +137,13 @@ function init() {
     }
     lastNode = i;
   }
-
   renderSystem();
 }
+
+// From https://developer.mozilla.org/en-US/docs/Web/API/window.requestAnimationFrame
+(function() {
+  var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+    window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+  window.requestAnimationFrame = requestAnimationFrame;
+})();
+
