@@ -1,9 +1,35 @@
 <html>
   <head>
-    <script src="js/sigma.min.js"></script>
-    <script src="fun/warp.js"></script>
+    <style>
+      body {
+        background: grey;
+        font-family: Monaco;
+      }
+      #nav {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 220px;
+        height: 100%;
+        margin: 10px;
+        text-align: center;
+      }
+      #main {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 83%;
+        height: 100%;
+      }
+    </style>
   </head>
-  <body onload="init()" onclick="anim()" style="background-color: #fff">
-    <div id="body" style="width: 100%; height: 100%"></div>
+  <body>
+    <div id="nav">
+      Warp<br/>
+      <a href="fun/warp/index.html" target="main"><img src="fun/warp/ss.png"/></a>
+      <p>Grid<br/>
+      <a href="game/gol/index.html" target="main"><img src="game/gol/ss.png"/></a>
+    </div>
+    <iframe id="main" src="fun/warp/index.html" border="0"/>
   </body>
 </html>
