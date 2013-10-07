@@ -1,6 +1,4 @@
-#library('phys/Space');
-
-#import('dart:html');
+part of phys;
 
 /**
  * A variable dimensional space of integer values.
@@ -64,11 +62,13 @@ class Space {
 
   void debug(msg) {
     StringBuffer s = new StringBuffer();
+/*
     String prev = query('#info').text;
     s.add(prev);
     s.add("\n");
     s.add(msg);
     query('#info').text = s.toString();
+*/
   }
 
   int get(final List<int> coord) {

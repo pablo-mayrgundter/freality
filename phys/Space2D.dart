@@ -1,6 +1,4 @@
-#library('phys/Space2D');
-
-#import('Space.dart');
+part of phys;
 
 /**
  * A square grid of integer values with convenience methods for
