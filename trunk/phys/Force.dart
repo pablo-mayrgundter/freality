@@ -1,4 +1,4 @@
-#library('/phys/Force');
+part of phys;
 
 // TODO(pablo): clearly need to generalize to multi-dimensional space.
 abstract class Force {
@@ -12,6 +12,6 @@ abstract class Force {
     }
   }
 
-  abstract void applyWithin(int radius, Space2D before, Space2D after,
-                            int x, int y);
+  void applyWithin(int radius, Space2D before, Space2D after,
+                   int x, int y) {}
 }

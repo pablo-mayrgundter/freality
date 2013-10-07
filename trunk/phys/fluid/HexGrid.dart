@@ -1,5 +1,4 @@
-#library('/phys/fluid/HexGrid');
-//#import('../../util/Flags.dart');
+part of phys;
 
 /**
  * Hexagonal grid and image.

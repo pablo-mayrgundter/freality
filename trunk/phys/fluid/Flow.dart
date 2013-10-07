@@ -1,10 +1,4 @@
-#import('dart:html');
-
-#import('/phys/Space.dart');
-#import('/phys/Space2D.dart');
-
-#import('/phys/fluid/HexGrid.dart');
-#import('/phys/fluid/HexForce.dart');
+part of phys;
 
 /**
  * Wolfram models a fluid as particle interactions on a hexagonal

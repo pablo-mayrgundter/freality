@@ -1,9 +1,4 @@
-#library('/phys/fluid/HexForce');
-
-#import('dart:html');
-
-#import('/phys/Force.dart');
-#import('/phys/Space2D.dart');
+part of phys;
 
 /**
  * Force field on a hexagonal grid.
