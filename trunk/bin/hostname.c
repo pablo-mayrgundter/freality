@@ -13,11 +13,12 @@
 int main (const int argc, const char * const argv[]) {
   if (argc == 1) {
     char name[HOST_NAME_MAX];
-    if (gethostname(name, HOST_NAME_MAX) == 0)
+    if (gethostname(name, HOST_NAME_MAX) == 0) {
       printf("%s\n", name);
-    else {
-      if (errno == ENAMETOOLONG)
+    } else {
+      if (errno == ENAMETOOLONG) {
         printf("Name too long\n");
+      }
       return -1;
     }
   }
