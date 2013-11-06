@@ -24,17 +24,10 @@ public class Echo {
       "NOTE: your shell may have its own version of echo, which usually supersedes\n" +
       "the version described here.  Please refer to your shell's documentation\n" +
       "for details about the options it supports.\n\n" +
-      "Report echo bugs to bug-coreutils@gnu.org\n" +
-      "GNU coreutils home page: <http://www.gnu.org/software/coreutils/>\n" +
-      "General help using GNU software: <http://www.gnu.org/gethelp/>\n" +
-      "Report echo translation bugs to <http://translationproject.org/team/>\n";
+      "Project home page and bug reports: <http://code.google.com/p/freality/>\n\0";
 
   static final String VERSION =
-      "Copyright (C) 2009 Free Software Foundation, Inc.\n" +
-      "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.\n" +
-      "This is free software: you are free to change and redistribute it.\n" +
-      "There is NO WARRANTY, to the extent permitted by law.\n\n" +
-      "Written by Brian Fox and Chet Ramey.";
+      "1.0 - written by Pablo Mayrgundter (derived from GNU coreutils)\n\0";
 
   @SuppressWarnings("fallthrough")
   public static void main(String [] args) {

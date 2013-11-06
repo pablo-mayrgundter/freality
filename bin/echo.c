@@ -48,9 +48,9 @@ int main (const int argc, const char * const argv[]) {
       case 'n': newline = 0; break;
       case 'e': escapes = 1; break;
       case 'E': ; break;
-      case 'v': printf("%s\n", VERSION); return;
+      case 'v': printf("%s\n", VERSION); return 0;
       case 'h':; // fall through
-      default: printf("%s\n", HELP); return;
+      default: printf("%s\n", HELP); return 1;
       }
     } else {
       flags = 0;
