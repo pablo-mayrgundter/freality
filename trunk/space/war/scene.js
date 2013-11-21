@@ -73,8 +73,11 @@ function newStar(props) {
   var orbitPlane = new THREE.Object3D;
   var orbitPosition = new THREE.Object3D;
   orbitPlane.add(orbitPosition);
-  // TODO(pablo): add back in 'sun-white' sunspot texture.
-  orbitPosition.add(sphere({radius: Measure.parseMeasure(props.radius).scalar * radiusScale}));
+  // Can't do a x-platform star yet.. sprites don't size up equally on
+  // all screens and don't know how to do a billboard otherwise, so
+  // just leave this as placeholder.  Particle system above does that
+  // actual rendering.
+  orbitPosition.add(new THREE.Object3D);
   orbitPlane.orbitPosition = orbitPosition;
   return orbitPlane;
 }

@@ -39,7 +39,7 @@ var Controller = function() {
     } else if (props.type == 'star') {
       obj = newStar(props);
       obj.add(newPointLight());
-      camera.position.set(0, 0, Measure.parseMeasure(props.radius).scalar * radiusScale * 1E1);
+      camera.position.set(0, 0, Measure.parseMeasure(props.radius).scalar * radiusScale * 1E3);
     } else if (props.type == 'planet') {
       obj = newOrbitingPlanet(props);
     }
