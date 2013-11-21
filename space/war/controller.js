@@ -94,8 +94,12 @@ var Controller = function() {
       if (node.props.type == 'star') {
         radius = Measure.parseMeasure(node.props.radius).scalar;
         controls.rotateSpeed = 1;
+        controls.zoomSpeed = 1;
+        controls.panSpeed = 1;
       } else {
         controls.rotateSpeed = 0.001;
+        controls.zoomSpeed = 0.001;
+        controls.panSpeed = 0.001;
       }
       tStepBack.setLength(radius * orbitScale * 10.0);
       targetPos.add(tStepBack);

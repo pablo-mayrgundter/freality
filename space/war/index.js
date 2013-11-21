@@ -75,8 +75,8 @@ function initCameraAndControls(renderer) {
   // Rotation speed is changed in controller.js depending on target
   // type: faster for sun, slow for planets.
   controls.rotateSpeed = 1;
-  controls.zoomSpeed = 1.2;
-  controls.panSpeed = 0.8;
+  controls.zoomSpeed = 1;
+  controls.panSpeed = 1;
   controls.noZoom = false;
   controls.noPan = false;
   controls.staticMoving = true;
