@@ -19,15 +19,9 @@ function sphere(opts) {
   opts = opts || {};
   opts.radius = opts.radius || 1;
   opts.segmentSize = opts.segmentSize || 128;
-  opts.color = opts.color || 0xff0000;
-  opts.basic = opts.basic || true;
+  opts.color = opts.color || 0xffffff;
   var geom = new THREE.SphereGeometry(opts.radius, opts.segmentSize, opts.segmentSize / 2);
-  var matr;
-  if (opts.basic) {
-    matr = new THREE.MeshPhongMaterial(opts);
-  } else {
-    matr = new THREE.MeshBasicMaterial(opts);
-  }
+  var matr = opts.matr || new THREE.MeshBasicMaterial();
   return new THREE.Mesh(geom, matr);
 }
 
