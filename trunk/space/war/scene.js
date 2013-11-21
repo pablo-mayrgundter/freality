@@ -34,7 +34,7 @@ function newStars(starProps, stars, s) {
   var starImage = pathTexture('star_glow', '.png');
   var starGlowMaterial =
     new THREE.ParticleBasicMaterial({ color: 0xffffff,
-                                      size: starProps.radius * 1E3 * radiusScale,
+                                      size: starProps.radius * 1E2 * radiusScale,
                                       map: starImage,
                                       sizeAttenuation: true,
                                       blending: THREE.AdditiveBlending,
@@ -77,7 +77,13 @@ function newStar(props) {
   // all screens and don't know how to do a billboard otherwise, so
   // just leave this as placeholder.  Particle system above does that
   // actual rendering.
-  orbitPosition.add(new THREE.Object3D);
+  //orbitPosition.add(new THREE.Object3D);
+  var matr = {
+    map: pathTexture('sun'),
+    blending: THREE.AdditiveBlending,
+  };
+  var star = sphere({'radius': 20, 'matr': matr});
+  orbitPosition.add(star);
   orbitPlane.orbitPosition = orbitPosition;
   return orbitPlane;
 }

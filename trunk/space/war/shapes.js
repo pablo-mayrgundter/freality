@@ -19,9 +19,11 @@ function sphere(opts) {
   opts = opts || {};
   opts.radius = opts.radius || 1;
   opts.segmentSize = opts.segmentSize || 128;
-  opts.color = opts.color || 0xffffff;
+  var matrOpts = opts.matr || {
+    color: 0xffffff
+  };
+  var matr = new THREE.MeshBasicMaterial(matrOpts);
   var geom = new THREE.SphereGeometry(opts.radius, opts.segmentSize, opts.segmentSize / 2);
-  var matr = opts.matr || new THREE.MeshBasicMaterial();
   return new THREE.Mesh(geom, matr);
 }
 
