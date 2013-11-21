@@ -29,6 +29,7 @@ var ctrl = null;
 var scene = null;
 var camera = null;
 var targetPos = new THREE.Vector3();
+var controls;
 
 window.onload = function() {
   scene = initCanvas(document.getElementById('scene'), 0);
@@ -70,9 +71,10 @@ function initCameraAndControls(renderer) {
   camera = new THREE.PerspectiveCamera(25, width / height, 1, 1E13);
   camera.rotationAutoUpdate = true;
 
-  var controls = null;
   controls = new THREE.TrackballControls( camera );
-  controls.rotateSpeed = 1.0;
+  // Rotation speed is changed in controller.js depending on target
+  // type: faster for sun, slow for planets.
+  controls.rotateSpeed = 1;
   controls.zoomSpeed = 1.2;
   controls.panSpeed = 0.8;
   controls.noZoom = false;
