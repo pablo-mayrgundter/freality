@@ -3,16 +3,18 @@
 /**
  * Solar System simulator inspired by Celestia using Three.js.
  *
- * TODO:
+ * TODO
+ * v1:
+ * - Exponential zoom.
+ * - Time control.
  * - Units for measurements.
  * - Q/A against Celestia.
- *   - Add actual epoch-based locations.
- *   - Add actual epoch-based locations.
+ *   - Epoch-based locations.
+ * v2:
  * - LRU scene-graph un-loading.
  * - View options, e.g. toggle orbits.
  * - Stars and Galaxies.
- * - Time slider.
- * - Zoom in.
+ * - Time slider.  Meaningful time steps: 1s, 1m, 1h, 1d, 1mo, 1yr, ...
  * BUGS:
  * - Scene select race before objects gain location in anim.
  *
@@ -21,8 +23,6 @@
  * @author Pablo Mayrgundter
  */
 
-var time = new Date().getTime();
-
 var test_hook = null;
 var animationDelegate = animation;
 var ctrl = null;
@@ -30,6 +30,8 @@ var scene = null;
 var camera = null;
 var targetPos = new THREE.Vector3();
 var controls;
+var date = new Date();
+var dateElt;
 
 window.onload = function() {
   scene = initCanvas(document.getElementById('scene'), 0);
@@ -39,6 +41,7 @@ function initCanvas(container, bgColor) {
   if (bgColor == null) {
     bgColor = 0xffffff;
   }
+  dateElt = document.getElementById('date');
   var width = container.clientWidth;
   var height = container.clientHeight;
   if (width == 0 || height == 0) {
@@ -88,9 +91,7 @@ function initCameraAndControls(renderer) {
   window.addEventListener('hashchange',
                           function(e) { 
                             var hash = (location.hash || '#').substring(1);
-                            console.log('hashchange: ' + hash);
                             hash = hash.split(',');
-                            console.log('hashchange(array): ' + hash.join(','));
                             ctrl.load(hash);
                           },
                           false);
@@ -114,7 +115,9 @@ function onWindowResize(renderer, camera, controls) {
   }
 }
 
+
 function animate(renderer, camera, controls, scene) {
+  updateUi();
   requestAnimationFrame(function() { animate(renderer, camera, controls, scene); } );
   render(renderer, camera, controls, scene);
 }
@@ -122,11 +125,11 @@ function animate(renderer, camera, controls, scene) {
 var targetObj = null;
 var targetObjLoc = new THREE.Matrix4;
 
-function render(renderer, camera, controls, scene) {
-  var t = new Date().getTime() * timeScale;
-  var dt = t - time;
-  var time = t;
+function updateUi() {
+  dateElt.innerHTML = date + '';
+}
 
+function render(renderer, camera, controls, scene) {
   if (controls) {
     controls.update();
   }
