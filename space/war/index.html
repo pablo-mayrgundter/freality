@@ -18,7 +18,14 @@
     <link rel="stylesheet" href="index.css"/>
   </head>
   <body>
-    <div id="info">Welcome to Celestiary!  Loading...</div>
+    <div id="controls">
+      <span id="date"></span>
+      <span id="timeScale"></span>
+      <button onclick="changeTimeScale(-1)">-</button>
+      <button onclick="changeTimeScale(0)">=</button>
+      <button onclick="changeTimeScale(1)">+</button>
+    </div>
     <div id="scene"/>
+    <div id="info">Welcome to Celestiary!  Loading...</div>
   </body>
 </html>

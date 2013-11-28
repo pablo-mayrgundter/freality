@@ -1,10 +1,14 @@
 'use strict';
 
+var RADIUS_SCALE_NORMAL = 1E-7;
+var RADIUS_SCALE_BIG = 5E-4;
+var ORBIT_SCALE_NORMAL = 1E-7;
+
 var
-  radiusScale = 1E-7,
+  radiusScale = RADIUS_SCALE_NORMAL,
   atmosScale = radiusScale * 1.005,
   atmosUpperScale = atmosScale,
-  orbitScale = 1E-7;
+  orbitScale = ORBIT_SCALE_NORMAL;
 
 var globe;
 var starImage, starGlowMaterial;
@@ -38,7 +42,7 @@ function newStars(starProps, stars, s) {
                                       map: starImage,
                                       sizeAttenuation: true,
                                       blending: THREE.AdditiveBlending,
-                                      depthTest: false,
+                                      depthTest: true,
                                       transparent: true }); 
 
   var starMiniMaterial =

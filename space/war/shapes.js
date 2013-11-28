@@ -20,7 +20,8 @@ function sphere(opts) {
   opts.radius = opts.radius || 1;
   opts.segmentSize = opts.segmentSize || 128;
   var matrOpts = opts.matr || {
-    color: 0xffffff
+    color: 0xffffff,
+    transparent: false
   };
   var matr = new THREE.MeshBasicMaterial(matrOpts);
   var geom = new THREE.SphereGeometry(opts.radius, opts.segmentSize, opts.segmentSize / 2);
