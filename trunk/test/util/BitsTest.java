@@ -1,6 +1,6 @@
 package util;
 
-import junit.framework.TestCase;
+import unit.TestCase;
 
 /**
  * Tests for the Bits class.
@@ -58,7 +58,7 @@ public class BitsTest extends TestCase {
     assertEquals(0, Bits.popCount(0));
     for (int i = 0; i < 32; i++) {
       final int x = 1 << i;
-      assertEquals("Expected popCount of 1 on 1 << " + i, 1, Bits.popCount(x));
+      assertEquals(1, Bits.popCount(x), "Expected popCount of 1 on 1 << " + i);
     }
     for (int i = 0; i < 32; i++) {
       final int x = 1 << i;
@@ -67,8 +67,8 @@ public class BitsTest extends TestCase {
           continue;
         }
         final int y = x | (1 << j);
-        assertEquals(String.format("Expected popCount of 2 on %d == (1 << %d | 1 << %d)", y, i, j),
-                     2, Bits.popCount(y));
+        assertEquals(2, Bits.popCount(y),
+                     "Expected popCount of 2 on %d == (1 << %d | 1 << %d)", y, i, j);
       }
     }
     // etc.
@@ -78,7 +78,8 @@ public class BitsTest extends TestCase {
 
   void testGet(final Bits bits, final int value) {
     for (int i = 0, n = bits.getLength(); i < n; i++) {
-      assertEquals("Expected bit to be "+ value +" at index: "+ i +" of "+ n, value, bits.get(i));
+      assertEquals(value, bits.get(i),
+                   "Expected bit to be %d at index %d of %d", value, i, n);
     }
   }
 
@@ -87,16 +88,8 @@ public class BitsTest extends TestCase {
       bits.set(i, value);
     }
     for (int i = 0, n = bits.getLength(); i < n; i++) {
-      assertEquals("Expected bit to be "+ value +" at index: "+ i +" of "+ n, value, bits.get(i));
+      assertEquals(value, bits.get(i),
+                   "Expected bit to be %d at index %d of %d", value, i, n);
     }
-  }
-
-  /**
-   * Runnable as:
-   *
-   *   java util.BitsTest
-   */
-  public static void main(String [] args) {
-    junit.textui.TestRunner.run(BitsTest.class);
   }
 }

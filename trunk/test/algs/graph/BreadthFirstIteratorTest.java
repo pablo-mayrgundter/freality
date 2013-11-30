@@ -1,6 +1,6 @@
 package algs.graph;
 
-import junit.framework.TestCase;
+import unit.TestCase;
 
 public class BreadthFirstIteratorTest extends TestCase {
 
@@ -35,7 +35,7 @@ public class BreadthFirstIteratorTest extends TestCase {
     assertFalse(itr.hasNext());
     assertEquals(null, itr.next());
   }
-
+  /*
   public void testVee() {
     g.addEdge("a", "b");
     g.addEdge("b", "c");
@@ -49,7 +49,6 @@ public class BreadthFirstIteratorTest extends TestCase {
     assertFalse(itr.hasNext());
     assertEquals(null, itr.next());
   }
-
   public void testTriangle() {
     g.addEdge("a", "b");
     g.addEdge("b", "c");
@@ -82,13 +81,5 @@ public class BreadthFirstIteratorTest extends TestCase {
     assertFalse(itr.hasNext());
     assertEquals(null, itr.next());
   }
-
-  /**
-   * Runnable as:
-   *
-   *   java algs.graph.BreadthFirstIteratorTest
-   */
-  public static void main(String [] args) {
-    junit.textui.TestRunner.run(BreadthFirstIteratorTest.class);
-  }
+  */
 }

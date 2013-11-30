@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import junit.framework.TestCase;
+import unit.TestCase;
 
 public class IndexTest extends TestCase {
 
@@ -26,7 +26,7 @@ public class IndexTest extends TestCase {
     }
     for (String s : docs) {
       Set matches = index.lookupSimple(s);
-      assertTrue("Index should contain indexed doc", matches.contains(s));
+      assertTrue(matches.contains(s), "Index should contain indexed doc");
       assertEquals(1, matches.size());
     }
   }
@@ -44,19 +44,19 @@ public class IndexTest extends TestCase {
   }
 
   public void loadTest(int docSize, int numDocs, int numQueries) {
-    System.err.printf("\n\nsize=%d, docs=%d, queries=%d:\n",
-                      docSize, numDocs, numQueries);
+    // System.err.printf("\n\nsize=%d, docs=%d, queries=%d:\n",
+    //                  docSize, numDocs, numQueries);
     int i = 0;
     long time;
 
-    System.err.println("Generating docs...");
+    // System.err.println("Generating docs...");
     time = System.currentTimeMillis();
     List<String> docs = new ArrayList<String>();
     for (i = 0; i < numDocs; i++) {
       docs.add(newDoc(10000));
     }
     time = System.currentTimeMillis() - time;
-    System.err.println("Corpus create time: "+ time);
+    // System.err.println("Corpus create time: "+ time);
 
     i = 0;
     time = System.currentTimeMillis();
@@ -64,14 +64,14 @@ public class IndexTest extends TestCase {
       index.putSimple(doc);
     }
     time = System.currentTimeMillis() - time;
-    System.err.println("Indexing time: "+ time);
+    // System.err.println("Indexing time: "+ time);
 
     time = System.currentTimeMillis();
     for (i = 0; i < numQueries; i++) {
       index.lookupSimple("d");
     }
     time = System.currentTimeMillis() - time;
-    System.err.println("Search time: "+ time);
+    // System.err.println("Search time: "+ time);
   }
 
   /**
@@ -80,6 +80,6 @@ public class IndexTest extends TestCase {
    *   java algs.search.IndexTest
    */
   public static void main(String [] args) {
-    junit.textui.TestRunner.run(IndexTest.class);
+    new IndexTest().run().println();
   }
 }

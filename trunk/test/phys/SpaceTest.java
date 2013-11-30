@@ -1,6 +1,6 @@
 package phys;
 
-import junit.framework.TestCase;
+import unit.TestCase;
 
 /**
  * Tests for the Space class.
@@ -28,8 +28,7 @@ public class SpaceTest extends TestCase {
     s.set(val, x1);
     for (int x = 0; x < radius; x++) {
       int expect = x == x1 ? val : 0;
-      assertEquals(String.format("expect: space[%d] == %d", x, expect),
-                   expect, s.get(x));
+      assertEquals(expect, s.get(x), "expect: space[%d] == %d", x, expect);
     }
   }
 
@@ -43,18 +42,8 @@ public class SpaceTest extends TestCase {
     for (int x = 0; x < radius; x++) {
       for (int y = 0; y < radius; y++) {
         int expect = x == x1 && y == x2 ? val : 0;
-        assertEquals(String.format("expect: space[%d, %d] == %d", x, y, expect),
-                     expect, s.get(x, y));
+        assertEquals(expect, s.get(x, y), "expect: space[%d, %d] == %d", x, y, expect);
       }
     }
-  }
-
-  /**
-   * Runnable as:
-   *
-   *   java phys.SpaceTest
-   */
-  public static void main(String [] args) {
-    junit.textui.TestRunner.run(SpaceTest.class);
   }
 }

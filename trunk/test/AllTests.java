@@ -1,4 +1,4 @@
-import junit.framework.TestSuite;
+import unit.TestSuite;
 
 /**
  * This is a convenient target for the build system to invoke all of
@@ -26,6 +26,6 @@ public class AllTests {
    *   java AllTests
    */
   public static void main(final String [] args) {
-    junit.textui.TestRunner.run(suite());
+    suite().run().println();
   }
 }
