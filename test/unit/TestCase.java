@@ -2,6 +2,8 @@ package unit;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,15 +27,24 @@ public class TestCase {
     }
   }
 
-  List<Result> results;
+  final List<String> errorMsgs;
+  final List<Result> results;
 
   public TestCase() {
+    errorMsgs = new ArrayList<String>();
     results = new ArrayList<Result>();
   }
 
   @Override
   public String toString() {
-    return "" + results;
+    String msg = "";
+    for (String errorMsg : errorMsgs) {
+      msg += errorMsg + "\n";
+    }
+    for (Result r : results) {
+      msg += r;
+    }
+    return msg;
   }
 
   protected void setUp() {}
@@ -42,6 +53,36 @@ public class TestCase {
   protected void assertEquals(double a, double b) {
     assertEquals(new Double(a), new Double(b),
                  String.format("Expected %f, got %f", a, b));
+  }
+
+  protected void assertEquals(double[] a, double[] b, Object ... msg) {
+    if (Arrays.equals(a, b)) {
+      return;
+    }
+    throwMsgOrDiff(a, b, msg);
+  }
+
+  /** Prefer the msg if present over diff. */
+  void throwMsgOrDiff(double[] a, double[] b, Object ... msg) {
+    throw new TestException(msg.length > 0 ? format(msg) : diff(a, b));
+  }
+
+  String diff(double[] a, double[] b) {
+    String msg = null;
+    if (a.length != b.length) {
+      msg = "Array lengths differ";
+    } else {
+      for (int i = 0; i < a.length; i++) {
+        double aElt = a[i];
+        double bElt = b[i];
+        if (aElt != bElt) {
+          msg = String.format("elts at index %d differ: %s != %s", i, aElt, bElt);
+          break;
+        }
+      }
+    }
+    if (msg == null) throw new IllegalStateException("Couldn't find diff");
+    return msg;
   }
 
   protected void assertEquals(Object a, Object b, Object ... msg) {
@@ -92,12 +133,20 @@ public class TestCase {
       try {
         m.invoke(this);
         results.add(Result.PASS);
-      } catch (TestException e) {
-        results.add(Result.FAIL);
       } catch (Exception e) {
         if (e instanceof InvocationTargetException) {
-          ((InvocationTargetException) e).getTargetException().printStackTrace();
-          results.add(Result.ERR);
+          Throwable t = ((InvocationTargetException) e).getTargetException();
+          if (t instanceof TestException) {
+            errorMsgs.add(m.getDeclaringClass().getName()
+                          + "." + m.getName() + ": " + t.getMessage());
+            results.add(Result.FAIL);
+          } else {
+            t.printStackTrace();
+            results.add(Result.ERR);
+          }
+        } else {
+          e.printStackTrace();
+          throw new RuntimeException(e);
         }
       }
     }
@@ -113,10 +162,16 @@ public class TestCase {
     Method[] methods = getClass().getDeclaredMethods();
     List<Method> testMethods = new ArrayList<Method>();
     for (Method m : methods) {
-      if (m.getName().startsWith("test")) {
+      if (m.getName().startsWith("test")
+          && Modifier.isPublic(m.getModifiers())) {
         testMethods.add(m);
       }
     }
     return testMethods;
+  }
+
+  public static void main(String[] args) throws Exception {
+    TestCase t = (TestCase) Class.forName(System.getProperty("sun.java.command")).newInstance();
+    t.run().println();
   }
 }

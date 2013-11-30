@@ -43,8 +43,12 @@ public class TestSuite extends LinkedHashSet<TestCase> {
 
   @Override
   public String toString() {
-    return String.format("%d TestCases with %d tests run:\n%s\n",
-                         size(), results.size(), results);
+    String msg = "";
+    for (Result r : results) {
+      msg += r;
+    }
+    return String.format("%d TestCases with %d tests run:\n%s",
+                         size(), results.size(), msg);
   }
 
   public void println() {

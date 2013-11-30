@@ -5,8 +5,6 @@ import unit.TestCase;
 /**
  * The DensityMapTest class covers the cartesian to screen space
  * conversion.
- *
- * @author Pablo Mayrgundter
  */
 public class DensityMapTest extends TestCase {
 
@@ -28,14 +26,5 @@ public class DensityMapTest extends TestCase {
     assertEquals(1, map.getDensity(3, 3.2));
     assertEquals(0, map.getDensity(3, 8.2));
     assertEquals(2, map.getMaxDensity());
-  }
-
-  /**
-   * Runnable as:
-   *
-   *   java math.algs.DensityMapTest
-   */
-  public static void main(String [] args) {
-    new DensityMapTest().run().println();
   }
 }

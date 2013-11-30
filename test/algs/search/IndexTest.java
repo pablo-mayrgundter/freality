@@ -11,10 +11,12 @@ public class IndexTest extends TestCase {
 
   Index index;
 
+  @Override
   public void setUp() {
     index = new Index();
   }
 
+  @Override
   public void tearDown() {
     index = null;
   }
@@ -72,14 +74,5 @@ public class IndexTest extends TestCase {
     }
     time = System.currentTimeMillis() - time;
     // System.err.println("Search time: "+ time);
-  }
-
-  /**
-   * Runnable as:
-   *
-   *   java algs.search.IndexTest
-   */
-  public static void main(String [] args) {
-    new IndexTest().run().println();
   }
 }
