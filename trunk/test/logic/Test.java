@@ -6,9 +6,7 @@ public class Test extends TestCase {
 
   Operator op = null;
 
-  public void setUp() {
-  }
-
+  @Override
   public void tearDown() {
     op = null;
   }
@@ -29,14 +27,5 @@ public class Test extends TestCase {
     op.add(True.VALUE);
     assertTrue(op.isTrue(), "False AND True");
     assertEquals(True.VALUE, op.reduce());
-  }
-
-  /**
-   * Runnable as:
-   *
-   *   java logic.Test
-   */
-  public static void main(String [] args) {
-    new Test().run().println();
   }
 }
