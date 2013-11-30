@@ -1,10 +1,10 @@
 DONE:
 13712 echo          v1.0
+13964 sleep         v1.0
 
 TODO:
 13828 rmdir         stalled - No local manpage for unlink.
-13896 hostname      started - Finished get, need to implement set.
-13964 sleep         started - fix atoi?
+13896 hostname      started - Need trim.
 13984 pwd           started - misc error checking.
 14080 mkdir         started - unknown syscall
 14100 kill          started - 
