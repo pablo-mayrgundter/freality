@@ -1,6 +1,6 @@
 package logic;
 
-import junit.framework.TestSuite;
+import unit.TestSuite;
 
 /**
  * This is a convenient target for the build system to invoke all of
@@ -16,7 +16,7 @@ public class AllTests {
    */
   public static TestSuite suite() {
     TestSuite suite = new TestSuite();
-    suite.addTestSuite(Test.class);
+    suite.addTest(Test.class);
     return suite;
   }
 
@@ -26,6 +26,6 @@ public class AllTests {
    *   java algs.AllTests
    */
   public static void main(final String [] args) {
-    junit.textui.TestRunner.run(suite());
+    suite().run();
   }
 }

@@ -1,7 +1,6 @@
 package util;
 
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import unit.TestCase;
 
 /**
  * Tests for the BitBuffer class.
@@ -10,16 +9,12 @@ import junit.framework.TestSuite;
  */
 public class BitBufferTest extends TestCase {
 
-  public BitBufferTest (final String name) {
-    super(name);
-  }
-
-  public void testGet () {
+  public void testGet() {
     for (int i = 0; i < 17; i++)
       testGet(new BitBuffer(i));
   }
 
-  public void testSet () {
+  public void testSet() {
     for (int i = 0; i < 17; i++)
       testSet(new BitBuffer(i));
     final BitBuffer b = new BitBuffer(9);
@@ -37,28 +32,22 @@ public class BitBufferTest extends TestCase {
     assertEquals(1, b.get(8));
   }
 
-  void testGet (final BitBuffer bits) {
-    for (int i = bits.position(), n = bits.limit(); i < n; i++)
-      assertEquals("Expected bit to be 0 at index: "+ i +" of "+ n, 0, bits.get(i));
-  }
-
-  void testSet (final BitBuffer bits) {
+  void testGet(final BitBuffer bits) {
     for (int i = bits.position(), n = bits.limit(); i < n; i++) {
-      bits.set(i, 1);
-      assertEquals("Expected bit to be 1 at index: "+ i +" of "+ n, 1, bits.get(i));
-      bits.set(i, 0);
-      assertEquals("Expected bit to be 0 at index: "+ i +" of "+ n, 0, bits.get(i));
+      assertEquals(0, bits.get(i), "Expected bit to be 0 at index: %d of %d", i, n);
     }
   }
 
-  public static TestSuite suite () {
-    final TestSuite suite = new TestSuite();
-    suite.addTestSuite(BitBufferTest.class);
-    return suite;
+  void testSet(final BitBuffer bits) {
+    for (int i = bits.position(), n = bits.limit(); i < n; i++) {
+      bits.set(i, 1);
+      assertEquals(1, bits.get(i), "Expected bit to be 1 at index: %d of %d", i, n);
+      bits.set(i, 0);
+      assertEquals(0, bits.get(i), "Expected bit to be 0 at index: %d of %d", i, n);
+    }
   }
 
-  public static void main (final String [] args) {
-    junit.textui.TestRunner r = new junit.textui.TestRunner();
-    r.run(suite());
+  public static void main(final String [] args) {
+    new BitBufferTest().run().println();
   }
 }
