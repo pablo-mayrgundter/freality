@@ -1,19 +1,18 @@
 package phys;
 
-import junit.framework.TestSuite;
+import unit.TestSuite;
 
 public class AllTests {
 
-  public static TestSuite suite () {
+  public static TestSuite suite() {
     final TestSuite suite = new TestSuite();
-    suite.addTestSuite(SpaceTest.class);
-    suite.addTestSuite(Space1DBinaryRingTest.class);
-    suite.addTestSuite(TimeSpace1DBinaryRingTest.class);
+    suite.addTest(SpaceTest.class);
+    suite.addTest(Space1DBinaryRingTest.class);
+    suite.addTest(TimeSpace1DBinaryRingTest.class);
     return suite;
   }
 
-  public static void main (final String [] args) {
-    junit.textui.TestRunner r = new junit.textui.TestRunner();
-    r.run(suite());
+  public static void main(final String [] args) {
+    suite().run().println();
   }
 }

@@ -1,6 +1,6 @@
 package util;
 
-import junit.framework.TestSuite;
+import unit.TestSuite;
 
 /**
  * This is a convenient target for the build system to invoke all of
@@ -16,8 +16,8 @@ public class AllTests {
    */
   public static TestSuite suite() {
     TestSuite suite = new TestSuite();
-    suite.addTestSuite(BitBufferTest.class);
-    suite.addTestSuite(BitsTest.class);
+    suite.addTest(BitBufferTest.class);
+    suite.addTest(BitsTest.class);
     return suite;
   }
 
@@ -27,6 +27,6 @@ public class AllTests {
    *   java util.AllTests
    */
   public static void main(final String [] args) {
-    junit.textui.TestRunner.run(suite());
+    suite().run();
   }
 }

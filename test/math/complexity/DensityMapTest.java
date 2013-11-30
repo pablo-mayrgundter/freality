@@ -1,6 +1,6 @@
 package math.complexity;
 
-import junit.framework.TestCase;
+import unit.TestCase;
 
 /**
  * The DensityMapTest class covers the cartesian to screen space
@@ -36,6 +36,6 @@ public class DensityMapTest extends TestCase {
    *   java math.algs.DensityMapTest
    */
   public static void main(String [] args) {
-    junit.textui.TestRunner.run(DensityMapTest.class);
+    new DensityMapTest().run().println();
   }
 }

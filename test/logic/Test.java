@@ -1,6 +1,6 @@
 package logic;
 
-import junit.framework.TestCase;
+import unit.TestCase;
 
 public class Test extends TestCase {
 
@@ -19,7 +19,7 @@ public class Test extends TestCase {
     op = new And();
     op.add(True.VALUE);
     op.add(True.VALUE);
-    assertTrue("True AND True", op.isTrue());
+    assertTrue(op.isTrue(), "True AND True");
     assertEquals(True.VALUE, op.reduce());
   }
 
@@ -27,7 +27,7 @@ public class Test extends TestCase {
     op = new Or();
     op.add(False.VALUE);
     op.add(True.VALUE);
-    assertTrue("False AND True", op.isTrue());
+    assertTrue(op.isTrue(), "False AND True");
     assertEquals(True.VALUE, op.reduce());
   }
 
@@ -37,6 +37,6 @@ public class Test extends TestCase {
    *   java logic.Test
    */
   public static void main(String [] args) {
-    junit.textui.TestRunner.run(Test.class);
+    new Test().run().println();
   }
 }
