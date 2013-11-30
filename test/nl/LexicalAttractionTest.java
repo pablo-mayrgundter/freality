@@ -1,12 +1,8 @@
 package nl;
 
-public class LexicalAttractionTest extends junit.framework.TestCase {
+public class LexicalAttractionTest extends unit.TestCase {
 
   LexicalAttraction la = null;
-
-  public LexicalAttractionTest(final String name) {
-    super(name);
-  }
 
   public void setUp() {
     la = new LexicalAttraction();
@@ -21,9 +17,5 @@ public class LexicalAttractionTest extends junit.framework.TestCase {
     la.reset(words);
     la.count();
     la.link();
-  }
-
-  public static void main(final String [] args) {
-    junit.textui.TestRunner.run(LexicalAttractionTest.class);
   }
 }

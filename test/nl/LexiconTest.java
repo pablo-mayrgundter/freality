@@ -1,12 +1,8 @@
 package nl;
 
-public class LexiconTest extends junit.framework.TestCase {
+public class LexiconTest extends unit.TestCase {
 
   Lexicon lexicon = null;
-
-  public LexiconTest(final String name) {
-    super(name);
-  }
 
   public void setUp() {
     lexicon = new Lexicon();
@@ -42,9 +38,5 @@ public class LexiconTest extends junit.framework.TestCase {
       assertEquals(1, lexicon.getBigramCount(lastWord, word));
       assertEquals(bigramProbs[i], lexicon.getBigramProbability(lastWord, word), 0.01f);
     }
-  }
-
-  public static void main(final String [] args) {
-    junit.textui.TestRunner.run(LexiconTest.class);
   }
 }

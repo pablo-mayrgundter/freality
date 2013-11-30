@@ -2,21 +2,18 @@ package util;
 
 import unit.TestCase;
 
-/**
- * Tests for the BitBuffer class.
- *
- * @author Pablo Mayrgundter (pablo@freality.com)
- */
 public class BitBufferTest extends TestCase {
 
   public void testGet() {
-    for (int i = 0; i < 17; i++)
+    for (int i = 0; i < 17; i++) {
       testGet(new BitBuffer(i));
+    }
   }
 
   public void testSet() {
-    for (int i = 0; i < 17; i++)
+    for (int i = 0; i < 17; i++) {
       testSet(new BitBuffer(i));
+    }
     final BitBuffer b = new BitBuffer(9);
     b.set(0,1);
     b.set(3,1);
@@ -45,9 +42,5 @@ public class BitBufferTest extends TestCase {
       bits.set(i, 0);
       assertEquals(0, bits.get(i), "Expected bit to be 0 at index: %d of %d", i, n);
     }
-  }
-
-  public static void main(final String [] args) {
-    new BitBufferTest().run().println();
   }
 }
