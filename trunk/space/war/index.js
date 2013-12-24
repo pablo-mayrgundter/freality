@@ -34,7 +34,11 @@ var date = new Date();
 var dateElt;
 
 window.onload = function() {
-  scene = initCanvas(document.getElementById('scene'), 0);
+  var container = document.getElementById('scene');
+  if (Detector.webgl) {
+    container.innerHTML = '';
+    scene = initCanvas(container, 0);
+  }
 }
 
 function initCanvas(container, bgColor) {

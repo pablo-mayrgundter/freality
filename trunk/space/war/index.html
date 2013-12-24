@@ -4,6 +4,8 @@
     <title>Celestiary - Solar System Simulator</title>
     <script type="text/javascript" src="rest.js"></script>
     <script type="text/javascript" src="js/three-63.min.js"></script>
+    <script type="text/javascript" src="js/Detector.js"></script>
+    <script type="text/javascript" src="js/OrbitControls.js"></script>
     <script type="text/javascript" src="js/TrackballControls.js"></script>
     <script type="text/javascript" src="shared.js"></script>
     <script type="text/javascript" src="material.js"></script>
@@ -25,7 +27,19 @@
       <button onclick="changeTimeScale(0)">=</button>
       <button onclick="changeTimeScale(1)">+</button>
     </div>
-    <div id="scene"/>
+    <div id="scene">
+      <div style="position: absolute; width: 50%; margin: 20% 20%">
+      <p>This page shows 3D content.  It should work fine in Chrome
+      and Firefox.</p>
+
+      <p>If you're using Safari,
+      follow <a href="https://discussions.apple.com/thread/3300585"
+      target="_window">Apple's instructions to enable WebGL</a>.  Then
+      reload this page.</p>
+
+      <p>If you're using IE... not sure if this will work.</p>
+      </div>
+    </div>
     <div id="info">Welcome to Celestiary!  Loading...</div>
   </body>
 </html>
