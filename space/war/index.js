@@ -5,15 +5,16 @@
  *
  * TODO
  * v1:
+ * - Smooth transitions.
  * - Exponential zoom.
- * - Time control.
+ * X Time control.
  * - Units for measurements.
  * - Q/A against Celestia.
  *   - Epoch-based locations.
  * v2:
+ * - Stars and Galaxies.
  * - LRU scene-graph un-loading.
  * - View options, e.g. toggle orbits.
- * - Stars and Galaxies.
  * - Time slider.  Meaningful time steps: 1s, 1m, 1h, 1d, 1mo, 1yr, ...
  * BUGS:
  * - Scene select race before objects gain location in anim.
@@ -63,9 +64,8 @@ function initCanvas(container, bgColor) {
   animate(renderer, cameraAndControls[0], cameraAndControls[1], scene);
   // This starts the scene loading process..
   ctrl = new Controller();
-  if (location.hash) {
-    ctrl.load(location.hash.substring(1).split(','));
-  }
+  ctrl.loadPath('milkyway');
+  ctrl.loadPath(location.hash ? location.hash.substring(1) : '');
   return scene;
 }
 
@@ -93,11 +93,7 @@ function initCameraAndControls(renderer) {
                           function() { onWindowResize(renderer, camera, controls); },
                           false);
   window.addEventListener('hashchange',
-                          function(e) { 
-                            var hash = (location.hash || '#').substring(1);
-                            hash = hash.split(',');
-                            ctrl.load(hash);
-                          },
+                          function(e) { ctrl.loadPath((location.hash || '#').substring(1)); },
                           false);
 
   return [camera, controls];

@@ -105,8 +105,8 @@ function atmos(radius) {
 
 function line(vec1, vec2) {
   var geom = new THREE.Geometry();
-  geom.vertices.push(new THREE.Vector3(vec1));
-  geom.vertices.push(new THREE.Vector3(vec2));
+  geom.vertices.push(vec1);
+  geom.vertices.push(vec2);
   return new THREE.Line(geom, lineMaterial());
 }
 

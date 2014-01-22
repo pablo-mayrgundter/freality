@@ -16,6 +16,7 @@ if (typeof XMLHttpRequest == "undefined") {
 var Resource = function(name) {
   this.name = 'data/' + name + '.json';
   this.get = function(func) {
+    console.log('Fetching: ' + name);
     if (location.href.startsWith && location.href.startsWith('file')) {
       return func({type:'star',name:'sun',radius: 6.9424895E8});
     }

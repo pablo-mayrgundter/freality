@@ -19,10 +19,15 @@ var lastTime = time;
 var dt = time - lastTime;
 var simTime = time;
 var date = new Date(simTime);
+var postRenderCb = null;
 
 function animation(scene) {
   animateSystem(scene);
   updateView(scene);
+  if (postRenderCb) {
+    postRenderCb();
+    postRenderCb = null;
+  }
 }
 
 /**
@@ -47,7 +52,6 @@ function changeTimeScale(delta) {
  * Recursive animation of orbits and rotations at the current time.
  */
 function animateSystem(system) {
-
   lastTime = time;
   time = Date.now();
   dt = time - lastTime;
@@ -60,6 +64,7 @@ function animateSystem(system) {
     system.setRotationFromAxisAngle(Y_AXIS, angle);
   }
 
+  // This is referred to by a comment in scene.js#addOrbitingPlanet.
   if (system.orbit) {
     var eccentricity = system.orbit.eccentricity;
     var aRadius = system.orbit.semiMajorAxis * orbitScale;

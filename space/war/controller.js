@@ -8,113 +8,35 @@
  */
 var Controller = function() {
 
-  this.sceneNodes = {};
+  this.scene = new Scene();
+  this.curPath = ['sun'];
+  this.loaded = {};
+  var me = this;
 
-  this.initPath = ['milkyway','stars','sun'];
-  this.curPath = [];
-
-  /**
-   * Create the scene object, add it to the scene graph and to
-   * this.sceneNodes.
-   */
-  this.display = function(props) {
-
-    // Find a parent or add directly to scene.  TODO(pablo): this is
-    // ugly, since this is the only way the scene goes live.
-    var parentNode = this.sceneNodes[props.parent];
-    if (!parentNode) {
-      console.log('Adding node to scene root: ' + props.name);
-      parentNode = scene;
-    }
-
-    console.log('Adding ' + props.type + ': ' + props.name);
-    var obj;
-    if (props.type == 'galaxy') {
-      // TODO(pablo): a nice galaxy.
-      obj = new THREE.Object3D;
-      obj.orbitPosition = obj;
-    } else if (props.type == 'stars') {
-      // TODO(pablo): get rid of global for stars.
-      obj = newStars(props, stars);
-    } else if (props.type == 'star') {
-      obj = newStar(props);
-      obj.add(newPointLight());
-      camera.position.set(0, 0, Measure.parseMeasure(props.radius).scalar * radiusScale * 1E3);
-    } else if (props.type == 'planet') {
-      obj = newOrbitingPlanet(props);
-    }
-
-    // Add to scene in reference frame of parent's orbit position,
-    // i.e. moons orbit planets, so they have to be added to the
-    // planet's orbital center.
-    if (parentNode.orbitPosition) {
-      parentNode.orbitPosition.add(obj);
-    } else {
-      // Should only happen for milkyway.
-      console.log('Parent has no orbit position: ' + props.name);
-      parentNode.add(obj);
-    }
-
-    obj['props'] = props;
-    this.sceneNodes[props.name] = obj;
+  this.getPathTarget = function() {
+    return me.curPath[me.curPath.length - 1];
   };
 
-  this.select = function(name) {
-    console.log('selecting: ' + name);
-    var node = this.sceneNodes[name];
-    if (!node) {
-      console.log('No such object: ' + name);
-      return;
-    }
-    // TODO(pablo): select is currently called during init, where
-    // sceneNodes is not yet populated?
-    if (node.orbitPosition)  {
-      targetObj = node.orbitPosition;
-      targetObjLoc.identity();
-      var curObj = targetObj;
-      var objs = [];
-      while (curObj.parent != scene) {
-        objs.push(curObj);
-        curObj = curObj.parent;
-      }
-      for (var i = objs.length - 1; i >= 0; i--) {
-        var o = objs[i];
-        targetObjLoc.multiply(o.matrix);
-      }
-
-      targetPos.getPositionFromMatrix(targetObjLoc);
-      var tStepBack = targetPos.clone();
-      tStepBack.negate();
-      // TODO(pablo): if the target is at the origin (i.e. the sun),
-      // need some non-zero basis to use as a step-back.
-      if (tStepBack.x == 0 && tStepBack.y == 0) {
-        tStepBack.set(0,0,1);
-      }
-      var radius = node.props.radius;
-      if (node.props.type == 'star') {
-        radius = Measure.parseMeasure(node.props.radius).scalar;
-        controls.rotateSpeed = 1;
-        controls.zoomSpeed = 1;
-        controls.panSpeed = 1;
+  this.showNavDisplay = function() {
+    console.log('showNavDisplay');
+    var crumbs = '';
+    for (var i = 0; i < me.curPath.length; i++) {
+      var hash = me.curPath.slice(0, i + 1).join('/');
+      var name = me.curPath[i];
+      if (i == me.curPath.length - 1) {
+        crumbs += name;
       } else {
-        controls.rotateSpeed = 0.001;
-        controls.zoomSpeed = 0.001;
-        controls.panSpeed = 0.001;
+        crumbs += '<a href="#'+ hash +'">' + name + '</a>';
       }
-      tStepBack.setLength(radius * orbitScale * 10.0);
-      targetPos.add(tStepBack);
-      camera.position.set(targetPos.x, targetPos.y, targetPos.z);
+      if (i < me.curPath.length - 1) {
+        crumbs += ' &gt; ';
+      }
     }
 
-    var links = this.curPath.length == 0 ? '' : '<a href="#">sun</a> &gt; ';
-    for (var i = 0; i < this.curPath.length - 1; i++) {
-      var hash = this.curPath.slice(0,i+1).join(',');
-      links += '<a href="#'+ hash +'">' + this.curPath[i] + '</a> &gt; ';
-    }
-
-    var html = links + name + ' <ul>\n';
-    var pathPrefix = this.curPath.join(',');
-    html += this.showInfoRecursive(node.props, pathPrefix, false, false);
+    var html = crumbs + ' <ul>\n';
+    var pathPrefix = me.curPath.join('/');
+    html += me.showInfoRecursive(me.loaded[me.getPathTarget()],
+                                 pathPrefix, false, false);
     html += '</ul>\n';
     var infoElt = document.getElementById('info');
     infoElt.innerHTML = html;
@@ -137,17 +59,17 @@ var Controller = function() {
           } else {
             html += '<ol class="collapsed">\n';
           }
-          html += this.showInfoRecursive(val, pathPrefix, true, prop == 'system');
+          html += me.showInfoRecursive(val, pathPrefix, true, prop == 'system');
           html += '</ol>\n';
         } else if (val instanceof Object) {
           html += '<ul class="collapsed">\n';
-          html += this.showInfoRecursive(val, pathPrefix, false, false);
+          html += me.showInfoRecursive(val, pathPrefix, false, false);
           html += '</ul>\n';
         } else {
           if (isSystem) {
             var path = pathPrefix;
             if (pathPrefix.length > 0) {
-              path += ',';
+              path += '/';
             }
             path += val;
             html += '<a href="#' + path + '">';
@@ -163,62 +85,76 @@ var Controller = function() {
     return html;
   };
 
-  this.loadSystem = function(systemName, select) {
-    // TODO(pablo): remove duplicate logic below; maybe into expand()
-    // method?
-    if (this.sceneNodes[systemName]) {
-      if (select) {
-        this.select(systemName);
-        var subSys = this.sceneNodes[systemName].props.system;
-        if (subSys) {
-          for (var i in subSys) {
-            var child = subSys[i];
-            console.log('loadSystem: expanding: ' + child);
-            this.loadSystem(child);
-          }
+  /**
+   * Loads the given object and adds it to the scene; optionally
+   * expanding it if it has as system.
+   * @param {!boolean} expand Whether to also load the children of the
+   *     given node.
+   * @param {function} cb optional callback.
+   */
+  this.loadObj = function(name, expand, cb) {
+    var loadedObj = me.loaded[name];
+    if (loadedObj) {
+      if (loadedObj == 'pending') {
+        return;
+      }
+      if (expand && loadedObj.system) {
+        for (var i = 0; i < loadedObj.system.length; i++) {
+          me.loadObj(loadedObj.system[i], false);
         }
       }
-      return;
-    }
-    var me = this;
-    new Resource(systemName).get(function(obj) {
-        me.display(obj);
-        if (select) {
-          setTimeout('ctrl.select("'+ systemName +'")', 200);
-          if (obj.system) {
-            for (var i in obj.system) {
-              var child = obj.system[i];
-              console.log('loadSystem: expanding: ' + child);
-              me.loadSystem(child);
+      // Execute cb immediately even though children may not all be
+      // loaded.  TODO(pmy): later selection of possibly unloaded
+      // child should wait.
+      if (cb) {
+        cb();
+      }
+    } else {
+      me.loaded[name] = 'pending';
+      new Resource(name).get(function(obj) {
+          me.loaded[name] = obj;
+          me.scene.add(obj);
+          if (expand && obj.system) {
+            for (var i = 0; i < obj.system.length; i++) {
+              me.loadObj(obj.system[i], false);
             }
           }
-        }
-    });
+          if (cb) {
+            cb();
+          }
+        });
+    }
   };
 
-  this.loadRecursive = function(path) {
-    console.log('loadRecursive: ' + path.join(','));
+  /**
+   * @param {!string} p The path, e.g. 'sun/earth/moon' or an empty
+   * string for default.
+   */
+  this.loadPath = function(p) {
+    var reqPath = p || '';
+    if (reqPath.length == 0) {
+      reqPath = 'sun';
+    }
+    console.log('loadPath: ' + reqPath);
+    me.curPath = reqPath.split('/');
+    me.loadPathRecursive([].concat(me.curPath), function() {
+        console.log('load done callback');
+        me.scene.select(me.getPathTarget());
+        me.showNavDisplay();
+      });
+  };
+
+  /**
+   * @param {!Array} path The path to the scene target, e.g. ['sun',
+   * 'earth', 'moon'].
+   */
+  this.loadPathRecursive = function(path, cb) {
+    console.log('loadPathRecursive: ' + path.join('/'));
     if (path.length == 0) {
       return;
     }
-
-    var system = path.shift();
-    // length == 0: means select the last system in the path.
-    this.loadSystem(system, path.length == 0);
-    // Recurse on the remaining.
-    this.loadRecursive(path);
+    var systemName = path.shift();
+    me.loadObj(systemName, true, path.length == 0 ? cb : null);
+    me.loadPathRecursive(path, cb);
   };
-
-  this.load = function(path) {
-    // TODO(pablo): messy to handle different paths in.
-    if (!path || path.length == 0 || path[0] == '') {
-      this.curPath = [];
-      this.select('sun');
-      return;
-    }
-    this.curPath = path;
-    this.loadRecursive(this.curPath.slice());
-  };
-
-  this.loadRecursive(this.initPath);
 };
