@@ -13,7 +13,116 @@ var
 var globe;
 var starImage, starGlowMaterial;
 
-function newStars(starProps, stars, s) {
+var Scene = function() {
+  this.sceneNodes = {};
+  this.lastAddTime = 0;
+};
+
+/**
+ * Add an object to the scene.
+ */
+Scene.prototype.add = function(props) {
+
+  // Find a parent or add directly to scene.  TODO(pablo): this is
+  // ugly, since this is the only way the scene goes live.
+  var parentNode = this.sceneNodes[props.parent];
+  if (!parentNode) {
+    console.log('Adding node to scene root: ' + props.name);
+    parentNode = scene;
+  }
+
+  console.log('Adding ' + props.type + ': ' + props.name);
+  var obj;
+  if (props.type == 'galaxy') {
+    // TODO(pablo): a nice galaxy.
+    obj = new THREE.Object3D;
+    obj.orbitPosition = obj;
+  } else if (props.type == 'stars') {
+    obj = this.newStars(props, stars);
+  } else if (props.type == 'star') {
+    obj = this.newStar(props);
+    obj.add(this.newPointLight());
+    camera.position.set(0, 0, Measure.parseMeasure(props.radius).scalar * radiusScale * 1E3);
+  } else if (props.type == 'planet') {
+    obj = this.newOrbitingPlanet(props, null);
+  }
+
+  // Add to scene in reference frame of parent's orbit position,
+  // i.e. moons orbit planets, so they have to be added to the
+  // planet's orbital center.
+  if (parentNode.orbitPosition) {
+    parentNode.orbitPosition.add(obj);
+  } else {
+    // Should only happen for milkyway.
+    console.log('Parent has no orbit position: ' + props.name);
+    parentNode.add(obj);
+  }
+
+  obj['props'] = props;
+  this.sceneNodes[props.name] = obj;
+
+  this.lastAddTime = time;
+};
+
+Scene.prototype.select = function(name) {
+  console.log('selecting: ' + name);
+  var node = this.sceneNodes[name];
+  if (!node) {
+    throw new Error('No such object: ' + name);
+  }
+  if (!node.orbitPosition) {
+    throw new Error('No orbit position for target of select: ' + name)
+  }
+  targetObj = node.orbitPosition;
+
+  if (this.lastAddTime == time) {
+    console.log('delaying select');
+    var me = this;
+    postRenderCb = function() {
+      // TODO(pmy):
+      //me.select(name);
+      setTimeout('ctrl.scene.select("'+name+'")', 10);
+    };
+    return;
+  }
+
+  targetObjLoc.identity();
+  var curObj = targetObj;
+  var objs = [];
+  while (curObj.parent != scene) {
+    objs.push(curObj);
+    curObj = curObj.parent;
+  }
+  for (var i = objs.length - 1; i >= 0; i--) {
+    var o = objs[i];
+    targetObjLoc.multiply(o.matrix);
+  }
+
+  targetPos.getPositionFromMatrix(targetObjLoc);
+  var tStepBack = targetPos.clone();
+  tStepBack.negate();
+  // TODO(pablo): if the target is at the origin (i.e. the sun),
+  // need some non-zero basis to use as a step-back.
+  if (tStepBack.x == 0 && tStepBack.y == 0) {
+    tStepBack.set(0,0,1);
+  }
+  var radius = node.props.radius;
+  if (node.props.type == 'star') {
+    radius = Measure.parseMeasure(node.props.radius).scalar;
+    controls.rotateSpeed = 1;
+    controls.zoomSpeed = 1;
+    controls.panSpeed = 1;
+  } else {
+    controls.rotateSpeed = 0.001;
+    controls.zoomSpeed = 0.001;
+    controls.panSpeed = 0.001;
+  }
+  tStepBack.setLength(radius * orbitScale * 10.0);
+  targetPos.add(tStepBack);
+  camera.position.set(targetPos.x, targetPos.y, targetPos.z);
+};
+
+Scene.prototype.newStars = function(starProps, stars) {
   var orbitPlane = new THREE.Object3D;
   var orbitPosition = new THREE.Object3D;
   orbitPlane.add(orbitPosition);
@@ -38,7 +147,7 @@ function newStars(starProps, stars, s) {
   var starImage = pathTexture('star_glow', '.png');
   var starGlowMaterial =
     new THREE.ParticleBasicMaterial({ color: 0xffffff,
-                                      size: starProps.radius * 1E2 * radiusScale,
+                                      size: starProps.radius * 1E3 * radiusScale,
                                       map: starImage,
                                       sizeAttenuation: true,
                                       blending: THREE.AdditiveBlending,
@@ -47,9 +156,9 @@ function newStars(starProps, stars, s) {
 
   var starMiniMaterial =
     new THREE.ParticleBasicMaterial({ color: 0xffffff,
-                                      size: 4,
+                                      size: starProps.radius * 5E5 * radiusScale,
                                       map: starImage,
-                                      sizeAttenuation: false,
+                                      sizeAttenuation: true,
                                       blending: THREE.AdditiveBlending,
                                       depthTest: true,
                                       transparent: true });
@@ -67,13 +176,13 @@ function newStars(starProps, stars, s) {
   orbitPosition.add(shape);
   orbitPlane.orbitPosition = orbitPosition;
   return orbitPlane;
-}
+};
 
-function newPointLight() {
+Scene.prototype.newPointLight = function() {
   return new THREE.PointLight(0xffffff);
-}
+};
 
-function newStar(props) {
+Scene.prototype.newStar = function(props) {
   var orbitPlane = new THREE.Object3D;
   var orbitPosition = new THREE.Object3D;
   orbitPlane.add(orbitPosition);
@@ -90,27 +199,34 @@ function newStar(props) {
   orbitPosition.add(star);
   orbitPlane.orbitPosition = orbitPosition;
   return orbitPlane;
-}
+};
 
-function newOrbitingPlanet(planetProps) {
+Scene.prototype.newOrbitingPlanet = function(planetProps, planetStars) {
 
   var orbit = planetProps.orbit;
 
   var orbitPlane = new THREE.Object3D;
-  orbitPlane.add(newOrbit(orbit));
+  orbitPlane.add(this.newOrbit(orbit));
 
   orbitPlane.rotation.x = orbit.inclination * toRad;
   orbitPlane.rotation.y = orbit.longitudeOfPerihelion * toRad;
 
-  orbitPlane.add(line(new THREE.Vector3(orbit.semiMajorAxis * orbitScale, 0, 0)));
+  orbitPlane.add(line(new THREE.Vector3(0, 0, 0),
+                      new THREE.Vector3(orbit.semiMajorAxis * orbitScale, 0, 0)));
 
   var orbitPosition = new THREE.Object3D;
   orbitPlane.add(orbitPosition);
 
   // Attaching this property triggers orbit of planet during animation.
+  // See animation.js#animateSystem.
   orbitPosition.orbit = planetProps.orbit;
+  if (planetStars) {
+    var planetStarVec = new THREE.Vector3();
+    planetStars.vertices.push(planetStarVec);
+    orbitPosition.particle = planetStarVec;
+  }
 
-  var planet = newPlanet(planetProps);
+  var planet = this.newPlanet(planetProps);
   orbitPosition.add(planet);
 
   var referencePlane = new THREE.Object3D;
@@ -122,11 +238,11 @@ function newOrbitingPlanet(planetProps) {
   return referencePlane;
 };
 
-function newPlanet(planetProps) {
+Scene.prototype.newPlanet = function(planetProps) {
   var planet = new THREE.Object3D;
   // TODO(pablo): put these in near LOD only.
   if (planetProps.texture_atmosphere) {
-    planet.add(newAtmosphere(planetProps));
+    planet.add(this.newAtmosphere(planetProps));
     //planet.add(atmos(planetProps.radius * atmosUpperScale));
   }
 
@@ -135,7 +251,7 @@ function newPlanet(planetProps) {
   // before atmosphere causes failure of atmosphere display.  No idea
   // why.  This is not currently the case, but this appears to be
   // idemopotent given then current config, so leaving it this way.
-  planet.add(newSurface(planetProps));
+  planet.add(this.newSurface(planetProps));
 
   // Tilt could be set in orbit configuration, but for the moment
   // seems more intrinsic.
@@ -146,10 +262,10 @@ function newPlanet(planetProps) {
   planet.siderealRotationPeriod = planetProps.siderealRotationPeriod;
 
   return planet;
-}
+};
 
 // TODO(pablo): get shaders working again.
-function newSurface(planetProps) {
+Scene.prototype.newSurface = function(planetProps) {
   var planetMaterial;
   if (true || !(planetProps.texture_hydrosphere || planetProps.texture_terrain)) {
     planetMaterial = cacheMaterial(planetProps.name);
@@ -191,17 +307,17 @@ function newSurface(planetProps) {
   }
 
   return lodSphere(planetProps.radius * radiusScale, planetMaterial);
-}
+};
 
-function newAtmosphere(planetProps) {
+Scene.prototype.newAtmosphere = function(planetProps) {
   var mat =
     new THREE.MeshLambertMaterial({color: 0xffffff,
                                    map: pathTexture(planetProps.name, '_atmos.png'),
                                    transparent: true});
   return lodSphere(planetProps.radius * atmosScale, mat);
-}
+};
 
-function newOrbit(orbit) {
+Scene.prototype.newOrbit = function(orbit) {
   var ellipseCurve = new THREE.EllipseCurve(0, 0,
                                             orbit.semiMajorAxis * orbitScale,
                                             orbit.eccentricity,
@@ -222,4 +338,4 @@ function newOrbit(orbit) {
   var line = new THREE.Line(ellipseGeometry, orbitMaterial);
   line.rotation.x = halfPi;
   return line;
-}
+};
