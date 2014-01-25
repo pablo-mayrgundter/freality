@@ -101,7 +101,21 @@ function atmos(radius) {
   return sceneAtmosphere;
 }
 
-// LINE
+// TODO(pmy): is there a simpler way to draw a point?
+function point() {
+  var geom = new THREE.Geometry();
+  geom.vertices.push(new THREE.Vector3());
+
+  var pointMaterial =
+    new THREE.ParticleBasicMaterial({ color: 0xffffff,
+                                      size: 3,
+                                      sizeAttenuation: false,
+                                      blending: THREE.AdditiveBlending,
+                                      depthTest: true,
+                                      transparent: true });
+
+  return new THREE.ParticleSystem(geom, pointMaterial);
+}
 
 function line(vec1, vec2) {
   var geom = new THREE.Geometry();
