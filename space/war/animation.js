@@ -48,6 +48,10 @@ function changeTimeScale(delta) {
   timeScaleElt.innerHTML = msg;
 }
 
+function invertTimeScale() {
+  timeScale *= -1.0;
+}
+
 /**
  * Recursive animation of orbits and rotations at the current time.
  */
@@ -70,7 +74,11 @@ function animateSystem(system) {
     var aRadius = system.orbit.semiMajorAxis * orbitScale;
     var bRadius = aRadius * Math.sqrt(1.0 - Math.pow(eccentricity, 2.0));
     var angle = simTimeSecs / system.orbit.siderealOrbitPeriod * twoPi;
-    system.position.set(aRadius * Math.cos(angle), 0, bRadius * Math.sin(angle));
+    var x = aRadius * Math.cos(angle);
+    var y = 0;
+    var z = bRadius * Math.sin(angle);
+    system.position.set(x, y, z);
+    //system.particle.set(x, y, z);
     // if (system.orbit.siderealOrbitPeriod == 31536000) {
     //   console.log('earth angle: ' + angle);
     // }

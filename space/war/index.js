@@ -96,6 +96,8 @@ function initCameraAndControls(renderer) {
                           function(e) { ctrl.loadPath((location.hash || '#').substring(1)); },
                           false);
 
+  window.addEventListener('keypress', keyPress, true);
+
   return [camera, controls];
 }
 
@@ -114,7 +116,6 @@ function onWindowResize(renderer, camera, controls) {
     controls.screen.height = height;
   }
 }
-
 
 function animate(renderer, camera, controls, scene) {
   updateUi();
@@ -140,4 +141,11 @@ function render(renderer, camera, controls, scene) {
 
   renderer.clear();
   renderer.render(scene, camera);
+}
+
+function keyPress(e) {
+  switch (e.which) {
+    // 'o'
+  case 111: ctrl.scene.toggleOrbits(); break;
+  }
 }

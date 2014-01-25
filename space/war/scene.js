@@ -1,7 +1,7 @@
 'use strict';
 
 var RADIUS_SCALE_NORMAL = 1E-7;
-var RADIUS_SCALE_BIG = 5E-4;
+var RADIUS_SCALE_BIG = 1E-4;
 var ORBIT_SCALE_NORMAL = 1E-7;
 
 var
@@ -15,11 +15,14 @@ var starImage, starGlowMaterial;
 
 var Scene = function() {
   this.sceneNodes = {};
+  this.orbitShapes = [];
+  this.orbitsVisible = true;
   this.lastAddTime = 0;
 };
 
 /**
  * Add an object to the scene.
+ * @param {!object} props object properties, must include type.
  */
 Scene.prototype.add = function(props) {
 
@@ -29,22 +32,25 @@ Scene.prototype.add = function(props) {
   if (!parentNode) {
     console.log('Adding node to scene root: ' + props.name);
     parentNode = scene;
+  } else {
+    console.log('Adding ' + props.type + ': ' + props.name + ' to parent: ' + parentNode);
   }
 
-  console.log('Adding ' + props.type + ': ' + props.name);
   var obj;
   if (props.type == 'galaxy') {
     // TODO(pablo): a nice galaxy.
     obj = new THREE.Object3D;
     obj.orbitPosition = obj;
   } else if (props.type == 'stars') {
-    obj = this.newStars(props, stars);
+    obj = this.newStars(this.starGeom(stars), props);
   } else if (props.type == 'star') {
     obj = this.newStar(props);
     obj.add(this.newPointLight());
     camera.position.set(0, 0, Measure.parseMeasure(props.radius).scalar * radiusScale * 1E3);
   } else if (props.type == 'planet') {
-    obj = this.newOrbitingPlanet(props, null);
+    obj = this.newOrbitingPlanet(props);
+  } else {
+    throw new Error('Adding object of unknown type: ' + props.type);
   }
 
   // Add to scene in reference frame of parent's orbit position,
@@ -122,17 +128,12 @@ Scene.prototype.select = function(name) {
   camera.position.set(targetPos.x, targetPos.y, targetPos.z);
 };
 
-Scene.prototype.newStars = function(starProps, stars) {
-  var orbitPlane = new THREE.Object3D;
-  var orbitPosition = new THREE.Object3D;
-  orbitPlane.add(orbitPosition);
-
-  var starsGeometry = new THREE.Geometry();
+/** The stars from the data file. */
+Scene.prototype.starGeom = function(stars) {
+  var geom = new THREE.Geometry();
 
   // Fist one is at 0,0,0 for the sun.
-  starsGeometry.vertices.push(new THREE.Vector3());
-
-  // Then the stars from the data file.
+  geom.vertices.push(new THREE.Vector3());
   for (var i = 0; i < stars.length; i++) {
     var s = stars[i];
     var ra = s[0] * toDeg; // why not toRad?
@@ -141,39 +142,48 @@ Scene.prototype.newStars = function(starProps, stars) {
     var vec = new THREE.Vector3(dist * Math.sin(ra) * Math.cos(dec),
                                 dist * Math.sin(ra) * Math.sin(dec),
                                 dist * Math.cos(ra));
-    starsGeometry.vertices.push(vec);
+    geom.vertices.push(vec);
   }
+  return geom;
+};
+
+Scene.prototype.newStars = function(geom, props) {
+  var orbitPlane = new THREE.Object3D;
+  var orbitPosition = new THREE.Object3D;
+  orbitPlane.add(orbitPosition);
 
   var starImage = pathTexture('star_glow', '.png');
-  var starGlowMaterial =
-    new THREE.ParticleBasicMaterial({ color: 0xffffff,
-                                      size: starProps.radius * 1E3 * radiusScale,
-                                      map: starImage,
-                                      sizeAttenuation: true,
-                                      blending: THREE.AdditiveBlending,
-                                      depthTest: true,
-                                      transparent: true }); 
-
   var starMiniMaterial =
     new THREE.ParticleBasicMaterial({ color: 0xffffff,
-                                      size: starProps.radius * 5E5 * radiusScale,
+                                      size: props.radius * 5E5 * radiusScale,
                                       map: starImage,
                                       sizeAttenuation: true,
                                       blending: THREE.AdditiveBlending,
                                       depthTest: true,
                                       transparent: true });
 
-  var shape = new THREE.Object3D();
-
-  var starPoints = new THREE.ParticleSystem(starsGeometry, starMiniMaterial);
+  var starPoints = new THREE.ParticleSystem(geom, starMiniMaterial);
   starPoints.sortParticles = true;
-  shape.add(starPoints);
+  orbitPosition.add(starPoints);
+  orbitPlane.orbitPosition = orbitPosition;
+  return orbitPlane;
+};
 
-  var starGlows = new THREE.ParticleSystem(starsGeometry, starGlowMaterial);
-  starGlows.sortParticles = true;
-  shape.add(starGlows);
+Scene.prototype.newPlanetStars = function(geom, props) {
+  var orbitPlane = new THREE.Object3D;
+  var orbitPosition = new THREE.Object3D;
+  orbitPlane.add(orbitPosition);
 
-  orbitPosition.add(shape);
+  var planetStarMiniMaterial =
+    new THREE.ParticleBasicMaterial({ color: 0xffffff,
+                                      size: 3,
+                                      sizeAttenuation: false,
+                                      depthTest: true,
+                                      transparent: false });
+
+  var planetStarPoints = new THREE.ParticleSystem(geom, planetStarMiniMaterial);
+  planetStarPoints.sortParticles = true;
+  orbitPosition.add(planetStarPoints);
   orbitPlane.orbitPosition = orbitPosition;
   return orbitPlane;
 };
@@ -201,18 +211,27 @@ Scene.prototype.newStar = function(props) {
   return orbitPlane;
 };
 
-Scene.prototype.newOrbitingPlanet = function(planetProps, planetStars) {
+Scene.prototype.toggleOrbits = function() {
+  this.orbitsVisible = !this.orbitsVisible;
+  for (var i = 0; i < this.orbitShapes.length; i++) {
+    this.orbitShapes[i].visible = this.orbitsVisible;
+  }
+};
+
+Scene.prototype.newOrbitingPlanet = function(planetProps) {
 
   var orbit = planetProps.orbit;
 
   var orbitPlane = new THREE.Object3D;
-  orbitPlane.add(this.newOrbit(orbit));
+  var orbitShape = this.newOrbit(orbit);
+  this.orbitShapes.push(orbitShape);
+  orbitPlane.add(orbitShape);
 
   orbitPlane.rotation.x = orbit.inclination * toRad;
   orbitPlane.rotation.y = orbit.longitudeOfPerihelion * toRad;
 
-  orbitPlane.add(line(new THREE.Vector3(0, 0, 0),
-                      new THREE.Vector3(orbit.semiMajorAxis * orbitScale, 0, 0)));
+  //orbitPlane.add(line(new THREE.Vector3(0, 0, 0),
+  //                    new THREE.Vector3(orbit.semiMajorAxis * orbitScale, 0, 0)));
 
   var orbitPosition = new THREE.Object3D;
   orbitPlane.add(orbitPosition);
@@ -220,14 +239,10 @@ Scene.prototype.newOrbitingPlanet = function(planetProps, planetStars) {
   // Attaching this property triggers orbit of planet during animation.
   // See animation.js#animateSystem.
   orbitPosition.orbit = planetProps.orbit;
-  if (planetStars) {
-    var planetStarVec = new THREE.Vector3();
-    planetStars.vertices.push(planetStarVec);
-    orbitPosition.particle = planetStarVec;
-  }
 
   var planet = this.newPlanet(planetProps);
   orbitPosition.add(planet);
+  orbitPosition.add(point());
 
   var referencePlane = new THREE.Object3D;
   referencePlane.add(orbitPlane);
@@ -276,7 +291,6 @@ Scene.prototype.newSurface = function(planetProps) {
     var uniforms = THREE.UniformsUtils.clone(shader.uniforms);
 
     var tex = pathTexture(planetProps.name);
-    console.log(tex);
     uniforms['tDiffuse'].texture = tex;
     uniforms['enableAO'].value = false;
     uniforms['enableDiffuse'].value = true;
@@ -337,5 +351,9 @@ Scene.prototype.newOrbit = function(orbit) {
   
   var line = new THREE.Line(ellipseGeometry, orbitMaterial);
   line.rotation.x = halfPi;
+
+  // Orbits may be turned off when this orbit is added, so set it to
+  // current visibility.
+  line.visible = this.orbitsVisible;
   return line;
 };
