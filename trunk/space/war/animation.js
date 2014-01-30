@@ -39,7 +39,11 @@ function changeTimeScale(delta) {
   } else {
     timeScaleSteps += delta;
   }
-  timeScale = (timeScaleSteps < 0 ? -1 : 1) * Math.pow(2, Math.abs(timeScaleSteps));
+  timeScale = (timeScale < 0 ? -1 : 1) * Math.pow(2, Math.abs(timeScaleSteps));
+  updateTimeMsg();
+}
+
+function updateTimeMsg() {
   var timeScaleElt = document.getElementById('timeScale');
   var msg = '';
   if (timeScaleSteps != 0) {
@@ -50,6 +54,7 @@ function changeTimeScale(delta) {
 
 function invertTimeScale() {
   timeScale *= -1.0;
+  updateTimeMsg();
 }
 
 /**
@@ -73,7 +78,8 @@ function animateSystem(system) {
     var eccentricity = system.orbit.eccentricity;
     var aRadius = system.orbit.semiMajorAxis * orbitScale;
     var bRadius = aRadius * Math.sqrt(1.0 - Math.pow(eccentricity, 2.0));
-    var angle = simTimeSecs / system.orbit.siderealOrbitPeriod * twoPi;
+    // -1.0 because orbits are counter-clockwise when viewed from above North of Earth.
+    var angle = -1.0 * simTimeSecs / system.orbit.siderealOrbitPeriod * twoPi;
     var x = aRadius * Math.cos(angle);
     var y = 0;
     var z = bRadius * Math.sin(angle);

@@ -132,8 +132,6 @@ Scene.prototype.select = function(name) {
 Scene.prototype.starGeom = function(stars) {
   var geom = new THREE.Geometry();
 
-  // Fist one is at 0,0,0 for the sun.
-  geom.vertices.push(new THREE.Vector3());
   for (var i = 0; i < stars.length; i++) {
     var s = stars[i];
     var ra = s[0] * toDeg; // why not toRad?
@@ -155,7 +153,7 @@ Scene.prototype.newStars = function(geom, props) {
   var starImage = pathTexture('star_glow', '.png');
   var starMiniMaterial =
     new THREE.ParticleBasicMaterial({ color: 0xffffff,
-                                      size: props.radius * 5E5 * radiusScale,
+                                      size: radiusScale * props.radius * 5E5,
                                       map: starImage,
                                       sizeAttenuation: true,
                                       blending: THREE.AdditiveBlending,
@@ -166,6 +164,17 @@ Scene.prototype.newStars = function(geom, props) {
   starPoints.sortParticles = true;
   orbitPosition.add(starPoints);
   orbitPlane.orbitPosition = orbitPosition;
+
+  // A special one for the Sun. TODO(pmy): replace w/shader.
+  var sunSpriteMaterial =
+    new THREE.ParticleBasicMaterial({ color: 0xffffff,
+                                      size: radiusScale * props.radius * 5E2,
+                                      map: starImage,
+                                      sizeAttenuation: true,
+                                      blending: THREE.AdditiveBlending,
+                                      depthTest: true,
+                                      transparent: true });
+  orbitPosition.add(new THREE.ParticleSystem(this.starGeom([[0,0,0]]), sunSpriteMaterial));
   return orbitPlane;
 };
 
