@@ -90,10 +90,14 @@ function initCameraAndControls(renderer) {
   controls.dynamicDampingFactor = 0.3;
 
   window.addEventListener('resize',
-                          function() { onWindowResize(renderer, camera, controls); },
+                          function() {
+                            onWindowResize(renderer, camera, controls);
+                          },
                           false);
   window.addEventListener('hashchange',
-                          function(e) { ctrl.loadPath((location.hash || '#').substring(1)); },
+                          function(e) {
+                            ctrl.loadPath((location.hash || '#').substring(1));
+                          },
                           false);
 
   window.addEventListener('keypress', keyPress, true);
