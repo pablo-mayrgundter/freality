@@ -1,4 +1,4 @@
-package slang;
+package lang.pl.slang;
 
 import java.io.InputStream;
 import java.io.OutputStream;
