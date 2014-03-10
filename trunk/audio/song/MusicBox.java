@@ -1,4 +1,4 @@
-package song;
+package audio.song;
 
 import java.io.*;
 import java.util.Random;
