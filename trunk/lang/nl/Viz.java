@@ -1,4 +1,4 @@
-package nl;
+package lang.nl;
 
 import java.awt.*;
 import java.awt.font.FontRenderContext;

@@ -1,4 +1,4 @@
-package slang;
+package lang.pl.slang;
 
 /**
  * Prints a Java ean class definition, given a specification of member

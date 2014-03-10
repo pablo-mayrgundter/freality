@@ -1,4 +1,4 @@
-package nl;
+package lang.nl;
 
 import java.io.InputStream;
 import java.util.Iterator;
