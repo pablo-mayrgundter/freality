@@ -1,4 +1,4 @@
-package slang;
+package lang.pl.slang;
 
 /**
  * ClassWriter writes a textual representation of a Class object.
