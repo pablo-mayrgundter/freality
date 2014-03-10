@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="6.0+" codebase="http://freality.googlecode.com/svn/trunk/" href="Grav3d.jnlp">
+  <information>
+    <title>Grav 3d</title>
+    <homepage href="http://code.google.com/p/freality/source/browse/trunk/phys/GravSim.java"/>
+    <vendor>freality.googlecode.com</vendor>
+    <description>Gravity in 3d</description>
+    <offline-allowed/> 
+    <shortcut online="false"/>
+  </information>
+  <security>
+    <all-permissions/>
+  </security>
+  <resources>
+    <j2se version="1.6+"/>
+    <jar href="Grav3d.jar"/>
+    <property name="sleep" value="20"/>
+    <property name="num" value="128"/>
+  </resources>
+  <application-desc main-class="phys.GravSim"/>
+</jnlp>
