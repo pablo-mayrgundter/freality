@@ -51,9 +51,7 @@ class HexForce extends Force {
   }
 
   void debug(msg) {
-    StringBuffer s = new StringBuffer();
-    s.write(msg);
-    querySelector('#info').text = s.toString();
+    querySelector('#info').text = msg;
   }
 
   void applyWithin(final int radius, final Space2D before, final Space2D after,
