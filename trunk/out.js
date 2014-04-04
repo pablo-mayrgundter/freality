@@ -450,9 +450,6 @@ var $$ = {};
     _tdivFast$1: function(receiver, other) {
       return (receiver | 0) === receiver ? receiver / other | 0 : this.toInt$0(receiver / other);
     },
-    _shlPositive$1: function(receiver, other) {
-      return other > 31 ? 0 : receiver << other >>> 0;
-    },
     _shrOtherPositive$1: function(receiver, other) {
       var t1;
       if (receiver > 0)
@@ -462,9 +459,6 @@ var $$ = {};
         t1 = receiver >> t1 >>> 0;
       }
       return t1;
-    },
-    _shrBothPositive$1: function(receiver, other) {
-      return other > 31 ? 0 : receiver >>> other;
     },
     $lt: function(receiver, other) {
       if (typeof other !== "number")
@@ -515,6 +509,35 @@ var $$ = {};
     substring$1: function($receiver, startIndex) {
       return this.substring$2($receiver, startIndex, null);
     },
+    trim$0: function(receiver) {
+      var endIndex, startIndex, codeUnit, endIndex0, endIndex1;
+      for (endIndex = receiver.length, startIndex = 0; startIndex < endIndex;) {
+        if (startIndex >= endIndex)
+          H.throwExpression(P.RangeError$value(startIndex));
+        codeUnit = receiver.charCodeAt(startIndex);
+        if (codeUnit === 32 || codeUnit === 13 || J.JSString__isWhitespace(codeUnit))
+          ++startIndex;
+        else
+          break;
+      }
+      if (startIndex === endIndex)
+        return "";
+      for (endIndex0 = endIndex; true; endIndex0 = endIndex1) {
+        endIndex1 = endIndex0 - 1;
+        if (endIndex1 < 0)
+          H.throwExpression(P.RangeError$value(endIndex1));
+        if (endIndex1 >= endIndex)
+          H.throwExpression(P.RangeError$value(endIndex1));
+        codeUnit = receiver.charCodeAt(endIndex1);
+        if (codeUnit === 32 || codeUnit === 13 || J.JSString__isWhitespace(codeUnit))
+          ;
+        else
+          break;
+      }
+      if (startIndex === 0 && endIndex0 === endIndex)
+        return receiver;
+      return receiver.substring(startIndex, endIndex0);
+    },
     get$isEmpty: function(receiver) {
       return receiver.length === 0;
     },
@@ -542,7 +565,47 @@ var $$ = {};
         throw H.wrapException(P.RangeError$value(index));
       return receiver[index];
     },
-    $isString: true
+    $isString: true,
+    static: {JSString__isWhitespace: function(codeUnit) {
+        if (codeUnit < 256)
+          switch (codeUnit) {
+            case 9:
+            case 10:
+            case 11:
+            case 12:
+            case 13:
+            case 32:
+            case 133:
+            case 160:
+              return true;
+            default:
+              return false;
+          }
+        switch (codeUnit) {
+          case 5760:
+          case 6158:
+          case 8192:
+          case 8193:
+          case 8194:
+          case 8195:
+          case 8196:
+          case 8197:
+          case 8198:
+          case 8199:
+          case 8200:
+          case 8201:
+          case 8202:
+          case 8232:
+          case 8233:
+          case 8239:
+          case 8287:
+          case 12288:
+          case 65279:
+            return true;
+          default:
+            return false;
+        }
+      }}
   }
 }],
 ["_isolate_helper", "dart:_isolate_helper", , H, {
@@ -722,13 +785,13 @@ var $$ = {};
     return x == null || typeof x === "string" || typeof x === "number" || typeof x === "boolean";
   },
   startRootIsolate_closure: {
-    "^": "Closure:6;entry_0",
+    "^": "Closure:7;entry_0",
     call$0: function() {
       this.entry_0.call$1([]);
     }
   },
   startRootIsolate_closure0: {
-    "^": "Closure:6;entry_1",
+    "^": "Closure:7;entry_1",
     call$0: function() {
       this.entry_1.call$2([], null);
     }
@@ -885,7 +948,7 @@ var $$ = {};
     }
   },
   _EventLoop__runHelper_next: {
-    "^": "Closure:0;this_0",
+    "^": "Closure:1;this_0",
     call$0: function() {
       if (!this.this_0.runIteration$0())
         return;
@@ -907,7 +970,7 @@ var $$ = {};
     "^": "Object;"
   },
   IsolateNatives__processWorkerMessage_closure: {
-    "^": "Closure:6;entryPoint_0,args_1,message_2,isSpawnUri_3,replyTo_4",
+    "^": "Closure:7;entryPoint_0,args_1,message_2,isSpawnUri_3,replyTo_4",
     call$0: function() {
       var t1, t2, t3, context, t4, t5;
       t1 = this.entryPoint_0;
@@ -991,7 +1054,7 @@ var $$ = {};
     $isSendPort: true
   },
   _NativeJsSendPort_send_closure: {
-    "^": "Closure:6;box_0,this_1,shouldSerialize_2",
+    "^": "Closure:7;box_0,this_1,shouldSerialize_2",
     call$0: function() {
       var t1, t2;
       t1 = this.this_1._receivePort;
@@ -1218,7 +1281,7 @@ var $$ = {};
     }
   },
   _Copier_visitMap_closure: {
-    "^": "Closure:7;box_0,this_1",
+    "^": "Closure:8;box_0,this_1",
     call$2: function(key, val) {
       var t1 = this.this_1;
       J.$indexSet$a(this.box_0.copy_0, t1._dispatch$1(key), t1._dispatch$1(val));
@@ -1385,14 +1448,14 @@ var $$ = {};
       }}
   },
   TimerImpl_internalCallback: {
-    "^": "Closure:0;this_0,callback_1",
+    "^": "Closure:1;this_0,callback_1",
     call$0: function() {
       this.this_0._handle = null;
       this.callback_1.call$0();
     }
   },
   TimerImpl_internalCallback0: {
-    "^": "Closure:0;this_2,callback_3",
+    "^": "Closure:1;this_2,callback_3",
     call$0: function() {
       this.this_2._handle = null;
       var t1 = init.globalState.topEventLoop;
@@ -1401,7 +1464,7 @@ var $$ = {};
     }
   },
   TimerImpl$periodic_closure: {
-    "^": "Closure:6;this_0,callback_1",
+    "^": "Closure:7;this_0,callback_1",
     call$0: function() {
       this.callback_1.call$1(this.this_0);
     }
@@ -1463,6 +1526,25 @@ var $$ = {};
       object.$identityHash = hash;
     }
     return hash;
+  },
+  Primitives__throwFormatException: [function(string) {
+    throw H.wrapException(P.FormatException$(string));
+  }, "call$1", "Primitives__throwFormatException$closure", 2, 0, 0],
+  Primitives_parseDouble: function(source, handleError) {
+    var result, trimmed;
+    if (typeof source !== "string")
+      H.throwExpression(P.ArgumentError$(source));
+    handleError = H.Primitives__throwFormatException$closure();
+    if (!/^\s*[+-]?(?:Infinity|NaN|(?:\.\d+|\d+(?:\.\d*)?)(?:[eE][+-]?\d+)?)\s*$/.test(source))
+      return handleError.call$1(source);
+    result = parseFloat(source);
+    if (isNaN(result)) {
+      trimmed = J.trim$0$s(source);
+      if (trimmed === "NaN" || trimmed === "+NaN" || trimmed === "-NaN")
+        return result;
+      return handleError.call$1(source);
+    }
+    return result;
   },
   Primitives_objectTypeName: function(object) {
     var $name, decompiled;
@@ -2330,7 +2412,7 @@ var $$ = {};
     }
   },
   unwrapException_saveStackTrace: {
-    "^": "Closure:8;ex_0",
+    "^": "Closure:9;ex_0",
     call$1: function(error) {
       var t1 = J.getInterceptor(error);
       if (typeof error === "object" && error !== null && !!t1.$isError)
@@ -2354,31 +2436,31 @@ var $$ = {};
     }
   },
   invokeClosure_closure: {
-    "^": "Closure:6;closure_0",
+    "^": "Closure:7;closure_0",
     call$0: function() {
       return this.closure_0.call$0();
     }
   },
   invokeClosure_closure0: {
-    "^": "Closure:6;closure_1,arg1_2",
+    "^": "Closure:7;closure_1,arg1_2",
     call$0: function() {
       return this.closure_1.call$1(this.arg1_2);
     }
   },
   invokeClosure_closure1: {
-    "^": "Closure:6;closure_3,arg1_4,arg2_5",
+    "^": "Closure:7;closure_3,arg1_4,arg2_5",
     call$0: function() {
       return this.closure_3.call$2(this.arg1_4, this.arg2_5);
     }
   },
   invokeClosure_closure2: {
-    "^": "Closure:6;closure_6,arg1_7,arg2_8,arg3_9",
+    "^": "Closure:7;closure_6,arg1_7,arg2_8,arg3_9",
     call$0: function() {
       return this.closure_6.call$3(this.arg1_7, this.arg2_8, this.arg3_9);
     }
   },
   invokeClosure_closure3: {
-    "^": "Closure:6;closure_10,arg1_11,arg2_12,arg3_13,arg4_14",
+    "^": "Closure:7;closure_10,arg1_11,arg2_12,arg3_13,arg4_14",
     call$0: function() {
       return this.closure_10.call$4(this.arg1_11, this.arg2_12, this.arg3_13, this.arg4_14);
     }
@@ -2558,19 +2640,19 @@ var $$ = {};
     $isDynamicRuntimeType: true
   },
   initHooks_closure: {
-    "^": "Closure:8;getTag_0",
+    "^": "Closure:9;getTag_0",
     call$1: function(o) {
       return this.getTag_0(o);
     }
   },
   initHooks_closure0: {
-    "^": "Closure:9;getUnknownTag_1",
+    "^": "Closure:10;getUnknownTag_1",
     call$2: function(o, tag) {
       return this.getUnknownTag_1(o, tag);
     }
   },
   initHooks_closure1: {
-    "^": "Closure:10;prototypeForTag_2",
+    "^": "Closure:0;prototypeForTag_2",
     call$1: function(tag) {
       return this.prototypeForTag_2(tag);
     }
@@ -2732,7 +2814,7 @@ var $$ = {};
       throw exception;
     }
 
-  }, "call$0", "_asyncRunCallback$closure", 0, 0, 0],
+  }, "call$0", "_asyncRunCallback$closure", 0, 0, 1],
   Timer_Timer: function(duration, callback) {
     var t1 = $.Zone__current;
     if (t1 === C.C__RootZone) {
@@ -2851,31 +2933,31 @@ var $$ = {};
     }
   },
   _BaseZone_bindCallback_closure: {
-    "^": "Closure:6;this_0,registered_1",
+    "^": "Closure:7;this_0,registered_1",
     call$0: function() {
       return this.this_0.runGuarded$1(this.registered_1);
     }
   },
   _BaseZone_bindCallback_closure0: {
-    "^": "Closure:6;this_2,registered_3",
+    "^": "Closure:7;this_2,registered_3",
     call$0: function() {
       return this.this_2.run$1(this.registered_3);
     }
   },
   _BaseZone_bindUnaryCallback_closure: {
-    "^": "Closure:8;this_0,registered_1",
+    "^": "Closure:9;this_0,registered_1",
     call$1: function(arg) {
       return this.this_0.runUnaryGuarded$2(this.registered_1, arg);
     }
   },
   _BaseZone_bindUnaryCallback_closure0: {
-    "^": "Closure:8;this_2,registered_3",
+    "^": "Closure:9;this_2,registered_3",
     call$1: function(arg) {
       return this.this_2.runUnary$2(this.registered_3, arg);
     }
   },
   _rootHandleUncaughtError_closure: {
-    "^": "Closure:6;error_0,stackTrace_1",
+    "^": "Closure:7;error_0,stackTrace_1",
     call$0: function() {
       var t1, t2;
       t1 = new P._rootHandleUncaughtError__closure(this.error_0, this.stackTrace_1);
@@ -2893,7 +2975,7 @@ var $$ = {};
     }
   },
   _rootHandleUncaughtError__closure: {
-    "^": "Closure:6;error_2,stackTrace_3",
+    "^": "Closure:7;error_2,stackTrace_3",
     call$0: function() {
       var t1, trace, t2;
       t1 = this.error_2;
@@ -2943,10 +3025,10 @@ var $$ = {};
   },
   _defaultEquals: [function(a, b) {
     return J.$eq(a, b);
-  }, "call$2", "_defaultEquals$closure", 4, 0, 1],
+  }, "call$2", "_defaultEquals$closure", 4, 0, 2],
   _defaultHashCode: [function(a) {
     return J.get$hashCode$(a);
-  }, "call$1", "_defaultHashCode$closure", 2, 0, 2],
+  }, "call$1", "_defaultHashCode$closure", 2, 0, 3],
   HashMap_HashMap: function(equals, hashCode, isValidKey, $K, $V) {
     return H.setRuntimeTypeInfo(new P._HashMap(0, null, null, null, null), [$K, $V]);
   },
@@ -3244,7 +3326,7 @@ var $$ = {};
       }}
   },
   _HashMap_values_closure: {
-    "^": "Closure:8;this_0",
+    "^": "Closure:9;this_0",
     call$1: function(each) {
       return this.this_0.$index(0, each);
     }
@@ -3480,7 +3562,7 @@ var $$ = {};
       }}
   },
   _LinkedHashMap_values_closure: {
-    "^": "Closure:8;this_0",
+    "^": "Closure:9;this_0",
     call$1: function(each) {
       return this.this_0.$index(0, each);
     }
@@ -3946,7 +4028,7 @@ var $$ = {};
     }
   },
   Maps_mapToString_closure: {
-    "^": "Closure:7;box_0,result_1",
+    "^": "Closure:8;box_0,result_1",
     call$2: function(k, v) {
       var t1 = this.box_0;
       if (!t1.first_0)
@@ -4106,10 +4188,10 @@ var $$ = {};
   },
   identical: [function(a, b) {
     return a == null ? b == null : a === b;
-  }, "call$2", "identical$closure", 4, 0, 3],
+  }, "call$2", "identical$closure", 4, 0, 4],
   identityHashCode: [function(object) {
     return H.objectHashCode(object);
-  }, "call$1", "identityHashCode$closure", 2, 0, 4],
+  }, "call$1", "identityHashCode$closure", 2, 0, 5],
   List_List$filled: function($length, fill, $E) {
     var result, t1, i;
     result = J.JSArray_JSArray$fixed($length, $E);
@@ -4316,6 +4398,15 @@ var $$ = {};
       return "Exception: " + H.S(t1);
     }
   },
+  FormatException: {
+    "^": "Object;message",
+    toString$0: function(_) {
+      return "FormatException: " + H.S(this.message);
+    },
+    static: {FormatException$: function(message) {
+        return new P.FormatException(message);
+      }}
+  },
   Expando: {
     "^": "Object;name",
     toString$0: function(_) {
@@ -4417,7 +4508,7 @@ var $$ = {};
   "^": "",
   HtmlElement: {
     "^": "Element;",
-    "%": "HTMLAppletElement|HTMLAudioElement|HTMLBRElement|HTMLBaseElement|HTMLBodyElement|HTMLButtonElement|HTMLContentElement|HTMLDListElement|HTMLDataListElement|HTMLDetailsElement|HTMLDialogElement|HTMLDirectoryElement|HTMLDivElement|HTMLEmbedElement|HTMLFieldSetElement|HTMLFontElement|HTMLFrameElement|HTMLFrameSetElement|HTMLHRElement|HTMLHeadElement|HTMLHeadingElement|HTMLHtmlElement|HTMLIFrameElement|HTMLImageElement|HTMLInputElement|HTMLKeygenElement|HTMLLIElement|HTMLLabelElement|HTMLLegendElement|HTMLLinkElement|HTMLMapElement|HTMLMarqueeElement|HTMLMediaElement|HTMLMenuElement|HTMLMetaElement|HTMLMeterElement|HTMLModElement|HTMLOListElement|HTMLObjectElement|HTMLOptGroupElement|HTMLOptionElement|HTMLOutputElement|HTMLParagraphElement|HTMLParamElement|HTMLPreElement|HTMLProgressElement|HTMLQuoteElement|HTMLScriptElement|HTMLShadowElement|HTMLSourceElement|HTMLSpanElement|HTMLStyleElement|HTMLTableCaptionElement|HTMLTableCellElement|HTMLTableColElement|HTMLTableDataCellElement|HTMLTableElement|HTMLTableHeaderCellElement|HTMLTableRowElement|HTMLTableSectionElement|HTMLTemplateElement|HTMLTextAreaElement|HTMLTitleElement|HTMLTrackElement|HTMLUListElement|HTMLUnknownElement|HTMLVideoElement;HTMLElement"
+    "%": "HTMLAppletElement|HTMLAudioElement|HTMLBRElement|HTMLBaseElement|HTMLBodyElement|HTMLContentElement|HTMLDListElement|HTMLDataListElement|HTMLDetailsElement|HTMLDialogElement|HTMLDirectoryElement|HTMLDivElement|HTMLEmbedElement|HTMLFieldSetElement|HTMLFontElement|HTMLFrameElement|HTMLFrameSetElement|HTMLHRElement|HTMLHeadElement|HTMLHeadingElement|HTMLHtmlElement|HTMLIFrameElement|HTMLImageElement|HTMLKeygenElement|HTMLLabelElement|HTMLLegendElement|HTMLLinkElement|HTMLMapElement|HTMLMarqueeElement|HTMLMediaElement|HTMLMenuElement|HTMLMetaElement|HTMLModElement|HTMLOListElement|HTMLObjectElement|HTMLOptGroupElement|HTMLParagraphElement|HTMLPreElement|HTMLQuoteElement|HTMLScriptElement|HTMLShadowElement|HTMLSourceElement|HTMLSpanElement|HTMLStyleElement|HTMLTableCaptionElement|HTMLTableCellElement|HTMLTableColElement|HTMLTableDataCellElement|HTMLTableElement|HTMLTableHeaderCellElement|HTMLTableRowElement|HTMLTableSectionElement|HTMLTemplateElement|HTMLTitleElement|HTMLTrackElement|HTMLUListElement|HTMLUnknownElement|HTMLVideoElement;HTMLElement"
   },
   AnchorElement: {
     "^": "HtmlElement;",
@@ -4432,6 +4523,10 @@ var $$ = {};
       return receiver.toString();
     },
     "%": "HTMLAreaElement"
+  },
+  ButtonElement: {
+    "^": "HtmlElement;value=",
+    "%": "HTMLButtonElement"
   },
   CanvasElement: {
     "^": "HtmlElement;",
@@ -4491,6 +4586,18 @@ var $$ = {};
     "^": "HtmlElement;length=",
     "%": "HTMLFormElement"
   },
+  InputElement: {
+    "^": "HtmlElement;value=",
+    "%": "HTMLInputElement"
+  },
+  LIElement: {
+    "^": "HtmlElement;value=",
+    "%": "HTMLLIElement"
+  },
+  MeterElement: {
+    "^": "HtmlElement;value=",
+    "%": "HTMLMeterElement"
+  },
   Node: {
     "^": "EventTarget;",
     toString$0: function(receiver) {
@@ -4499,9 +4606,29 @@ var $$ = {};
     },
     "%": "Document|HTMLDocument;Node"
   },
+  OptionElement: {
+    "^": "HtmlElement;value=",
+    "%": "HTMLOptionElement"
+  },
+  OutputElement: {
+    "^": "HtmlElement;value=",
+    "%": "HTMLOutputElement"
+  },
+  ParamElement: {
+    "^": "HtmlElement;value=",
+    "%": "HTMLParamElement"
+  },
+  ProgressElement: {
+    "^": "HtmlElement;value=",
+    "%": "HTMLProgressElement"
+  },
   SelectElement: {
-    "^": "HtmlElement;length=",
+    "^": "HtmlElement;length=,value=",
     "%": "HTMLSelectElement"
+  },
+  TextAreaElement: {
+    "^": "HtmlElement;value=",
+    "%": "HTMLTextAreaElement"
   },
   Window: {
     "^": "EventTarget;",
@@ -4554,10 +4681,10 @@ var $$ = {};
   },
   runIt: [function(foo) {
     $.get$f().run$0();
-  }, "call$1", "runIt$closure", 2, 0, 5],
+  }, "call$1", "runIt$closure", 2, 0, 6],
   main: [function() {
-    P.Timer_Timer$periodic(C.Duration_5000, E.runIt$closure());
-  }, "call$0", "main$closure", 0, 0, 0],
+    P.Timer_Timer$periodic(C.Duration_100000, E.runIt$closure());
+  }, "call$0", "main$closure", 0, 0, 1],
   Force: {
     "^": "Object;",
     apply$2: function(before, after) {
@@ -4596,18 +4723,22 @@ var $$ = {};
   Flow: {
     "^": "Object;radius,gridScale,frame,graphics,palette,hexGrid,grid,space,next,force",
     popCount$1: function(bits) {
-      var popCount, i, t1;
+      var popCount, i;
       for (popCount = 0, i = 0; i < 32; ++i) {
-        t1 = C.JSInt_methods._shlPositive$1(1, i);
         if (typeof bits !== "number")
           return bits.$and();
-        popCount += C.JSInt_methods._shrBothPositive$1(bits & t1, i);
+        popCount += bits & 1;
+        bits = bits >>> 1;
       }
       return popCount;
     },
     run$0: function() {
-      var wallLeft, wallLo, wallHi, y, x, t1, t2, t3, ndx, t4, tmp;
-      wallLeft = C.JSNumber_methods.toInt$0(this.radius * 0.8);
+      var wallLeftR, t1, wallLeft, wallLo, wallHi, y, x, t2, t3, ndx, t4, tmp;
+      wallLeftR = H.Primitives_parseDouble(J.get$value$x(document.querySelector("#wallLeftR")), null);
+      t1 = this.radius;
+      if (typeof wallLeftR !== "number")
+        return H.iae(wallLeftR);
+      wallLeft = C.JSNumber_methods.toInt$0(t1 * wallLeftR);
       wallLo = C.JSNumber_methods.toInt$0(this.radius * 0.25);
       wallHi = C.JSNumber_methods.toInt$0(this.radius * 0.75);
       for (y = 0; y < this.radius; ++y) {
@@ -4667,7 +4798,7 @@ var $$ = {};
     },
     Flow$0: function() {
       var canvas, t1, t2, i, val;
-      this.gridScale = 2;
+      this.gridScale = 5;
       canvas = document.querySelector("#canvas");
       this.graphics = J.getContext$1$x(canvas, "2d");
       t1 = canvas.width;
@@ -4686,9 +4817,9 @@ var $$ = {};
       t1.HexForce$0();
       this.force = t1;
       this.palette = H.setRuntimeTypeInfo([], [E.Color]);
-      for (i = 0; i < 64; ++i) {
-        val = C.JSInt_methods.toInt$0(256 * (i / 64));
-        this.palette.push(new E.Color(val, val, val));
+      for (i = 0; i < 7; ++i) {
+        val = C.JSInt_methods.toInt$0(256 * (i / 7));
+        this.palette.push(new E.Color(val, 0, val));
       }
       t1 = this.radius;
       this.hexGrid = E.HexGrid$(t1, t1, this.gridScale, this.graphics);
@@ -4806,11 +4937,16 @@ var $$ = {};
       var t1, t2, rs, gs, bs, t3, i, t4;
       t1 = this.g;
       t2 = color.r;
-      rs = t2 === 0 ? "00" : C.JSInt_methods.toRadixString$1(t2, 16);
-      t2 = color.g;
-      gs = t2 === 0 ? "00" : C.JSInt_methods.toRadixString$1(t2, 16);
+      rs = C.JSInt_methods.toRadixString$1(t2, 16);
+      if (t2 < 16)
+        rs = "0" + rs;
+      gs = C.JSInt_methods.toRadixString$1(color.g, 16);
+      if (color.g < 16)
+        gs = "0" + gs;
       t2 = color.b;
-      bs = t2 === 0 ? "00" : C.JSInt_methods.toRadixString$1(t2, 16);
+      bs = C.JSInt_methods.toRadixString$1(t2, 16);
+      if (t2 < 16)
+        bs = "0" + bs;
       J.set$fillStyle$x(t1, "#" + rs + gs + bs);
       J.beginPath$0$x(this.g);
       t1 = this.g;
@@ -5014,6 +5150,9 @@ J.get$iterator$a = function(receiver) {
 J.get$length$asx = function(receiver) {
   return J.getInterceptor$asx(receiver).get$length(receiver);
 };
+J.get$value$x = function(receiver) {
+  return J.getInterceptor$x(receiver).get$value(receiver);
+};
 J.getContext$1$x = function(receiver, a0) {
   return J.getInterceptor$x(receiver).getContext$1(receiver, a0);
 };
@@ -5029,10 +5168,13 @@ J.set$fillStyle$x = function(receiver, value) {
 J.toString$0 = function(receiver) {
   return J.getInterceptor(receiver).toString$0(receiver);
 };
+J.trim$0$s = function(receiver) {
+  return J.getInterceptor$s(receiver).trim$0(receiver);
+};
 C.C_DynamicRuntimeType = new H.DynamicRuntimeType();
 C.C__RootZone = new P._RootZone();
 C.Duration_0 = new P.Duration(0);
-C.Duration_5000 = new P.Duration(5000);
+C.Duration_100000 = new P.Duration(100000);
 C.JSArray_methods = J.JSArray.prototype;
 C.JSInt_methods = J.JSInt.prototype;
 C.JSNumber_methods = J.JSNumber.prototype;
@@ -5278,7 +5420,8 @@ Isolate.$lazy($, "f", "f", "get$f", function() {
 
 init.functionAliases = {};
 ;
-init.metadata = [{func: "void_", void: true},
+init.metadata = [{func: "dynamic__String", args: [J.JSString]},
+{func: "void_", void: true},
 {func: "bool__dynamic_dynamic", ret: J.JSBool, args: [null, null]},
 {func: "int__dynamic", ret: J.JSInt, args: [null]},
 {func: "bool__Object_Object", ret: J.JSBool, args: [P.Object, P.Object]},
@@ -5288,7 +5431,6 @@ init.metadata = [{func: "void_", void: true},
 {func: "args2", args: [null, null]},
 {func: "args1", args: [null]},
 {func: "dynamic__dynamic_String", args: [null, J.JSString]},
-{func: "dynamic__String", args: [J.JSString]},
 {func: "dynamic__Symbol_dynamic", args: [P.Symbol, null]},
 {func: "String__int", ret: J.JSString, args: [J.JSInt]},
 ];

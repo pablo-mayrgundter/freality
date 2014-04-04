@@ -32,7 +32,7 @@ class Flow {
   Force force;
 
   Flow() {
-    gridScale = 2;
+    gridScale = 5;
     CanvasElement canvas = querySelector('#canvas');
     graphics = canvas.getContext('2d');
     radius = (canvas.width / 4 / gridScale).toInt();
@@ -41,9 +41,9 @@ class Flow {
     force = new HexForce();
 
     palette = new List<Color>();
-    for (int i = 0; i < 64; i++) {
-      int val = (256.0 * (i.toDouble() / 64.0)).toInt();
-      palette.add(new Color(val, val, val));
+    for (int i = 0; i < 7; i++) {
+      int val = (256.0 * (i.toDouble() / 7.0)).toInt();
+      palette.add(new Color(val, 0, val));
     }
     hexGrid = new HexGrid(radius, radius, gridScale, graphics);
   }
@@ -58,7 +58,9 @@ class Flow {
   }
 
   void run() {
-    int wallLeft = (radius.toDouble() * 0.6).toInt();
+    InputElement e = querySelector('#wallLeftR');
+    double wallLeftR = double.parse(e.value);
+    int wallLeft = (radius.toDouble() * wallLeftR).toInt();
     int wallLo = (radius.toDouble() * 0.25).toInt();
     int wallHi = (radius.toDouble() * 0.75).toInt();
     int forceRight =
