@@ -19,7 +19,7 @@ class Space {
     int ndx = 0;
     for (int d = 0; d < x.length; d++) {
       int val = wrap(radius, x[d]);
-      ndx += val * Math.pow(radius, d);
+      ndx += val * math.pow(radius, d);
     }
     return ndx;
   }
@@ -32,16 +32,18 @@ class Space {
   /**
    * One-dimensional storage for variable-dimension space.
    */
-  final List<int> space;
+  List<int> space;
   List<int> pos;
   int dimension = 0;
   int radius = 0;
 
-  Space(int this.dimension, int this.radius) :
-  space = new List<int>(),
-    pos = new List<int>() {
-      space.length = Math.pow(radius, dimension);
-      pos.length = dimension;
+  Space(int this.dimension, int this.radius) {
+    int size = math.pow(radius, dimension);
+    this.space = new List<int>(size);
+    for (int i = 0; i < size; i++) {
+      space[i] = 0;
+    }
+    this.pos = new List<int>(dimension);
   }
 
   List<int> getBuffer() {
@@ -62,18 +64,16 @@ class Space {
 
   void debug(msg) {
     StringBuffer s = new StringBuffer();
-/*
-    String prev = query('#info').text;
-    s.add(prev);
-    s.add("\n");
-    s.add(msg);
-    query('#info').text = s.toString();
-*/
+    String prev = querySelector('#info').text;
+    s.write(prev);
+    s.write("\n");
+    s.write(msg);
+    querySelector('#info').text = s.toString();
   }
 
   int get(final List<int> coord) {
-    debug(coord);
-    return space[coordToNdx(radius, coord)];
+    var ndx = coordToNdx(radius, coord);
+    return space[ndx];
   }
 
   void setCur(final int val) {

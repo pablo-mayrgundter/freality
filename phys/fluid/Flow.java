@@ -20,7 +20,7 @@ import javax.swing.JFrame;
 
 /**
  * Wolfram models a fluid as particle interactions on a hexagonal
- * field (p. 378):
+ * field (p. 378), where each node interacts with 6 neighbors.
  *
  * \ /
  * -x-
@@ -30,40 +30,15 @@ import javax.swing.JFrame;
  * The evolution rule specifies how the cell transfers these forces
  * outwards by the end of the step.  Wolfram seems to pick a
  * particular rule which transfers the forces most symmetrically for
- * this configuration, and assumes that the count of incident fields
- * is half, or 3/6.
+ * this configuration, and ensures the count of active vectors is
+ * half, or 3/6.  The configuration of active incoming states is
+ * encoded as the disjuntion (OR) of those force vectors.  The
+ * outgoing forces are found via a lookup table associated with the
+ * disjunctive code.
  *
- * To start simply, I will use a 2-dimensional square grid:
- *
- *  |
- * -x-
- *  |
- *
- * where each node interacts with 4 neighbors.  At a given step, each
- * node has 4 possible states of incoming force per dimension, for a
- * total of 8 incoming states, e.g. for left-right for is either not
- * coming in or coming in from the left only, from the right only, or
- * from both left and right.  Similarly for the up-down dimension.
- * This set of incoming states is encoded as the disjuntion (OR) of
- * those force vectors.  To progress to the next step, absent force is
- * left as absent force, incoming left is propagated to the right, and
- * similarly right to the left, and in the case of both left and right
- * incoming at once, the force is reflected (or doubly passed
- * through).  The full set of states for left-right, before and after,
- * is represented in this table:
- *
- * <pre>Force propagation state transition rules, with encodings for
- * left-right (similarly for up-down):
- *
- *  IN  | OUT | Code
- *  ----------------
- *  -x- | -x- |   00   None
- *  -x< | <x- |   01   Left
- *  >x- | -x> |   10   Right
- *  >x< | <x> |   11   Left OR Right
- * </pre>
- *
- * Solids within the flow are represented with an additional ...
+ * Solids within the flow are represented with special hard-coded
+ * force propagation conditionals in the main evaluation loop, though
+ * this should be replaced with something more general.
  *
  * @author Pablo Mayrgundter <pablo.mayrgundter@gmail.com>
  */
@@ -71,13 +46,18 @@ final class Flow {
 
   static Flags flags = new Flags(Flow.class);
   static final boolean SCREEN_GFX = flags.get("gfx", "gfx", true);
-  static final int WIDTH = flags.get("width", "w", 80);
+  static {
+    // Set this immediatly before awt initializes.
+    if (!SCREEN_GFX)
+      System.setProperty("java.awt.headless", "true");
+  }
+  static final int WIDTH = flags.get("width", "w", 20);
   static final int NUM = flags.get("num", "num", 100);
   static final int SLEEP = flags.get("sleep", 100);
   static final int HEX_SIZE = flags.get("hexSize", 5);
   static final int COMPARE_STEP = flags.get("compare", -1);
 
-  final int radius, gridScale;
+  final int radius, hexSize;
   Space2D space, next;
   Force force;
   FullScreenableFrame frame = null;
@@ -90,24 +70,34 @@ final class Flow {
   }
 
   /**
-   * @param gridScale of hexagons, for use with hex grid.
+   * @param hexSize of hexagons to draw grid with.
    */
-  Flow(int num, int width, int gridScale) {
+  Flow(int num, int cols, int hexSize) {
 
-    this.gridScale = gridScale;
+    this.hexSize = hexSize;
 
     // Setup gfx first to get possible full-screen dimensions.
     if (SCREEN_GFX) {
-      palette = new Color[64];
-      for (int i = 0; i < 64; i++) {
-        float val = (float)i / 63f;
+      if (FullScreenableFrame.FULL_SCREEN) {
+        frame = new FullScreenableFrame(-1, -1, true);
+        // computation related to the sizing in HexGrid.java, not sure
+        // why + 2 instead of just say off by one.
+        // int cols = (frame.getWidth()) - hexSize) / 3 * hexSize;
+        int rows = (frame.getHeight() - (6 * hexSize)) / (4 * hexSize) + 2;
+        radius = rows;
+        hexGrid = new HexGrid(radius, radius, hexSize);
+      } else {
+        radius = cols;
+        hexGrid = new HexGrid(radius, radius, hexSize);
+        frame = new FullScreenableFrame(hexGrid.img.getWidth(),
+                                        hexGrid.img.getHeight());
+      }
+      graphics = frame.getDrawGraphics();
+      palette = new Color[7];
+      for (int i = 0; i < 7; i++) {
+        float val = (float)i / 7f;
         palette[i] = new Color(val, val, val);
       }
-      radius = width;
-      hexGrid = new HexGrid(radius, radius, gridScale);
-      frame = new FullScreenableFrame(hexGrid.img.getWidth(),
-                                      hexGrid.img.getHeight());
-      graphics = frame.getDrawGraphics();
     } else {
       palette = new Color[7];
       palette[0] = Color.BLACK;
@@ -117,8 +107,8 @@ final class Flow {
       palette[4] = Color.RED;
       palette[5] = Color.MAGENTA;
       palette[6] = Color.WHITE;
-      graphics = new TextGraphics(width, width);
-      radius = width;
+      graphics = new TextGraphics(cols, cols);
+      radius = cols;
     }
 
     space = new Space2D(radius);
@@ -155,23 +145,23 @@ final class Flow {
 
     int stepCount = 0;
     while (true) {
-      for (int y = 0; y < radius; y++) {
-        for (int x = 0; x < radius; x++) {
-          final int curForce = space.get(x, y);
-          if (SCREEN_GFX) {
-            hexGrid.next(palette[curForce]);
-          } else {
-            int popCount = util.Bits.popCount(curForce);
+      if (SCREEN_GFX) {
+        for (int y = 0; y < radius; y++) {
+          for (int x = 0; x < radius; x++) {
+            final int popCount = util.Bits.popCount(space.get(x, y));
+            hexGrid.next(palette[popCount]);
+          }
+          hexGrid.line();
+        }
+        hexGrid.reset();
+      } else {
+        for (int y = 0; y < radius; y++) {
+          for (int x = 0; x < radius; x++) {
+            final int popCount = util.Bits.popCount(space.get(x, y));
             graphics.setBackground(palette[popCount]);
             graphics.drawLine(x, y, x + 1, y + 1);
           }
         }
-        if (SCREEN_GFX) {
-          hexGrid.line();
-        }
-      }
-      if (SCREEN_GFX) {
-        hexGrid.reset();
       }
 
       force.apply(space, next);
@@ -181,7 +171,7 @@ final class Flow {
         next.set(forceRight, 0, y);
 
         // wall should bounce back.
-        if (y > wallLo && y < wallHi) {
+        if (y >= wallLo && y <= wallHi) {
           /*
           for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {

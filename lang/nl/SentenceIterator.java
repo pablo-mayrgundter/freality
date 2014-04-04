@@ -1,6 +1,8 @@
 package lang.nl;
 
-import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.Iterator;
 import java.util.Scanner;
 
@@ -16,8 +18,8 @@ public class SentenceIterator implements Iterator<String> {
 
   final Scanner sentenceScanner;
 
-  public SentenceIterator(final InputStream in) {
-    sentenceScanner = new Scanner(in).useDelimiter("\\s*[.?!]\\s*");
+  public SentenceIterator(final Reader r) {
+    sentenceScanner = new Scanner(r).useDelimiter("\\s*[.?!]\\s*");
   }
 
   public boolean hasNext() {
@@ -37,7 +39,7 @@ public class SentenceIterator implements Iterator<String> {
   static final String EXPECTED_OUTPUT = "a\na b\na b c\na b c\na b c\nd e f\na b\nc d e f\n";
   @SuppressWarnings(value = "deprecation")
   static boolean test() {
-    final SentenceIterator itr = new SentenceIterator(new java.io.StringBufferInputStream(TEST_INPUT));
+    final SentenceIterator itr = new SentenceIterator(new StringReader(TEST_INPUT));
     String out = "";
     while (itr.hasNext())
       out += itr.next() + "\n";
@@ -56,7 +58,8 @@ public class SentenceIterator implements Iterator<String> {
       System.err.println("TESTS PASSED");
       return;
     }
-    final SentenceIterator itr = new SentenceIterator(System.in);
+    final SentenceIterator itr =
+      new SentenceIterator(new InputStreamReader(System.in));
     while (itr.hasNext())
       System.out.println(itr.next());
   }

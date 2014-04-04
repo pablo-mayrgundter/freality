@@ -83,6 +83,20 @@ public class Flags {
     return defaultVal;
   }
 
+  // Double flags.
+
+  public static double getDouble(String name) {
+    return Double.parseDouble(get(name, "0"));
+  }
+
+  public static double getDouble(String name, double defaultVal) {
+    String strVal = System.getProperty(name);
+    if (strVal != null) {
+      return Double.parseDouble(strVal);
+    }
+    return defaultVal;
+  }
+
   Class clazz;
 
   public Flags(Class clazz) {
