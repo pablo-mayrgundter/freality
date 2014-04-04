@@ -38,9 +38,9 @@ public class Explorer extends FullScreenableFrame {
     grapher = new Grapher(getWidth() * OVERSAMPLE,
                           getHeight() * OVERSAMPLE,
                           SCALE);
-    flame = new Fern(grapher, ITERATIONS / NUM_PROCESSORS, 1f);
+    //flame = new Fern(grapher, ITERATIONS / NUM_PROCESSORS, 1f);
     //flame = new SierpenskisGasket(grapher, ITERATIONS / NUM_PROCESSORS, 1f);
-    //flame = new ChaosGame(grapher, ITERATIONS / NUM_PROCESSORS, 1f, SEED);
+    flame = new ChaosGame(grapher, ITERATIONS / NUM_PROCESSORS, 1f, SEED);
     drawer = new Drawer(getWidth(), getHeight(), OVERSAMPLE);
     grapher.setSeed(SEED);
     grapher.init();

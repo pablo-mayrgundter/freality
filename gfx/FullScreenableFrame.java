@@ -18,9 +18,9 @@ import javax.swing.JFrame;
 public class FullScreenableFrame extends JFrame {
 
   static Flags flags = new Flags(FullScreenableFrame.class);
-  static final int WIDTH = flags.get("width", "w", 400);
-  static final int HEIGHT = flags.get("height", "h", 400);
-  static final boolean FULL_SCREEN = flags.get("fullScreen", "fs", false);
+  public static final boolean FULL_SCREEN = flags.get("fullScreen", "fs", false);
+  protected static final int WIDTH = flags.get("width", "w", 400);
+  protected static final int HEIGHT = flags.get("height", "h", 400);
 
   protected int width, height;
   protected Graphics2D drawGraphics;
@@ -43,13 +43,15 @@ public class FullScreenableFrame extends JFrame {
       device.setFullScreenWindow(this);
       this.width = (int)config.getBounds().getWidth();
       this.height = (int)config.getBounds().getHeight();
+      setSize(this.width, this.height);
+      System.out.printf("width(%d), height(%d)\n", this.width, this.height);
     } else {
       this.width = width;
       this.height = height;
-      setSize(width, height);
+      setSize(this.width, this.height + getInsets().top);
     }
     setVisible(true);
-    util.Sleep.sleep(100); // JRE Bug: graphics not ready immediately.
+    util.Sleep.sleep(100); // JRE Bug? graphics not ready immediately.
   }
 
   public int getWidth() {

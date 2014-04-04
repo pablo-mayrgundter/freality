@@ -18,6 +18,23 @@ final class HexGrid {
 
   /**
    * Coordinates of a polygon.
+   *
+   *   0 1 2 3 4 5 6 7 8 9 A
+   *  0. 1   2     . 7   8
+   *  1        
+   *  26     . 3   C       9
+   *  3
+   *  4. 5   4       B   A
+   *  5
+   *  6      . x   x
+   *
+   *  . = origins of each successive hex.
+   *
+   *  Thus:
+   *      hexWidth = 4 * scale, hexHeight = 4 * scale
+   *      xStride = 3 * scale, yStride = 2 * scale.
+   *      imgWidth = cols * xStride + (1 * scale)
+   *      imgHeight = rows * yStride + (2 * scale)
    */
   int []
     xc = {1,3,4,3,1,0},
@@ -28,8 +45,8 @@ final class HexGrid {
   int cols, rows, scale, count, xStride, yStride, yOffset;
   Polygon hex;
 
-  HexGrid(int columns, int rows, int scale) {
-    this.cols = columns;
+  HexGrid(int cols, int rows, int scale) {
+    this.cols = cols;
     this.rows = rows;
     this.scale = scale;
     for (int i = 0; i < 6; i++) {
@@ -40,8 +57,13 @@ final class HexGrid {
     xStride = 3 * scale;
     yStride = 2 * scale;
     yOffset = yStride;
+    /*
     img = new BufferedImage(xStride * cols + xStride / 2,
                             2 * yStride * rows + yStride,
+                            BufferedImage.TYPE_INT_RGB);
+    */
+    img = new BufferedImage(xStride * cols + scale,
+                            4 * scale * rows + 6 * scale,
                             BufferedImage.TYPE_INT_RGB);
     g = img.getGraphics();
     count = 0;

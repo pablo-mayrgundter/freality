@@ -1,5 +1,6 @@
 package lang.nl;
 
+import java.io.InputStreamReader;
 import java.util.*;
 
 public class LexicalAttraction {
@@ -117,7 +118,7 @@ public class LexicalAttraction {
   public static void main(final String [] args) {
     final LexicalAttraction la = new LexicalAttraction();
     Viz v = new Viz();
-    for (final String s : new Sentences(System.in)) {
+    for (final String s : new Sentences(new InputStreamReader(System.in))) {
       la.reset(s.split("\\s+"));
       la.count();
       la.link();
