@@ -7,22 +7,15 @@ part of phys;
  */
 class HexGrid {
 
-  final bool DRAW_BORDER = false;
-  final double TAU = Math.PI * 2;
-
   /**
    * Coordinates of a polygon.
    */
-  /*
-  xc = new List<int>();
-  yc = new List<int>();
-  xc[0] = {1,3,4,3,1,0},
-  yc = {0,0,2,4,4,2};
-  */
+  List<int> xc = [1,3,4,3,1,0];
+  List<int> yc = [0,0,2,4,4,2];
 
   var g;
   int cols, rows, scale, count, xStride, yStride, yOffset;
-  //Polygon hex;
+  Polygon hex;
   int x, y;
   int radius;
 
@@ -31,15 +24,13 @@ class HexGrid {
     this.rows = rows;
     this.scale = scale;
     this.g = graphics;
-    /*
     for (int i = 0; i < 6; i++) {
       xc[i] = xc[i] * scale;
       yc[i] = yc[i] * scale;
     }
-    */
     x = 0;
     y = 0;
-    // hex = new Polygon(xc, yc, 6);
+    hex = new Polygon(xc, yc, 6);
     xStride = 3 * scale;
     yStride = 2 * scale;
     yOffset = yStride;
@@ -48,40 +39,34 @@ class HexGrid {
   }
 
   void drawTest() {
-    var color = 'black';
+    var color = new Color(255, 128, 64);
     for (int i = 0, I = cols; i < I; i++) {
       for (int j = 0, J = rows; j < J; j++) {
-        //next(new Color(0,
-        // 0.5f + (0.5f * i / (float)I),
-        // 0.5f + (0.5f * j / (float)J)));
-        next(color);
+        next(new Color(0,
+                       (256.0 * (i.toDouble() / I.toDouble())).toInt(),
+                       (256.0 * (j.toDouble() / J.toDouble())).toInt()));
       }
       line();
     }
   }
 
   void reset() {
-    //hex = new Polygon(xc, yc, 6);
+    hex = new Polygon(xc, yc, 6);
     x = 0;
     y = 0;
     yOffset = yStride;
     count = 0;
   }
 
-  void next(String color) {
+  void next(Color color) {
+    g.fillStyle = color.toCssString();
     g.beginPath();
-    g.fillStyle = color;
-    //g.fillPolygon(hex);
-    g.arc(x, y, radius, 0, TAU, false);
-    if (DRAW_BORDER) {
-      g.fillStyle = 'blue';
-      //g.drawPolygon(hex);
-      var radius = 3;
-      g.arc(x, y, radius, 0, TAU, false);
+    g.moveTo(x + hex.xc[0], y + hex.yc[0]);
+    for (int i = 1; i < hex.size; i++) {
+      g.lineTo(x + hex.xc[i], y + hex.yc[i]);
     }
-    g.fill();
     g.closePath();
-    g.stroke();
+    g.fill();
     x += xStride;
     y += yOffset;
     yOffset *= -1;

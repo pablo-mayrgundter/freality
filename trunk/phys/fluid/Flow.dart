@@ -21,16 +21,10 @@ part of phys;
  */
 class Flow {
 
-  String width;
-  String num;
-  String sleep;
-  String hexSize;
-  String compareStep;
-
   int radius, gridScale;
   var frame = null;
   var graphics;
-  var palette = null;
+  List<Color> palette = null;
   var hexGrid;
 
   HexGrid grid;
@@ -38,41 +32,76 @@ class Flow {
   Force force;
 
   Flow() {
-    width = 80;
-    num = 100;
-    sleep = 100;
-    hexSize = 5;
-    compareStep = -1;
-    gridScale = 10;
-    graphics = query('#canvas').getContext('2d');
-    radius = 10;
+    gridScale = 2;
+    CanvasElement canvas = querySelector('#canvas');
+    graphics = canvas.getContext('2d');
+    radius = (canvas.width / 4 / gridScale).toInt();
     space = new Space2D(radius);
     next = new Space2D(radius);
     force = new HexForce();
 
-    /*
-    palette = new Color[64];
+    palette = new List<Color>();
     for (int i = 0; i < 64; i++) {
-      float val = (float)i / 63.0;
-      palette[i] = new Color(val, val, val);
-      }*/
-    radius = width;
+      int val = (256.0 * (i.toDouble() / 64.0)).toInt();
+      palette.add(new Color(val, val, val));
+    }
     hexGrid = new HexGrid(radius, radius, gridScale, graphics);
   }
 
-  void run() {
-    hexGrid.drawTest();
-    while (true) {
-      force.apply(space, next);
-
-      Space2D tmp = space;
-      space = next;
-      next = tmp;
+  int popCount(final int bits) {
+    int popCount = 0;
+    for (int i = 0; i < 32; i++) {
+      int isSet = (bits & (1 << i)) >> i;
+      popCount += isSet;
     }
+    return popCount;
+  }
+
+  void run() {
+    int wallLeft = (radius.toDouble() * 0.8).toInt();
+    int wallLo = (radius.toDouble() * 0.25).toInt();
+    int wallHi = (radius.toDouble() * 0.75).toInt();
+    int forceRight =
+      HexForce.R |
+      HexForce.UR |
+      HexForce.DR,
+      forceWall =
+      HexForce.L |
+      HexForce.UL |
+      HexForce.DL;
+    // draw.
+    for (int y = 0; y < radius; y++) {
+      for (int x = 0; x < radius; x++) {
+        hexGrid.next(palette[popCount(space.get([x, y]))]);
+      }
+      hexGrid.line();
+    }
+    hexGrid.reset();
+    force.apply(space, next);
+    for (int y = 0; y < radius; y++) {
+      // Continuous left-to-right feed from the left side.
+      next.set(forceRight, [0, y]);
+    }
+    for (int y = 0; y < radius; y++) {
+      // Continuous left-to-right feed from the left side.
+      next.set(forceRight, [0, y]);
+      // wall should bounce back.
+      if (y >= wallLo && y <= wallHi) {
+        next.set(forceWall, [wallLeft, y]);
+      }
+    }
+    Space2D tmp = space;
+    space = next;
+    next = tmp;
   }
 }
 
-void main() {
-  Flow f = new Flow();
+Flow f = new Flow();
+
+void runIt(foo) {
   f.run();
+}
+
+void main() {
+  new Timer.periodic(const Duration(milliseconds: 5), runIt);
 }

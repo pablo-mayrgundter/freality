@@ -9,7 +9,7 @@ public abstract class Display {
   }
 
   final Renderer renderer;
-  final FullScreenableFrame frame;
+  protected final FullScreenableFrame frame;
 
   /**
    * @param renderer The Renderer that is invoked on each frame to

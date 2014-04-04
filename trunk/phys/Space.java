@@ -9,8 +9,6 @@ import java.util.Arrays;
  */
 public class Space implements java.io.Serializable {
 
-  static final long serialVersionUID = -7380887576176557470L;
-
   /**
    * Computes a scalar index quantity from a variable dimensional
    * coordinate into a single dimenional value, interpreted with the
@@ -91,4 +89,6 @@ public class Space implements java.io.Serializable {
   public void set(final int val, final int ... coord) {
     space[coordToNdx(radius, coord)] = val;
   }
+
+  static final long serialVersionUID = -7380887576176557470L;
 }

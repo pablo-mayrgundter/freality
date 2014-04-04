@@ -1,12 +1,12 @@
 package lang.nl;
 
-import java.io.InputStream;
+import java.io.Reader;
 import java.util.Iterator;
 
 class Sentences implements Iterable<String> {
   final SentenceIterator itr;
-  Sentences(final InputStream is) {
-    itr = new SentenceIterator(is);
+  Sentences(final Reader r) {
+    itr = new SentenceIterator(r);
   }
   public Iterator<String> iterator() {
     return itr;

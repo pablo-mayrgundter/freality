@@ -7,8 +7,8 @@ import java.util.regex.*;
 import javax.swing.*;
 import gfx.ColorMap;
 import gfx.FullScreenableFrame;
-import nl.SentenceIterator;
-import nl.WordSizeFilter;
+import lang.nl.SentenceIterator;
+import lang.nl.WordSizeFilter;
 
 class Textamota {
 
@@ -38,7 +38,7 @@ class Textamota {
   final int width, height;
 
   Textamota() throws Exception {
-    itr = new SentenceIterator(System.in);
+    itr = new SentenceIterator(new InputStreamReader(System.in, "UTF-16"));
     colors = ColorMap.linear(Color.BLUE, 128);
     grays = ColorMap.linear(MEMORY + 1);
     final FullScreenableFrame frame = new FullScreenableFrame();
@@ -59,6 +59,10 @@ class Textamota {
       // Split sentence into words on any non-letter.
       String [] words = itr.next().toLowerCase().split("[^\\w]+");
       words = sizeFilter.process(words);
+
+      if (words.length <= 1) {
+        continue;
+      }
 
       // Debug.
       String wordBuf = "";
