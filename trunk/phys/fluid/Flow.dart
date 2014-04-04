@@ -48,17 +48,17 @@ class Flow {
     hexGrid = new HexGrid(radius, radius, gridScale, graphics);
   }
 
-  int popCount(final int bits) {
+  int popCount(int bits) {
     int popCount = 0;
     for (int i = 0; i < 32; i++) {
-      int isSet = (bits & (1 << i)) >> i;
-      popCount += isSet;
+      popCount += bits & 1;
+      bits >>= 1;
     }
     return popCount;
   }
 
   void run() {
-    int wallLeft = (radius.toDouble() * 0.8).toInt();
+    int wallLeft = (radius.toDouble() * 0.6).toInt();
     int wallLo = (radius.toDouble() * 0.25).toInt();
     int wallHi = (radius.toDouble() * 0.75).toInt();
     int forceRight =
@@ -103,5 +103,5 @@ void runIt(foo) {
 }
 
 void main() {
-  new Timer.periodic(const Duration(milliseconds: 5), runIt);
+  new Timer.periodic(const Duration(milliseconds: 100), runIt);
 }

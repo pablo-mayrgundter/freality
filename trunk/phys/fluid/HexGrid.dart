@@ -39,7 +39,6 @@ class HexGrid {
   }
 
   void drawTest() {
-    var color = new Color(255, 128, 64);
     for (int i = 0, I = cols; i < I; i++) {
       for (int j = 0, J = rows; j < J; j++) {
         next(new Color(0,
