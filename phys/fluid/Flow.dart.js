@@ -4724,7 +4724,7 @@ var $$ = {};
     "^": "Object;radius,gridScale,frame,graphics,palette,hexGrid,grid,space,next,force",
     popCount$1: function(bits) {
       var popCount, i;
-      for (popCount = 0, i = 0; i < 32; ++i) {
+      for (popCount = 0, i = 0; i < 6; ++i) {
         if (typeof bits !== "number")
           return bits.$and();
         popCount += bits & 1;
@@ -4817,7 +4817,7 @@ var $$ = {};
       t1.HexForce$0();
       this.force = t1;
       this.palette = H.setRuntimeTypeInfo([], [E.Color]);
-      for (i = 0; i < 7; ++i) {
+      for (i = 0; i <= 6; ++i) {
         val = C.JSInt_methods.toInt$0(256 * (i / 7));
         this.palette.push(new E.Color(val, 0, val));
       }
