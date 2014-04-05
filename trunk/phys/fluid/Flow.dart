@@ -41,7 +41,8 @@ class Flow {
     force = new HexForce();
 
     palette = new List<Color>();
-    for (int i = 0; i < 7; i++) {
+    // Only 6 bits can be set in the force field.
+    for (int i = 0; i <= 6; i++) {
       int val = (256.0 * (i.toDouble() / 7.0)).toInt();
       palette.add(new Color(val, 0, val));
     }
@@ -50,7 +51,8 @@ class Flow {
 
   int popCount(int bits) {
     int popCount = 0;
-    for (int i = 0; i < 32; i++) {
+    // Only go up to 6 for this force field.
+    for (int i = 0; i < 6; i++) {
       popCount += bits & 1;
       bits >>= 1;
     }
