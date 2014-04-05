@@ -31,27 +31,31 @@ class Flow {
   Space2D space, next;
   Force force;
 
-  Flow() {
-    gridScale = 5;
+  Flow(int this.gridScale) {
     CanvasElement canvas = querySelector('#canvas');
     graphics = canvas.getContext('2d');
-    radius = (canvas.width / 4 / gridScale).toInt();
+    if (gridScale == 1) {
+      radius = canvas.width;
+    } else {
+      radius = (canvas.width / 4 / gridScale).toInt();
+    }
     space = new Space2D(radius);
     next = new Space2D(radius);
     force = new HexForce();
 
     palette = new List<Color>();
     // Only 6 bits can be set in the force field.
-    for (int i = 0; i <= 6; i++) {
-      int val = (256.0 * (i.toDouble() / 7.0)).toInt();
-      palette.add(new Color(val, 0, val));
+    for (int i = 0; i < 7; i++) {
+      int val = (255.0 * (i.toDouble() / 6.0)).toInt();
+      palette.add(new Color(0, val, val));
     }
     hexGrid = new HexGrid(radius, radius, gridScale, graphics);
   }
 
+  /** Count the number of bits set within the first 6. */
   int popCount(int bits) {
+    //if (bits == 0) return 0;
     int popCount = 0;
-    // Only go up to 6 for this force field.
     for (int i = 0; i < 6; i++) {
       popCount += bits & 1;
       bits >>= 1;
@@ -74,13 +78,29 @@ class Flow {
       HexForce.UL |
       HexForce.DL;
     // draw.
-    for (int y = 0; y < radius; y++) {
-      for (int x = 0; x < radius; x++) {
-        hexGrid.next(palette[popCount(space.get([x, y]))]);
+    if (gridScale == 1) {
+      ImageData img = hexGrid.getImage();
+      var data = img.data;
+      for (int y = 0; y < radius; y++) {
+        for (int x = 0; x < radius; x++) {
+          Color pixColor = palette[popCount(space.get([x, y]))];
+          int ndx = (y * radius + x) * 4;
+          data[ndx] = pixColor.r;
+          data[ndx + 1] = pixColor.g;
+          data[ndx + 2] = pixColor.b;
+          data[ndx + 3] = 255;
+        }
       }
-      hexGrid.line();
+      hexGrid.g.putImageData(img, 0, 0);
+    } else {
+      for (int y = 0; y < radius; y++) {
+        for (int x = 0; x < radius; x++) {
+          hexGrid.next(palette[popCount(space.get([x, y]))]);
+        }
+        hexGrid.line();
+      }
+      hexGrid.reset();
     }
-    hexGrid.reset();
     force.apply(space, next);
     for (int y = 0; y < radius; y++) {
       // Continuous left-to-right feed from the left side.
@@ -100,12 +120,24 @@ class Flow {
   }
 }
 
-Flow f = new Flow();
+Flow f;
+var animTimer;
 
-void runIt(foo) {
+void animate(foo) {
   f.run();
 }
 
+void runIt() {
+  window.console.log('runIt');
+  InputElement i = querySelector('#cellSize');
+  if (animTimer) {
+    animTimer.cancel();
+  }
+  f = new Flow(int.parse(i.value));
+  animTimer = new Timer.periodic(const Duration(milliseconds: 30), animate);
+}
+
 void main() {
-  new Timer.periodic(const Duration(milliseconds: 100), runIt);
+  ButtonElement b = querySelector('#startButton');
+  b.onClick.listen((event) => runIt());
 }
