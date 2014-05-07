@@ -2,6 +2,8 @@ package algs;
 
 import static util.Check.*;
 
+import math.Matrix;
+
 import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.Reader;

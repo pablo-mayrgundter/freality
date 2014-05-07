@@ -1,7 +1,10 @@
-package algs;
+package math;
 
 import static util.Check.*;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.Arrays;
 
 public class Matrix {
@@ -41,7 +44,7 @@ public class Matrix {
     return buf.length;
   }
 
-  Matrix subMatrix(int cols, int rows) {
+  public Matrix subMatrix(int cols, int rows) {
     check(this.buf.length >= rows && this.buf[0].length >= cols,
           "subMatrix dimensions must be smaller");
     Matrix m = new Matrix(cols, rows);
@@ -51,24 +54,26 @@ public class Matrix {
     return m;
   }
 
-  static Matrix read(Reader reader) {
+  public static Matrix read(Reader reader) throws IOException {
     BufferedReader r = new BufferedReader(reader);
     String line;
     String header = r.readLine();
     String[] colNames = header.split(",");
     double[][] tmp = new double[colNames.length][];
+    int lineNo = 0;
     while ((line = r.readLine()) != null) {
       String[] valsStr = line.split(",");
-      tmp[i] = new double[valsStr.length];
-      if (i > 0) {
-        check(tmp[i].length == tmp[i - 1].length,
+      tmp[lineNo] = new double[valsStr.length];
+      if (lineNo > 0) {
+        check(tmp[lineNo].length == tmp[lineNo - 1].length,
               "Input line %d length(%d) different from previous(%d)",
-              i, tmp[i].length, tmp[i - 1].length);
+              lineNo, tmp[lineNo].length, tmp[lineNo - 1].length);
       }
       for (int j = 0; j < valsStr.length; j++) {
         String valStr = valsStr[j];
-        tmp[i][j] = Double.parseDouble(valStr);
+        tmp[lineNo][j] = Double.parseDouble(valStr);
       }
+      lineNo++;
     }
     return new Matrix(tmp);
   }
