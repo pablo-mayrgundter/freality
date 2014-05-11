@@ -5977,7 +5977,7 @@ var $$ = {};
       t2.HexForce$0();
       this.force = t2;
       this.palette = H.setRuntimeTypeInfo([], [E.Color]);
-      for (i = 0; i < 7; ++i) {
+      for (i = 0; i <= 6; ++i) {
         val = C.JSInt_methods.toInt$0(255 * (i / 6));
         this.palette.push(new E.Color(0, val, val));
       }
