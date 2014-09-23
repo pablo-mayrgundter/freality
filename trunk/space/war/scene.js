@@ -30,10 +30,7 @@ Scene.prototype.add = function(props) {
   // ugly, since this is the only way the scene goes live.
   var parentNode = this.sceneNodes[props.parent];
   if (!parentNode) {
-    console.log('Adding node to scene root: ' + props.name);
     parentNode = scene;
-  } else {
-    console.log('Adding ' + props.type + ': ' + props.name + ' to parent: ' + parentNode);
   }
 
   var obj;
@@ -60,7 +57,9 @@ Scene.prototype.add = function(props) {
     parentNode.orbitPosition.add(obj);
   } else {
     // Should only happen for milkyway.
-    console.log('Parent has no orbit position: ' + props.name);
+    if (!(props.name == 'milky_way')) {
+      console.log('Parent has no orbit position: ' + props.name);
+    }
     parentNode.add(obj);
   }
 
@@ -71,10 +70,12 @@ Scene.prototype.add = function(props) {
 };
 
 Scene.prototype.select = function(name) {
-  console.log('selecting: ' + name);
   var node = this.sceneNodes[name];
   if (!node) {
-    throw new Error('No such object: ' + name);
+    // TODO(pablo): this is a race on initial load.  The target is
+    // selected before it's loaded, but the deferred select does work,
+    // so not critical for now.
+    return;
   }
   if (!node.orbitPosition) {
     throw new Error('No orbit position for target of select: ' + name)
@@ -82,7 +83,6 @@ Scene.prototype.select = function(name) {
   targetObj = node.orbitPosition;
 
   if (this.lastAddTime == time) {
-    console.log('delaying select');
     var me = this;
     postRenderCb = function() {
       // TODO(pmy):

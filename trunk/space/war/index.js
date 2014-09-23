@@ -130,8 +130,12 @@ function animate(renderer, camera, controls, scene) {
 var targetObj = null;
 var targetObjLoc = new THREE.Matrix4;
 
+var lastUiUpdateTime = 0;
 function updateUi() {
-  dateElt.innerHTML = date + '';
+  if (time > lastUiUpdateTime + 1000) {
+    lastUiUpdateTime = time;
+    dateElt.innerHTML = new Date(simTime) + '';
+  }
 }
 
 function render(renderer, camera, controls, scene) {
