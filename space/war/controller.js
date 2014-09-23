@@ -18,7 +18,6 @@ var Controller = function() {
   };
 
   this.showNavDisplay = function() {
-    console.log('showNavDisplay');
     var crumbs = '';
     for (var i = 0; i < me.curPath.length; i++) {
       var hash = me.curPath.slice(0, i + 1).join('/');
@@ -135,10 +134,8 @@ var Controller = function() {
     if (reqPath.length == 0) {
       reqPath = 'sun';
     }
-    console.log('loadPath: ' + reqPath);
     me.curPath = reqPath.split('/');
     me.loadPathRecursive([].concat(me.curPath), function() {
-        console.log('load done callback');
         me.scene.select(me.getPathTarget());
         me.showNavDisplay();
       });
@@ -149,7 +146,6 @@ var Controller = function() {
    * 'earth', 'moon'].
    */
   this.loadPathRecursive = function(path, cb) {
-    console.log('loadPathRecursive: ' + path.join('/'));
     if (path.length == 0) {
       return;
     }

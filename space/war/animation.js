@@ -18,6 +18,7 @@ var time = Date.now();
 var lastTime = time;
 var dt = time - lastTime;
 var simTime = time;
+var simTimeSecs = simTime / 1000;
 var date = new Date(simTime);
 var postRenderCb = null;
 
@@ -65,11 +66,17 @@ function animateSystem(system) {
   time = Date.now();
   dt = time - lastTime;
   simTime += dt * timeScale;
-  date = new Date(simTime);
-  var simTimeSecs = simTime / 1000;
+  simTimeSecs = simTime / 1000;
 
   if (system.siderealRotationPeriod) {
-    var angle = simTimeSecs / 86400 * twoPi;
+    // TODO(pablo): this is hand-calibrated for Earth and so is
+    // incorrect for the other planets.  Earth Orientation Parameters
+    // are here:
+    //
+    //   http://hpiers.obspm.fr/eop-pc/index.php?index=orientation
+    // 
+    // and also would also need them for the other planets.
+    var angle = 1.5 * Math.PI + simTimeSecs / 86400 * twoPi;
     system.setRotationFromAxisAngle(Y_AXIS, angle);
   }
 
