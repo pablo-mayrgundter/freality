@@ -1,11 +1,11 @@
 package net.http;
 
-import java.net.*;
+import util.Flags;
+
 import java.io.*;
+import java.net.*;
 import java.util.*;
 import java.util.logging.Logger;
-
-import util.Flags;
 
 /**
  * A simple multi-threaded HTTP file server.  Handles only GET
@@ -81,7 +81,7 @@ public class Server {
         if (hdr.startsWith("GET")) {
           String [] parts = hdr.split(" ");
           if (parts.length < 3) {
-            responseHeader(400);
+            responseHeaders(400, null);
             return;
           }
           sendFile(parts[1]);
@@ -102,30 +102,45 @@ public class Server {
       }
     }
 
-    void responseHeader(int code) throws IOException {
+    void responseHeaders(int code, String mime) throws IOException {
       String msg = "HTTP/1.0 " + code + " ";
       switch(code) {
         case 200: msg += "OK"; break;
         case 400: msg += "Client error"; break;
         case 404: msg += "File not found"; break;
       }
+      if (mime != null) {
+        msg += "Content-Type: " + mime + "\r\n";
+      }
       msg = msg += "\r\n\r\n";
       os.write(msg.getBytes());
     }
 
+    String getMime(String filename) {
+      String [] parts = filename.split(".");
+      if (parts[1].matches("(png|jpg|jpeg|gif)")) {
+        return "image/" + parts[1];
+      }
+      if (parts[1].matches("(html|xml|txt)")) {
+        return "text/" + parts[1];
+      }
+      return "application/octet";
+    }
+
     void sendFile(String filename) throws IOException {
+      String mime = getMime(filename);
       filename = translateFilename(filename);
       assert debug("Serving file: " + filename);
       FileInputStream fr = null;
       try {
         fr = new FileInputStream(filename);
-        responseHeader(200);
+        responseHeaders(200, mime);
         int len;
         while ((len = fr.read(buf)) != -1) {
           os.write(buf, 0, len);
         }
       } catch(FileNotFoundException e) {
-        responseHeader(404);
+        responseHeaders(404, mime);
       } finally {
         if (fr != null)
           fr.close();
