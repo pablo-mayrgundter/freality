@@ -118,10 +118,9 @@ public class Server {
 
     String getMime(String filename) {
       String [] parts = filename.split(".");
-      if (parts[1].matches("(png|jpg|jpeg|gif)")) {
+      if (parts.length > 0 && parts[1].matches("(png|jpg|jpeg|gif)")) {
         return "image/" + parts[1];
-      }
-      if (parts[1].matches("(html|xml|txt)")) {
+      } else if (parts.length > 0 && parts[1].matches("(html|xml|txt|css)")) {
         return "text/" + parts[1];
       }
       return "application/octet";
