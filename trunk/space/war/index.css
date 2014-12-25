@@ -43,26 +43,21 @@ button:hover {
   border-top-right-radius: 10px;
 }
 
+#nav > div {
+  padding: 1em;
+  border-top: solid 1px grey;
+}
+
 #info {
   color: white;
-  padding: 1em;
-  z-index: 3;
 }
 
-#clock {
+#clock, #controls {
   font-family: monospace;
-  border-top: solid 1px grey;
-  padding: 1em 0 1em 0.5em;
-}
-
-#date {
 }
 
 #controls {
-  border-top: solid 1px grey;
-  font-family: monospace;
   font-weight: bold;
-  padding: 2em;
 }
 
 #controls button {
