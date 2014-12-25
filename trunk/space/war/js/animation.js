@@ -116,7 +116,7 @@ function updateView() {
       var o = objs[i];
       targetObjLoc.multiply(o.matrix);
     }
-    targetPos.getPositionFromMatrix(targetObjLoc);
+    targetPos.setFromMatrixPosition(targetObjLoc);
     camera.lookAt(targetPos);
   }
 }

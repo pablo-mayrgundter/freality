@@ -107,14 +107,14 @@ function point() {
   geom.vertices.push(new THREE.Vector3());
 
   var pointMaterial =
-    new THREE.ParticleBasicMaterial({ color: 0xffffff,
-                                      size: 3,
-                                      sizeAttenuation: false,
-                                      blending: THREE.AdditiveBlending,
-                                      depthTest: true,
-                                      transparent: true });
+    new THREE.PointCloudMaterial({ color: 0xffffff,
+                                   size: 3,
+                                   sizeAttenuation: false,
+                                   blending: THREE.AdditiveBlending,
+                                   depthTest: true,
+                                   transparent: true });
 
-  return new THREE.ParticleSystem(geom, pointMaterial);
+  return new THREE.PointCloud(geom, pointMaterial);
 }
 
 function line(vec1, vec2) {
