@@ -2,9 +2,21 @@ package net.http;
 
 import util.Flags;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.RandomAccessFile;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.WritableByteChannel;
+import java.net.Socket;
+import java.net.ServerSocket;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Logger;
 
 /**
@@ -54,6 +66,7 @@ public class Server {
     final OutputStream os;
     final BufferedReader r;
     final byte [] buf;
+    DateFormat DF;
 
     Handler(Socket s) throws IOException {
       assert debug("Handling connection: " + s);
@@ -61,10 +74,12 @@ public class Server {
       r = new BufferedReader(new InputStreamReader(s.getInputStream()));
       try {
         os = s.getOutputStream();
-      } catch(IOException e) {
+      } catch (IOException e) {
         r.close();
         throw e;
       }
+      DF = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
+      DF.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
     }
 
     public void run() {
@@ -102,28 +117,42 @@ public class Server {
       }
     }
 
-    void responseHeaders(int code, String mime) throws IOException {
+    void responseHeaders(int code, String mime, long ... contentLength) throws IOException {
       String msg = "HTTP/1.0 " + code + " ";
       switch(code) {
         case 200: msg += "OK"; break;
         case 400: msg += "Client error"; break;
         case 404: msg += "File not found"; break;
       }
+      msg += "\r\n";
       if (mime != null) {
         msg += "Content-Type: " + mime + "\r\n";
       }
-      msg = msg += "\r\n\r\n";
+      if (contentLength.length != 0) {
+        msg += "Content-Length: " + contentLength[0] + "\r\n";
+      }
+      msg += "Cache-Control: private, max-age=0\r\n";
+      msg += "Expires: -1\r\n";
+      msg += "Server: yo\r\n";
+      msg += "Date: " + DF.format(new Date()) + "\r\n";
+      msg += "\r\n";
       os.write(msg.getBytes());
     }
 
     String getMime(String filename) {
-      String [] parts = filename.split(".");
-      if (parts.length > 0 && parts[1].matches("(png|jpg|jpeg|gif)")) {
-        return "image/" + parts[1];
-      } else if (parts.length > 0 && parts[1].matches("(html|xml|txt|css)")) {
-        return "text/" + parts[1];
+      final String [] parts = filename.split("\\.");
+      String type = "application/octet";
+      if (parts.length > 0) {
+        final String ftype = parts[parts.length - 1];
+        if (ftype.matches("(png|jpg|jpeg|gif)")) {
+          type = "image/" + ftype;
+        } else if (ftype.matches("(html|xml|txt|css)")) {
+          type = "text/" + ftype;
+        } else if (ftype.matches("js")) {
+          type = "text/javascript";
+        }
       }
-      return "application/octet";
+      return type;
     }
 
     void sendFile(String filename) throws IOException {
@@ -132,17 +161,22 @@ public class Server {
       assert debug("Serving file: " + filename);
       FileInputStream fr = null;
       try {
-        fr = new FileInputStream(filename);
-        responseHeaders(200, mime);
-        int len;
-        while ((len = fr.read(buf)) != -1) {
-          os.write(buf, 0, len);
+        RandomAccessFile raf = new RandomAccessFile(filename, "r");
+        final long fileLen = raf.length();
+        responseHeaders(200, mime, fileLen);
+        // Send file.
+        FileChannel fc = raf.getChannel();
+        WritableByteChannel out = java.nio.channels.Channels.newChannel(os);
+        long sentLen = 0;
+        while (sentLen < fileLen) {
+          sentLen += fc.transferTo(sentLen, fileLen - sentLen, out);
         }
-      } catch(FileNotFoundException e) {
-        responseHeaders(404, mime);
+      } catch (FileNotFoundException e) {
+        responseHeaders(404, null);
       } finally {
-        if (fr != null)
+        if (fr != null) {
           fr.close();
+        }
       }
     }
 
