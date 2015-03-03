@@ -1,4 +1,5 @@
-#import <bits/time.h>
+#import <stdio.h>
+#import <time.h>
 int main(int argc, char ** argv) {
   int MHZ = 1395.807 * 1000000.0;
   const int numIts = (double)MHZ / 1.525;
