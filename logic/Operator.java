@@ -30,18 +30,25 @@ public abstract class Operator
   }
 
   public boolean isBound() {
-    for (Proposition p : this)
-      if (!p.isBound())
+    for (Proposition p : this) {
+      if (!p.isBound()) {
         return false;
+      }
+    }
     return true;
+  }
+
+  public String getName() {
+    return this.getClass().getSimpleName().toUpperCase();
   }
 
   public String toString() {
     final StringBuffer buf = new StringBuffer();
-    String opStr = " "+ getClass().getSimpleName().toUpperCase() +" ";
+    String opStr = String.format(" %s ", getName());
     for (int i = 0; i < size(); i++) {
-      if (i > 0)
+      if (i > 0) {
         buf.append(opStr);
+      }
       buf.append(get(i));
     }
     return buf.toString();

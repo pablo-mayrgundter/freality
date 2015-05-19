@@ -21,8 +21,9 @@ public class Not extends Operator {
   }
 
   public boolean add(Proposition p) {
-    if (size() >= 1)
+    if (size() >= 1) {
       throw new IllegalStateException("Not already has one argument.");
+    }
     return super.add(p);
   }
 
@@ -37,8 +38,9 @@ public class Not extends Operator {
   public Proposition reduce() {
     Proposition arg = get(0);
     set(0, arg = arg.reduce());
-    if (!arg.isBound())
+    if (!arg.isBound()) {
       return this;
-    return arg.isTrue() ? False.VALUE : True.VALUE;
+    }
+    return arg.isTrue() ? Var.TRUE : Var.FALSE;
   }
 }
