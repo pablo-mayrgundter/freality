@@ -66,8 +66,13 @@ public class TestCase extends Check<TestCase.TestException> {
         if (e instanceof InvocationTargetException) {
           Throwable t = ((InvocationTargetException) e).getTargetException();
           if (t instanceof TestException) {
-            errorMsgs.add(m.getDeclaringClass().getName()
-                          + "." + m.getName() + ": " + t.getMessage());
+            StackTraceElement ste = t.getStackTrace()[2];
+            errorMsgs.add(String.format("%s\n\tat %s.%s(%s:%d)\n",
+                t.getMessage(),
+                ste.getClassName(),
+                ste.getMethodName(),
+                ste.getFileName(),
+                ste.getLineNumber()));
             results.add(Result.FAIL);
           } else {
             t.printStackTrace();
