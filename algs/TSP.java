@@ -13,6 +13,10 @@ class TSP {
 
   Matrix tsm;
 
+  TSP(String matrixStr) {
+    this(Matrix.read(matrixStr));
+  }
+
   TSP(Matrix tsm) {
     this.tsm = tsm;
   }
