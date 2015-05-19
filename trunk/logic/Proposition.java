@@ -9,4 +9,5 @@ interface Proposition {
   public boolean isBound();
   public boolean isTrue();
   public Proposition reduce();
+  public String getName();
 }

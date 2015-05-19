@@ -91,7 +91,11 @@ public abstract class Check<T extends RuntimeException> {
       return;
     }
     if (!a.equals(b)) {
-      throwException(format(msg));
+      if (msg.length == 0) {
+        throwException(String.format("Expected %s, got %s", a, b));
+      } else {
+        throwException(format(msg));
+      }
     }
   }
 

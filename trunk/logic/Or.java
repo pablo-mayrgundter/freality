@@ -30,9 +30,11 @@ public class Or extends Operator {
   }
 
   public boolean isTrue() {
-    for (Proposition p : this)
-      if (p.isTrue())
+    for (Proposition p : this) {
+      if (p.isTrue()) {
         return true;
+      }
+    }
     return false;
   }
 
@@ -42,17 +44,17 @@ public class Or extends Operator {
     while (argItr.hasNext()) {
       Proposition arg = argItr.next().reduce();
       if (arg.isBound()) {
-        if (arg.isTrue())
-          return True.VALUE;
+        if (arg.isTrue()) {
+          return Var.TRUE;
+        }
         argItr.remove();
-        t = true;
       } else {
         argItr.set(arg);
       }
     }
-
-    if (!isEmpty())
+    if (!isEmpty()) {
       return this;
-    return t ? True.VALUE : False.VALUE;
+    }
+    return t ? Var.TRUE : Var.FALSE;
   }
 }
