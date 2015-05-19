@@ -5,6 +5,7 @@ import static util.Check.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 import java.util.Arrays;
 
 public class Matrix {
@@ -52,6 +53,14 @@ public class Matrix {
       System.arraycopy(buf[i], 0, m.buf[i], 0, cols);
     }
     return m;
+  }
+
+  public static Matrix read(String s) {
+    try {
+      return read(new StringReader(s));
+    } catch (IOException e) {
+      throw new IllegalArgumentException("Invalid string: " + s);
+    }
   }
 
   public static Matrix read(Reader reader) throws IOException {
