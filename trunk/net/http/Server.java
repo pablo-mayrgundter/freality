@@ -18,6 +18,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Logger;
+import java.util.concurrent.ConcurrentLinkedDeque;
+
 
 /**
  * A simple multi-threaded HTTP file server.  Handles only GET
@@ -54,23 +56,30 @@ import java.util.logging.Logger;
  *
  * @author Pablo Mayrgundter
  */
-public class Server {
+public final class Server {
 
   static final Logger logger = Logger.getLogger(Server.class.getName());
 
   static final Flags flags = new Flags(Server.class);
   static final int PORT = flags.get("port", "port", 80);
 
+  static ConcurrentLinkedDeque<Handler> idleHandlers = new ConcurrentLinkedDeque<Handler>();
+
   static final class Handler implements Runnable {
 
-    final OutputStream os;
-    final BufferedReader r;
     final byte [] buf;
-    DateFormat DF;
+    final DateFormat dateFormat;
+    OutputStream os;
+    BufferedReader r;
 
-    Handler(Socket s) throws IOException {
-      assert debug("Handling connection: " + s);
+    Handler() {
       buf = new byte[1024];
+      dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
+      dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+    }
+
+    void handle(Socket s) throws IOException {
+      assert debug("Handling connection: " + s);
       r = new BufferedReader(new InputStreamReader(s.getInputStream()));
       try {
         os = s.getOutputStream();
@@ -78,8 +87,6 @@ public class Server {
         r.close();
         throw e;
       }
-      DF = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
-      DF.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
     }
 
     public void run() {
@@ -104,37 +111,39 @@ public class Server {
       } catch (IOException e) {
         e.printStackTrace();
         logger.warning("Connection service failed: " + e);
+        try {
+          responseHeaders(500, null);
+        } catch (IOException ee) {
+          ee.printStackTrace();
+          logger.severe("Response 500 to client failed: " + ee);
+        }
       } finally {
         try {
-          try {
-            r.close();
-          } finally {
-            os.close();
-          }
-        } catch(IOException e) {
+          r.close();
+        } catch (IOException e) {
           logger.warning("Connection close failed: " + e);
         }
       }
+      idleHandlers.push(this);
     }
 
     void responseHeaders(int code, String mime, long ... contentLength) throws IOException {
       String msg = "HTTP/1.0 " + code + " ";
       switch(code) {
-        case 200: msg += "OK"; break;
-        case 400: msg += "Client error"; break;
-        case 404: msg += "File not found"; break;
-      }
-      msg += "\r\n";
-      if (mime != null) {
-        msg += "Content-Type: " + mime + "\r\n";
+        case 200: msg += "OK\r\n"; break;
+        case 400: msg += "Client error\r\n"; break;
+        case 404: msg += "File not found\r\n"; break;
       }
       if (contentLength.length != 0) {
         msg += "Content-Length: " + contentLength[0] + "\r\n";
       }
+      if (mime != null) {
+        msg += "Content-Type: " + mime + "; charset=UTF-8\r\n";
+      }
       msg += "Cache-Control: private, max-age=0\r\n";
       msg += "Expires: -1\r\n";
       msg += "Server: yo\r\n";
-      msg += "Date: " + DF.format(new Date()) + "\r\n";
+      msg += "Date: " + dateFormat.format(new Date()) + "\r\n";
       msg += "\r\n";
       os.write(msg.getBytes());
     }
@@ -151,31 +160,30 @@ public class Server {
         } else if (ftype.matches("js")) {
           type = "text/javascript";
         }
+      } else if (parts.length > 0 && parts[1].equals("js")) {
+        return "text/javascript";
       }
       return type;
     }
 
     void sendFile(String filename) throws IOException {
-      String mime = getMime(filename);
+      final String mime = getMime(filename);
       filename = translateFilename(filename);
       assert debug("Serving file: " + filename);
-      FileInputStream fr = null;
+      RandomAccessFile raf = null;
       try {
-        RandomAccessFile raf = new RandomAccessFile(filename, "r");
-        final long fileLen = raf.length();
+        raf = new RandomAccessFile(filename, "r");
+      } catch (FileNotFoundException e) {
+        responseHeaders(404, mime, 0);
+        return;
+      }
+      final long fileLen = raf.length();
+      try (FileChannel fc = raf.getChannel();
+           WritableByteChannel wbc = Channels.newChannel(os)) {
         responseHeaders(200, mime, fileLen);
-        // Send file.
-        FileChannel fc = raf.getChannel();
-        WritableByteChannel out = java.nio.channels.Channels.newChannel(os);
         long sentLen = 0;
         while (sentLen < fileLen) {
-          sentLen += fc.transferTo(sentLen, fileLen - sentLen, out);
-        }
-      } catch (FileNotFoundException e) {
-        responseHeaders(404, null);
-      } finally {
-        if (fr != null) {
-          fr.close();
+          sentLen += fc.transferTo(sentLen, fileLen - sentLen, wbc);
         }
       }
     }
@@ -197,7 +205,18 @@ public class Server {
     Socket socket;
     while ((socket = ss.accept()) != null) {
       assert debug("Spawning worker thread: " + socket);
-      new Thread(new Handler(socket)).start();
+      Handler h;
+      if (idleHandlers.isEmpty()) {
+        h = new Handler();
+      } else {
+        h = idleHandlers.pop();
+      }
+      try {
+        h.handle(socket);
+        new Thread(h).start();
+      } catch (IOException e) {
+        logger.warning(e.getMessage());
+      }
     }
   }
 
