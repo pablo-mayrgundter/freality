@@ -43,15 +43,11 @@ public abstract class Operator
   }
 
   public String toString() {
-    final StringBuffer buf = new StringBuffer();
-    String opStr = String.format(" %s ", getName());
-    for (int i = 0; i < size(); i++) {
-      if (i > 0) {
-        buf.append(opStr);
-      }
-      buf.append(get(i));
+    String opStr = get(0).toString();
+    for (int i = 1; i < size(); i++) {
+      opStr += String.format(" %s %s", getName(), get(i));
     }
-    return buf.toString();
+    return opStr;
   }
 }
     
