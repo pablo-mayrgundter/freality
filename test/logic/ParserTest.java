@@ -11,13 +11,16 @@ public class ParserTest extends TestCase {
     op = null;
   }
 
-  // TODO(pablo): use Boolean instead? Also get autoboxing then.
-
-  void evalOp(Operator op, Proposition p1, Proposition p2, boolean expectedTruthVal) {
-    op.add(p1);
-    op.add(p2);
-    assertEquals(String.format("%s %s %s", p1, op.getName(), p2), op.toString());
-    // System.out.printf("%s %s %s %s %s\n", op, p1, p2, expectedTruthVal, op.isTrue());
+  void evalOp(Operator op, boolean expectedTruthVal, Proposition ... props) {
+    // System.out.printf("%s %s %s\n", op.getName(), expectedTruthVal, java.util.Arrays.toString(props));
+    String strRep = props[0].toString();
+    op.add(props[0]);
+    for (int i = 1; i < props.length; i++) {
+      Proposition p = props[i];
+      op.add(p);
+      strRep += String.format(" %s %s", op.getName(), p);
+    }
+    assertEquals(strRep, op.toString());
     assertEquals(expectedTruthVal, op.isTrue());
     assertEquals(expectedTruthVal ? Var.TRUE : Var.FALSE, op.reduce());
   }
@@ -33,7 +36,7 @@ public class ParserTest extends TestCase {
         } catch (Exception e) {
           throw new IllegalStateException();
         }
-        evalOp(op, p1, p2, tt[i][j]);
+        evalOp(op, tt[i][j], p1, p2);
       }
     }
   }
@@ -42,7 +45,35 @@ public class ParserTest extends TestCase {
     evalOpWithTable(And.class, new boolean[][]{{false, false}, {false, true}});
   }
 
+  public void testAndMulti() {
+    evalOp(new And(), true, Var.TRUE, Var.TRUE, Var.TRUE);
+
+    evalOp(new And(), false, Var.TRUE, Var.FALSE, Var.FALSE);
+    evalOp(new And(), false, Var.FALSE, Var.TRUE, Var.FALSE);
+    evalOp(new And(), false, Var.FALSE, Var.FALSE, Var.TRUE);
+
+    evalOp(new And(), false, Var.TRUE, Var.TRUE, Var.FALSE);
+    evalOp(new And(), false, Var.FALSE, Var.TRUE, Var.TRUE);
+    evalOp(new And(), false, Var.TRUE, Var.FALSE, Var.TRUE);
+
+    evalOp(new And(), false, Var.FALSE, Var.FALSE, Var.FALSE);
+  }
+
   public void testOr() {
     evalOpWithTable(Or.class, new boolean[][]{{false, true}, {true, true}});
+  }
+
+  public void testOrMulti() {
+    evalOp(new Or(), true, Var.TRUE, Var.TRUE, Var.TRUE);
+
+    evalOp(new Or(), true, Var.TRUE, Var.FALSE, Var.FALSE);
+    evalOp(new Or(), true, Var.FALSE, Var.TRUE, Var.FALSE);
+    evalOp(new Or(), true, Var.FALSE, Var.FALSE, Var.TRUE);
+
+    evalOp(new Or(), true, Var.TRUE, Var.TRUE, Var.FALSE);
+    evalOp(new Or(), true, Var.FALSE, Var.TRUE, Var.TRUE);
+    evalOp(new Or(), true, Var.TRUE, Var.FALSE, Var.TRUE);
+
+    evalOp(new Or(), false, Var.FALSE, Var.FALSE, Var.FALSE);
   }
 }
