@@ -13,8 +13,8 @@ public class Parser {
   }
 
   static Proposition parse (final String prop) {
-    if (prop.equalsIgnoreCase(True.VALUE.toString())) {
-      return True.VALUE;
+    if (prop.equalsIgnoreCase(Var.TRUE.getName())) {
+      return Var.TRUE;
     }
     String [] parts = prop.split("\\s+=\\s+");
     if (parts.length == 2) {
