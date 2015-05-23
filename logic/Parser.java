@@ -45,7 +45,7 @@ public class Parser {
     if (parts.length == 2) {
       return new Equals(parse(parts[0]), parse(parts[1]));
     }
-    return Var.FALSE;
+    throw new IllegalArgumentException("Expression not recognized: " + prop);
   }
 
   public static void main (String [] args) throws Exception {
