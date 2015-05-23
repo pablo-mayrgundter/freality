@@ -12,25 +12,38 @@ public class Parser {
     return props;
   }
 
-  static Proposition parse (final String prop) {
+  static Proposition parse(final String prop) {
     if (prop.equalsIgnoreCase(Var.TRUE.getName())) {
       return Var.TRUE;
+    } else if (prop.equalsIgnoreCase(Var.FALSE.getName())) {
+      return Var.FALSE;
     }
-    String [] parts = prop.split("\\s+=\\s+");
-    if (parts.length == 2) {
-      return new Equals(parse(parts[0]), parse(parts[1]));
+    String [] parts;
+    parts = prop.split("\\s+(\\||OR)\\s+");
+    if (parts.length >= 2) {
+      // System.out.println("or split: " + java.util.Arrays.asList(parts));
+      Or expr = new Or();
+      for (String p : parts) {
+        expr.add(parse(p));
+      }
+      return expr;
     }
     parts = prop.split("\\s+(&|AND)\\s+");
-    if (parts.length == 2) {
-      return new And(parse(parts[0]), parse(parts[1]));
+    if (parts.length >= 2) {
+      // System.out.println("and split: " + java.util.Arrays.asList(parts));
+      And expr = new And();
+      for (String p : parts) {
+        expr.add(parse(p));
+      }
+      return expr;
     }
-    parts = prop.split("\\s+(\\||OR)\\s+");
-    if (parts.length == 2) {
-      return new Or(parse(parts[0]), parse(parts[1]));
-    }
-    parts = prop.split("\\s+(^|NOT)\\s+");
+    parts = prop.split("\\s+(^|XOR)\\s+");
     if (parts.length == 2) {
       return new Xor(parse(parts[0]), parse(parts[1]));
+    }
+    parts = prop.split("\\s+=\\s+");
+    if (parts.length == 2) {
+      return new Equals(parse(parts[0]), parse(parts[1]));
     }
     return Var.FALSE;
   }
