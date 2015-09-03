@@ -8,81 +8,53 @@ import java.awt.Polygon;
 import java.awt.image.BufferedImage;
 
 /**
- * Hexagonal grid and image.
+ * The HexGrid class provides a grid of hexagons that can be drawn
+ * line-by-line, varying the color of each cell, for use in
+ * visualizing the dynamics of hexagonal cellular automata.
  *
- * @author Pablo Mayrgundter <pablo.mayrgundter@gmail.com>
+ * @see HexGridHorizontal
+ * @see HexGridVertical
  */
-final class HexGrid {
+abstract class HexGrid {
 
-  static final boolean DRAW_BORDER = new Flags(HexGrid.class).get("drawBorder", false);
-
-  /**
-   * Coordinates of a polygon.
-   *
-   *   0 1 2 3 4 5 6 7 8 9 A
-   *  0. 1   2     . 7   8
-   *  1        
-   *  26     . 3   C       9
-   *  3
-   *  4. 5   4       B   A
-   *  5
-   *  6      . x   x
-   *
-   *  . = origins of each successive hex.
-   *
-   *  Thus:
-   *      hexWidth = 4 * scale, hexHeight = 4 * scale
-   *      xStride = 3 * scale, yStride = 2 * scale.
-   *      imgWidth = cols * xStride + (1 * scale)
-   *      imgHeight = rows * yStride + (2 * scale)
-   */
-  int []
-    xc = {1,3,4,3,1,0},
-    yc = {0,0,2,4,4,2};
+  static final boolean DRAW_BORDER = new Flags(HexGrid.class).get("drawBorder", true);
 
   BufferedImage img;
   Graphics g;
-  int cols, rows, scale, count, xStride, yStride, yOffset;
+  int cols, rows, scale, count, xStrideScaled, yStrideScaled;
+  int lineWidthPix;
   Polygon hex;
+  final int []
+    xc = new int[6],
+    yc = new int[6];
 
-  HexGrid(int cols, int rows, int scale) {
+  HexGrid(int cols, int rows, int scale,
+          int [] XC, int [] YC,
+          int xStride, int yStride) {
+    System.out.printf("cols: %d, rows: %d, scale: %d\n", cols, rows, scale);
     this.cols = cols;
     this.rows = rows;
     this.scale = scale;
     for (int i = 0; i < 6; i++) {
-      xc[i] = xc[i] * scale;
-      yc[i] = yc[i] * scale;
+      xc[i] = XC[i] * scale;
+      yc[i] = YC[i] * scale;
     }
     hex = new Polygon(xc, yc, 6);
-    xStride = 3 * scale;
-    yStride = 2 * scale;
-    yOffset = yStride;
-    /*
-    img = new BufferedImage(xStride * cols + xStride / 2,
-                            2 * yStride * rows + yStride,
-                            BufferedImage.TYPE_INT_RGB);
-    */
-    img = new BufferedImage(xStride * cols + scale,
-                            4 * scale * rows + 6 * scale,
-                            BufferedImage.TYPE_INT_RGB);
+    xStrideScaled = xStride * scale;
+    yStrideScaled = yStride * scale;
+    lineWidthPix = cols * xStrideScaled;
+    System.out.printf("xStrideScaled: %d, yStrideScaled: %d\n",
+                      xStrideScaled, yStrideScaled);
+    img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
     g = img.getGraphics();
     count = 0;
   }
 
-  void drawTest() {
-    for (int i = 0, I = cols; i < I; i++) {
-      for (int j = 0, J = rows; j < J; j++) {
-        next(new Color(0,
-                       0.5f + (0.5f * i / (float)I),
-                       0.5f + (0.5f * j / (float)J)));
-      }
-      line();
-    }
-  }
+  abstract int getWidth();
+  abstract int getHeight();
 
   void reset() {
     hex = new Polygon(xc, yc, 6);
-    yOffset = yStride;
     count = 0;
   }
 
@@ -90,21 +62,24 @@ final class HexGrid {
     g.setColor(c);
     g.fillPolygon(hex);
     if (DRAW_BORDER) {
-      g.setColor(Color.BLUE);
+      g.setColor(Color.BLACK);
       g.drawPolygon(hex);
     }
-    hex.translate(xStride, yOffset);
-    yOffset *= -1;
     count++;
   }
 
   void line() {
-    // if yOffset is now negative, it was positive for last
-    // translate, so only add half a yStride.  Otherwise, it was
-    // negative for last translate, so add 1.5 strides.
-    hex.translate(-1 * (count * xStride),
-                  yOffset < 0 ? yStride : 2 * yStride);
-    yOffset = Math.abs(yOffset);
     count = 0;
+  }
+
+  private void drawTest() {
+    for (int i = 0, I = cols; i < I; i++) {
+      for (int j = 0, J = rows; j < J; j++) {
+        next(new Color(1f,
+                       0.5f + (0.5f * i / (float)I),
+                       0.5f + (0.5f * j / (float)J)));
+      }
+      line();
+    }
   }
 }

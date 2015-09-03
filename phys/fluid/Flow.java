@@ -51,54 +51,93 @@ final class Flow {
     if (!SCREEN_GFX)
       System.setProperty("java.awt.headless", "true");
   }
-  static final int WIDTH = flags.get("width", "w", 20);
-  static final int NUM = flags.get("num", "num", 100);
-  static final int SLEEP = flags.get("sleep", 100);
-  static final int HEX_SIZE = flags.get("hexSize", 5);
+  static final boolean HORIZ = flags.get("horiz", "horiz", true);
+  static final int COLUMNS = flags.get("columns", "cols", 20);
+  static final int NUM = flags.get("num", "num", 0);
+  static final int SLEEP = flags.get("sleep", -1);
+  static final int HEX_SIZE = flags.get("hexSize", "hexSize", 5);
   static final int COMPARE_STEP = flags.get("compare", -1);
 
-  final int radius, hexSize;
-  Space2D space, next;
+  final int cols, rows, hexSize, frameXOffset, frameYOffset;
+  Space2D spaceCur, spaceNext;
   Force force;
   FullScreenableFrame frame = null;
   Graphics2D graphics;
   Color [] palette;
   HexGrid hexGrid;
+  int stepCount = 0;
+  BufferedImage directImg = null;
 
-  Flow(int num, int width) {
-    this(num, width, HEX_SIZE);
+  Flow(int num, int reqCols) {
+    this(num, reqCols, HEX_SIZE);
   }
 
   /**
    * @param hexSize of hexagons to draw grid with.
    */
-  Flow(int num, int cols, int hexSize) {
-
+  Flow(int num, int reqCols, int hexSize) {
     this.hexSize = hexSize;
 
     // Setup gfx first to get possible full-screen dimensions.
     if (SCREEN_GFX) {
+      // TODO: these aren't currently needed.
+      int frameWidth, frameHeight;
       if (FullScreenableFrame.FULL_SCREEN) {
         frame = new FullScreenableFrame(-1, -1, true);
-        // computation related to the sizing in HexGrid.java, not sure
-        // why + 2 instead of just say off by one.
-        // int cols = (frame.getWidth()) - hexSize) / 3 * hexSize;
-        int rows = (frame.getHeight() - (6 * hexSize)) / (4 * hexSize) + 2;
-        radius = rows;
-        hexGrid = new HexGrid(radius, radius, hexSize);
+        frameWidth = frame.getWidth();
+        frameHeight = frame.getHeight();
+        int cellWidth, cellHeight, numCellsWide, numCellsHigh;
+        if (HORIZ && hexSize > 0) {
+          cellWidth = HexGridHorizontal.CELL_WIDTH;
+          cellHeight = HexGridHorizontal.CELL_HEIGHT;
+          numCellsWide = HexGridHorizontal.colsForWidth(hexSize, frameWidth);
+          numCellsHigh = HexGridHorizontal.rowsForHeight(hexSize, frameHeight);
+          int numCells = Math.min(numCellsWide, numCellsHigh);
+          cols = numCells;
+          rows = numCells;
+          hexGrid = new HexGridHorizontal(cols, rows, hexSize);
+        } else if (!HORIZ && hexSize > 0) {
+          // TODO: all copied from HORIZ.. incorrect for vert.
+          cellWidth = HexGridHorizontal.CELL_WIDTH;
+          cellHeight = HexGridHorizontal.CELL_HEIGHT;
+          numCellsWide = HexGridHorizontal.colsForWidth(hexSize, frameWidth);
+          numCellsHigh = HexGridHorizontal.rowsForHeight(hexSize, frameHeight);
+          int numCells = Math.min(numCellsWide, numCellsHigh);
+          cols = numCells;
+          rows = numCells;
+          hexGrid = new HexGridVertical(cols, rows, hexSize);
+        } else {
+          cellWidth = cellHeight = 1;
+          cols = rows = numCellsWide = numCellsHigh = Math.min(frameWidth, frameHeight);
+          hexGrid = null;
+          directImg = new BufferedImage(cols, rows, BufferedImage.TYPE_INT_RGB);
+        }
+        frameXOffset = (frameWidth - (numCellsHigh * hexSize * HexGridHorizontal.X_STRIDE)) / 2;
+        frameYOffset = (frameHeight - (numCellsHigh * hexSize * HexGridHorizontal.Y_STRIDE)) / 2;
+        System.out.printf("numCellsWide: %d, cellWidth: %d, numCellsHigh: %d, cellHeight: %d\n",
+                          numCellsWide, cellWidth, numCellsHigh, cellHeight);
+        System.out.printf("cellWidth: %d, cellHeight: %d, frameXOffset: %d, frameYOffset: %d\n",
+                          cellWidth, cellHeight, frameXOffset, frameYOffset);
       } else {
-        radius = cols;
-        hexGrid = new HexGrid(radius, radius, hexSize);
-        frame = new FullScreenableFrame(hexGrid.img.getWidth(),
-                                        hexGrid.img.getHeight());
+        cols = rows = reqCols;
+        if (HORIZ) {
+          hexGrid = new HexGridHorizontal(cols, rows, hexSize);
+        } else {
+          hexGrid = new HexGridVertical(cols, rows, hexSize);
+        }
+        frameWidth = hexGrid.img.getWidth();
+        frameHeight = hexGrid.img.getHeight();
+        frame = new FullScreenableFrame(frameWidth, frameHeight);
+        frameXOffset = frameYOffset = 0;
       }
-      graphics = frame.getDrawGraphics();
+      graphics = frame.getDrawGraphics(Color.BLACK);
       palette = new Color[7];
       for (int i = 0; i < 7; i++) {
         float val = (float)i / 7f;
-        palette[i] = new Color(val, val, val);
+        palette[i] = new Color(val, val, 1f);
       }
     } else {
+      cols = rows = reqCols;
       palette = new Color[7];
       palette[0] = Color.BLACK;
       palette[1] = Color.BLUE;
@@ -107,111 +146,117 @@ final class Flow {
       palette[4] = Color.RED;
       palette[5] = Color.MAGENTA;
       palette[6] = Color.WHITE;
-      graphics = new TextGraphics(cols, cols);
-      radius = cols;
+      graphics = new TextGraphics(cols, rows);
+      frameXOffset = frameYOffset = 0;
     }
 
-    space = new Space2D(radius);
-    next = new Space2D(radius);
+    spaceCur = new Space2D(cols);
+    spaceNext = new Space2D(cols);
     force = new HexForce();
 
-    final java.util.Random r = new java.util.Random();
-    if (NUM == -1) {
-      for (int y = 0; y < radius; y++) {
-        for (int x = 0; x < radius; x++) {
-          space.set(r.nextInt(64), x, y);
-        }
-      }
-    } else if (NUM > 0) {
+    if (NUM > 0) {
+      final java.util.Random r = new java.util.Random();
       for (int i = 0; i < NUM; i++) {
-        space.set(r.nextInt(64), r.nextInt(radius), r.nextInt(radius));
+        spaceCur.set(HexForce.DEBUG_ALL, r.nextInt(cols), r.nextInt(rows));
       }
     }
   }
 
   public void run () {
     graphics.setBackground(Color.BLACK);
-    int wallLeft = (int)((float) radius * 0.8f);
-    int wallLo = (int)((float) radius * 0.25f);
-    int wallHi = (int)((float) radius * 0.75f);
+    int wallLeft = (int)((float) cols * 0.2f);
+    int wallRight = (int)((float) cols * 0.75f);
+    int wallLo = (int)((float) rows * 0.25f);
+    int wallHi = (int)((float) rows * 0.75f);
+    System.out.printf("wallLeft: %d, wallRight: %d, wallLo: %d, wallHi: %d\n",
+                      wallLeft, wallRight, wallLo, wallHi);
     int forceRight =
       HexForce.R |
       HexForce.UR |
       HexForce.DR,
-      forceWall =
+      forceLeft =
       HexForce.L |
       HexForce.UL |
       HexForce.DL;
 
-    int stepCount = 0;
     while (true) {
-      if (SCREEN_GFX) {
-        for (int y = 0; y < radius; y++) {
-          for (int x = 0; x < radius; x++) {
-            final int popCount = util.Bits.popCount(space.get(x, y));
-            hexGrid.next(palette[popCount]);
-          }
-          hexGrid.line();
-        }
-        hexGrid.reset();
-      } else {
-        for (int y = 0; y < radius; y++) {
-          for (int x = 0; x < radius; x++) {
-            final int popCount = util.Bits.popCount(space.get(x, y));
-            graphics.setBackground(palette[popCount]);
-            graphics.drawLine(x, y, x + 1, y + 1);
-          }
-        }
+
+      force.apply(spaceCur, spaceNext);
+
+      // Left wall radiating continuously to the right, and
+      // vice-versa.
+      for (int y = wallLo; y < wallHi; y++) {
+        spaceNext.set(forceRight, wallLeft, y);
+        spaceNext.set(forceLeft, wallRight, y);
       }
 
-      force.apply(space, next);
+      //spaceNext.set(HexForce.DEBUG_ALL, 0, 0);
 
-      for (int y = 0; y < radius; y++) {
-        // Continuous left-to-right feed from the left side.
-        next.set(forceRight, 0, y);
-
-        // wall should bounce back.
-        if (y >= wallLo && y <= wallHi) {
-          /*
-          for (int i = -1; i <= 1; i++) {
-            for (int j = -1; j <= 1; j++) {
-              if (i == 0 || ) {
-                continue;
-              }
-            }
-          }
-          */
-          next.set(forceWall, wallLeft, y);
-        }
-      }
+      draw();
 
       if (stepCount == COMPARE_STEP) {
-        Space other = (Space) load("flow-" + stepCount + ".obj");
-        if (other != null) {
-          if (!space.equals(other)) {
-            System.out.println(space.diff(other));
+        compare();
+      }
+
+      Space2D tmp = spaceCur;
+      spaceCur = spaceNext;
+      spaceNext = tmp;
+      stepCount++;
+
+      if (SLEEP >= 0) {
+        try { Thread.sleep(SLEEP); } catch (InterruptedException e) { break; }
+      }
+      if (stepCount % 100 == 0) {
+        System.out.print(stepCount + "\r");
+      }
+    }
+  }
+
+  void draw() {
+    if (SCREEN_GFX) {
+      for (int y = 0; y < rows; y++) {
+        for (int x = 0; x < cols; x++) {
+          final int popCount = util.Bits.popCount(spaceCur.get(x, y));
+          if (hexSize == 0) {
+            directImg.setRGB(x, y, palette[popCount].getRGB());
           } else {
-            System.out.println("Systems the same at step " + stepCount);
+            hexGrid.next(palette[popCount]);
           }
-        } else {
-          save(this.space, "flow-" + stepCount + ".obj");
-          System.out.println("Saved system at step " + stepCount);
+        }
+        if (hexSize > 0) {
+          hexGrid.line();
         }
       }
-
-      Space2D tmp = space;
-      space = next;
-      next = tmp;
-
-      if (SCREEN_GFX) {
-        graphics.drawImage(hexGrid.img, 0, 0, frame);
+      if (hexSize > 0) {
+        graphics.drawImage(hexGrid.img, frameXOffset, frameYOffset, frame);
       } else {
-        graphics.setBackground(Color.WHITE);
+        graphics.drawImage(directImg, frameXOffset, frameYOffset, frame);
       }
-      // System.out.println(force);
-      try { Thread.sleep(SLEEP); } catch (InterruptedException e) { break; }
+      if (hexSize > 0) {
+        hexGrid.reset();
+      }
+    } else {
+      for (int y = 0; y < rows; y++) {
+        for (int x = 0; x < cols; x++) {
+          final int popCount = util.Bits.popCount(spaceCur.get(x, y));
+          graphics.setBackground(palette[popCount]);
+          graphics.drawLine(x, y, x + 1, y + 1);
+        }
+      }
+    }
+  }
 
-      stepCount++;
+  void compare() {
+    Space other = (Space) load("flow-" + stepCount + ".obj");
+    if (other != null) {
+      if (!spaceCur.equals(other)) {
+        System.out.println(spaceCur.diff(other));
+      } else {
+        System.out.println("Systems the same at step " + stepCount);
+      }
+    } else {
+      save(spaceCur, "flow-" + stepCount + ".obj");
+      System.out.println("Saved system at step " + stepCount);
     }
   }
 
@@ -235,7 +280,7 @@ final class Flow {
   void save(Object o, String filename) {
     ObjectOutputStream os = null;
     try {
-      (os = new ObjectOutputStream(new FileOutputStream(filename))).writeObject(space);
+      (os = new ObjectOutputStream(new FileOutputStream(filename))).writeObject(spaceCur);
     } catch (Exception e) {
     throw new RuntimeException(e);
     } finally {
@@ -250,7 +295,7 @@ final class Flow {
   }
 
   public static void main (final String [] args) {
-    final Flow f = new Flow(NUM, WIDTH);
+    final Flow f = new Flow(NUM, COLUMNS);
     f.run();
   }
 }
