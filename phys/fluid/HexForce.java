@@ -13,6 +13,8 @@ final class HexForce extends Force {
   // Basic hex forces.
   static final int DR = 1, UR = 2, DL = 4, UL = 8, L = 16, R = 32;
 
+  static final int DEBUG_ALL = DR | UR | DL | UL | L | R;
+
   // Input/output rule pairs.
   static final int R1_I = DR | UL,              R1_O = L | R;
   static final int R2_I = L | DR | UL,          R2_O = L | UR | DL;
