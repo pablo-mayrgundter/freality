@@ -68,7 +68,7 @@ class Grid {
   static final int [] path = new int[levels];
   static void genPath() {
     for (int i = 0; i < levels; i++) {
-      path[i] = (int)(Math.random() * 2.0);
+      path[i] = (int)(Math.random() * 4.0);
     }
     path[levels - 1] = 0;
   }
