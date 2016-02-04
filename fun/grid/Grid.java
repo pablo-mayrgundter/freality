@@ -2,6 +2,7 @@ package fun.grid;
 
 import gfx.FullScreenableFrame;
 import gfx.LayeredImage;
+import util.Flags;
 import java.awt.*;
 import java.awt.image.*;
 import javax.swing.*;
@@ -59,21 +60,17 @@ class Grid {
                          (float)pathType/8f));
   }
 
-  static int prop(final String name, final int defaultVal) {
-    return Integer.parseInt(System.getProperty(name, ""+defaultVal));
-  }
-
   static final int FANOUT = 4;
-  static final int levels = prop("levels", 7);
-  static final int size = prop("size", 5);
+  static final int levels = Flags.getInt("levels", 7);
+  static final int size = Flags.getInt("size", 5);
   static final int w = size, h = size;
-  static final int SLEEP = prop("sleep", 100);
+  static final int SLEEP = Flags.getInt("sleep", 100);
   static final int [] path = new int[levels];
   static void genPath() {
     for (int i = 0; i < levels; i++) {
-      path[i] = (int)(Math.random() * 4.0);
+      path[i] = (int)(Math.random() * 2.0);
     }
-    path[levels-1] = 0;
+    path[levels - 1] = 0;
   }
 
   public static void main(final String [] args) {
