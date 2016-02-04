@@ -7,6 +7,10 @@ import java.awt.*;
 import java.awt.image.*;
 import javax.swing.*;
 
+
+/**
+ * Draws a layered image of random hierarchal squares.
+ */
 class Grid {
 
   final Grid [] neigh;
