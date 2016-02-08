@@ -2,7 +2,10 @@ package audio;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.InputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import javax.sound.sampled.*;
 
@@ -13,9 +16,10 @@ public class SoundIO {
   public SoundIO() {
   }
 
-  public void record(final OutputStream os) throws Exception {
-    final AudioFormat audioFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
-                                                    44100.0F, 16, 2, 4, 44100.0F, false);
+  public void record(final File outFile) throws Exception {
+    final AudioFormat audioFormat = new AudioFormat(
+        AudioFormat.Encoding.PCM_SIGNED,
+        44100.0F, 16, 2, 4, 44100.0F, false);
     final DataLine.Info info = new DataLine.Info(TargetDataLine.class, audioFormat);
     if (!AudioSystem.isLineSupported(info))
       throw new IllegalStateException("!AudioSystem.isLineSupported(info)");
@@ -24,15 +28,16 @@ public class SoundIO {
     l = line;
     line.open(audioFormat);
     line.start();
-    AudioSystem.write(audioInputStream, AudioFileFormat.Type.AU, os);
+    AudioSystem.write(audioInputStream, AudioFileFormat.Type.AIFF, outFile);
   }
 
-  public void play(final InputStream is) throws Exception {
-    final AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new BufferedInputStream(is));
-    final AudioFormat audioFormat = audioInputStream.getFormat();
+  public void play(File f) throws Exception {
+    final AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(f);
     final Clip clip = AudioSystem.getClip();
     l = clip;
     clip.open(audioInputStream);
+    clip.setFramePosition(0);
+    System.out.println("Playing audio clip");
     clip.start();
     while (clip.isRunning()) {
       try {
@@ -43,17 +48,27 @@ public class SoundIO {
     }
   }
 
+  byte [] readFully(InputStream is) throws IOException {
+    final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    byte [] buf = new byte[1024];
+    int len;
+    while ((len = is.read(buf)) != -1) {
+      baos.write(buf, 0, len);
+    }
+    is.close();
+    return baos.toByteArray();
+  }
+
   // http://jvalentino2.tripod.com/dft/index.html
-  public void display(final byte [] abData) throws Exception {
-    System.err.println("buf length: "+ abData.length);
-    final ByteArrayInputStream is = new ByteArrayInputStream(abData);
-    final AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new BufferedInputStream(is));
-    final AudioFormat audioFormat = audioInputStream.getFormat();
+  public void display(File audioFile) throws Exception {
+    final AudioInputStream audioIn = AudioSystem.getAudioInputStream(audioFile);
+    final byte [] abData = readFully(audioIn);
+    final AudioFormat audioFormat = audioIn.getFormat();
 
     final float sampleRate = audioFormat.getSampleRate();
     System.err.println("sample rate: "+ sampleRate);
 
-    final float seconds = (float)audioInputStream.getFrameLength() / audioFormat.getFrameRate();
+    final float seconds = (float) audioIn.getFrameLength() / audioFormat.getFrameRate();
     System.err.println("seconds: "+ seconds);
 
     final int samples = (int) (seconds * sampleRate) / 8;
