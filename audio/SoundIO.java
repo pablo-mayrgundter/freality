@@ -48,21 +48,11 @@ public class SoundIO {
     }
   }
 
-  byte [] readFully(InputStream is) throws IOException {
-    final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    byte [] buf = new byte[1024];
-    int len;
-    while ((len = is.read(buf)) != -1) {
-      baos.write(buf, 0, len);
-    }
-    is.close();
-    return baos.toByteArray();
-  }
-
   // http://jvalentino2.tripod.com/dft/index.html
   public void display(File audioFile) throws Exception {
     final AudioInputStream audioIn = AudioSystem.getAudioInputStream(audioFile);
-    final byte [] abData = readFully(audioIn);
+    final byte [] abData = util.Streams.readFully(audioIn);
+    audioIn.close();
     final AudioFormat audioFormat = audioIn.getFormat();
 
     final float sampleRate = audioFormat.getSampleRate();
