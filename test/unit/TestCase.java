@@ -17,7 +17,7 @@ public class TestCase extends Check<TestCase.TestException> {
   }
 
   enum Result {
-    PASS("."), FAIL("F"), ERR("E");
+    PASS("P"), FAIL("F"), ERR("E");
     final String code;
     Result(String code) {
       this.code = code;
@@ -28,11 +28,10 @@ public class TestCase extends Check<TestCase.TestException> {
     }
   }
 
-  final List<String> errorMsgs;
+  private List<Method> testMethods;
   final List<Result> results;
 
   public TestCase() {
-    errorMsgs = new ArrayList<String>();
     results = new ArrayList<Result>();
   }
 
@@ -43,14 +42,16 @@ public class TestCase extends Check<TestCase.TestException> {
 
   @Override
   public String toString() {
-    String msg = "";
-    for (String errorMsg : errorMsgs) {
-      msg += errorMsg + "\n";
-    }
+    int pass = 0, fail = 0, err = 0;
     for (Result r : results) {
-      msg += r;
+      switch(r) {
+      case PASS: pass++; break;
+      case FAIL: fail++; break;
+      case ERR: err++; break;
+      }
     }
-    return msg;
+    return String.format("%s\n%d tests ran, %d pass, %d fail, %d err",
+                         this.results, this.results.size(), pass, fail, err);
   }
 
   protected void setUp() {}
@@ -58,7 +59,8 @@ public class TestCase extends Check<TestCase.TestException> {
 
   public TestCase run() {
     setUp();
-    for (Method m : getTestMethods()) {
+    testMethods = getTestMethods();
+    for (Method m : testMethods) {
       try {
         m.invoke(this);
         results.add(Result.PASS);
@@ -66,13 +68,7 @@ public class TestCase extends Check<TestCase.TestException> {
         if (e instanceof InvocationTargetException) {
           Throwable t = ((InvocationTargetException) e).getTargetException();
           if (t instanceof TestException) {
-            StackTraceElement ste = t.getStackTrace()[2];
-            errorMsgs.add(String.format("%s\n\tat %s.%s(%s:%d)\n",
-                t.getMessage(),
-                ste.getClassName(),
-                ste.getMethodName(),
-                ste.getFileName(),
-                ste.getLineNumber()));
+            t.printStackTrace();
             results.add(Result.FAIL);
           } else {
             t.printStackTrace();
@@ -88,12 +84,8 @@ public class TestCase extends Check<TestCase.TestException> {
     return this;
   }
 
-  public void println() {
-    System.out.println(this);
-  }
-
   List<Method> getTestMethods() {
-    Method[] methods = getClass().getDeclaredMethods();
+    Method[] methods = getClass().getMethods();
     List<Method> testMethods = new ArrayList<Method>();
     for (Method m : methods) {
       if (m.getName().startsWith("test")
@@ -105,7 +97,8 @@ public class TestCase extends Check<TestCase.TestException> {
   }
 
   public static void main(String[] args) throws Exception {
-    TestCase t = (TestCase) Class.forName(System.getProperty("sun.java.command")).newInstance();
-    t.run().println();
+    String clazz = System.getProperty("sun.java.command");
+    TestCase t = (TestCase) Class.forName(clazz).newInstance();
+    System.out.println(t.run());
   }
 }

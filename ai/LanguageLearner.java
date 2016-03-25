@@ -24,7 +24,7 @@ class LanguageLearner extends RandomLearner<String> {
     this.delim = delim;
   }
 
-  public String learn(String s){
+  public String learn(String s) {
     listen(s);
     return speak();
   }

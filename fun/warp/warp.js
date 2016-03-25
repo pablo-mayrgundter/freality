@@ -5,6 +5,11 @@ var morphLevel = 0,
   maxMorphSpeed = 0.005,
   morphAccel = 0.0001;
 var numNodes = 1000;
+/**
+ * Animation request ID for subsequent canceling.  Null if no current
+ * animation.
+ */
+var animId = null;
 
 /**
  * A single step in an Iterated Function System with linear and
@@ -29,6 +34,7 @@ function ifs() {
   serial++;
 }
 
+var maxFreq = 2000;
 /**
  * A visitor for each node in the graph, to compute and assign its new
  * position and color (which is used for its edges as well).
@@ -40,6 +46,24 @@ function renderNode(n) {
   // Move the node to its new position
   n.x = x;
   n.y = y;
+  if (n.id == 10) {
+    n.x = -1;
+    synth.set("tone1.freq", n.y * maxFreq);
+    n.y = -1;
+  }
+  if (n.id == 100) {
+    n.x = 1;
+    synth.set("tone2.freq", n.y * maxFreq);
+    n.y = -1;
+  }
+  if (n.id == 200) {
+    n.x = -1;
+    n.y = 1;
+  }
+  if (n.id == 400) {
+    n.x = 1;
+    n.y = 1;
+  }
 
   // Color mapping.
   var r = Math.abs(n.x) * 256,
@@ -78,8 +102,8 @@ function renderSystem() {
 }
 
 /**
- * Compute and draw a single frame, which represents a sequence of an
- * IFS attractor orbit.
+ * Compute and draw a frame, and schedule the next.  A frame represents a
+ * sequence of an IFS attractor orbit.
  */
 function frame() {
   renderSystem();
@@ -87,15 +111,18 @@ function frame() {
   // frames.
   if (morphSpeed > 0) {
     animId = window.requestAnimationFrame(frame);
+    if (!soundRunning) {
+      startSound();
+    }
   } else {
     animId = null;
+    if (soundRunning) {
+      stopSound();
+    }
   }
 }
 
-/**
- * Setup an animation start/stop callback for user clicks.
- */
-var animId;
+/** Callback for clicks from the DOM body. */
 function anim() {
   if (animId) {
     // If we're already animating, flip the direction of acceleration
@@ -146,4 +173,3 @@ function init() {
     window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
   window.requestAnimationFrame = requestAnimationFrame;
 })();
-

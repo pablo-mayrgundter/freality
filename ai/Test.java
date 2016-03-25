@@ -13,10 +13,10 @@ public class Test {
   public static void main (final String [] args) throws Exception {
     final Learner<String> l = new LanguageLearner();
     l.risk = 0.01;
-    l.goal = "foo";
+    l.goal = "hello world";
     l.environment = new Environment<String>();
     while (true) {
-      System.err.println(String.format("goal:%.2f", l.goal));
+      System.err.println(l.goal);
       System.out.println(l.learn(args[0]));
       if (!Util.sleep(100))
         break;

@@ -74,22 +74,17 @@ class FrequencyGraph<T> extends Graph<T> {
     return (float) frequency(node1, node2) / (float) eventCount;
   }
 
-  public static void main(String [] args) {
-    final String [] mappings = args[0].split("\\|");
-    final FrequencyGraph<String> g = new FrequencyGraph<String>();
-    for (String mapping : mappings) {
-      final String [] nodeLinks = mapping.split(":");
-      final String node = nodeLinks[0];
-      final String [] neighbors = nodeLinks[1].split(",");
-      for (String neighbor : neighbors) {
-        g.link(node, neighbor);
+  public String toString() {
+    StringBuffer buf = new StringBuffer();
+    for (T node : nodes()) {
+      for (T neighbor : neighbors(node)) {
+        buf.append(String.format("%s->%s: %d\n", node, neighbor, frequency(node, neighbor)));
       }
     }
+    return buf.toString();
+  }
 
-    for (String node : g.nodes()) {
-      for (String neighbor : g.neighbors(node)) {
-        System.out.println(node + "->" + neighbor + ": " + g.frequency(node, neighbor));
-      }
-    }
+  public static void main(String [] args) throws Exception {
+    main(args, new FrequencyGraph<String>());
   }
 }
