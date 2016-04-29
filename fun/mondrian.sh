@@ -6,8 +6,9 @@ while true ; do
   x=$[RANDOM % COLUMNS]
   y=$[RANDOM % LINES]
   c=$[40+RANDOM%10]
-  width=$[1 + RANDOM % COLUMNS - x + 1]
   height=$[1 + RANDOM % LINES - y + 1]
+#  width=$[1 + RANDOM % COLUMNS - x + 1]
+  width=$height
   h=$y;
   while [ $h -lt $height ] ; do
     w=$x;
