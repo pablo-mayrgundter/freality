@@ -26,11 +26,12 @@ width=$COLUMNS
 height=$LINES
 for (( h=1; h <= height; h++ )) ; do
   for (( w=1; w <= width; w++ )) ; do
-    W=$(( w + 0.0 ))
+    W=$(( w + 0.0 )) # to float
     H=$(( h + 0.0 ))
-    c1=$(( -2.0 + (( $W / $width) * 4.0) ))
-    c2=$(( 2.0 - (( $H / $height) * 4.0) ))
+    c1=$(( -2.0 + (( $W / $width) * 3.0) ))
+    c2=$(( 1.2 - (( $H / $height) * 2.4) ))
     mand $c1 $c2
+    # clamp colors
     if (( N > 9 )) ; then
       N=9
     fi
