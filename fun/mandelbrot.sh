@@ -7,14 +7,13 @@ N=0;
 function mand {
   c1=$1
   c2=$2
-  thresh=$3
   z1=$c1
   z2=$c2
-  for (( n=0; n < thresh ; n++ )) ; do
+  for (( n=0; n < 100 ; n++ )) ; do
     t=$(( (z1 ** 2) - (z2 ** 2) + c1 ))
     z2=$(( (2 * z1 * z2) + c2 ))
     z1=$t
-    if (( z1**2 > 2 || z2**2 > 2 )) ; then
+    if (( (z1**2 + z2**2) > 4 )) ; then
       N=$n;
       return;
     fi
@@ -25,14 +24,16 @@ function mand {
 
 width=$COLUMNS
 height=$LINES
-thresh=9
 for (( h=1; h <= height; h++ )) ; do
   for (( w=1; w <= width; w++ )) ; do
     W=$(( w + 0.0 ))
     H=$(( h + 0.0 ))
     c1=$(( -2.0 + (( $W / $width) * 4.0) ))
     c2=$(( 2.0 - (( $H / $height) * 4.0) ))
-    mand $c1 $c2 $thresh
+    mand $c1 $c2
+    if (( N > 9 )) ; then
+      N=9
+    fi
     color=$(( 40 + N ))
     echo -en "\033[${h};${w}f\033[1;${color}m "
   done
