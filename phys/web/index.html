@@ -1,0 +1,34 @@
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0;
+        font-family: Sans, Arial;
+      }
+      #container {
+        position: absolute;
+        left: 35%;
+        top: 20%;
+        align: center;
+      }
+      input {
+        border: none;
+        border-bottom: solid 1px grey;
+        padding: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <canvas id="canvas" width="400" height="400"></canvas>
+      <ul id="controls">
+        <li>Cell size: <input id="cellSize" value="1"/></li>
+        <li>Wall position (0 to 1): <input id="wallLeftR" value="0.6"/></li>
+        <li>draw delay (ms): <input id="delayInput" value="0"/></li>
+        <li id="info"></li>
+      </ul>
+      <button id="startButton">Run</button>
+    </div>
+    <script src="app.dart.js" type="application/javascript"></script>
+  </body>
+</html>
