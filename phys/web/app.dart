@@ -34,6 +34,14 @@ void restartAnimation() {
   animTimer = new Timer.periodic(new Duration(milliseconds: delay), animate);
 }
 
+void info(msg) {
+  infoElt.text = msg;
+}
+
+void infoAppend(msg) {
+  infoElt.text = infoElt.text + '\n' + msg;
+}
+
 void startButtonOnClickHandler() {
   if (animTimer != null) {
     animTimer.cancel();
@@ -49,25 +57,22 @@ void wallLeftRInputOnChangeHandler() {
   flow.run();
 }
 
-void info(msg) {
-  infoElt.text = msg;
-}
-
-void infoAppend(msg) {
-  infoElt.text = infoElt.text + '\n' + msg;
+void cellSizeInputOnChangeHandler() {
+  CanvasElement canvas = querySelector('#canvas');
+  flow = new Flow(
+      canvas,
+      int.parse(cellSizeInput.value));
+  flow.run();
 }
 
 void main() {
   wallLeftRInput = querySelector('#wallLeftR');
   wallLeftRInput.onChange.listen((event) => wallLeftRInputOnChangeHandler());
   cellSizeInput = querySelector('#cellSize');
+  cellSizeInput.onChange.listen((event) => cellSizeInputOnChangeHandler());
   infoElt = querySelector('#info');
 
-  CanvasElement canvas = querySelector('#canvas');
-  flow = new Flow(
-      canvas,
-      int.parse(cellSizeInput.value));
-  flow.run();
+  cellSizeInputOnChangeHandler();
 
   startButton = querySelector('#startButton');
   delayInput = querySelector('#delayInput');
