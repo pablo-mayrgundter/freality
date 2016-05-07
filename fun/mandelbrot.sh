@@ -13,7 +13,7 @@ function mand {
     t=$(( (z1 ** 2) - (z2 ** 2) + c1 ))
     z2=$(( (2 * z1 * z2) + c2 ))
     z1=$t
-    if (( (z1**2 + z2**2) > 4 )) ; then
+    if (( z1**2 > 2 || z2**2 > 2 )) ; then
       N=$n;
       return;
     fi
