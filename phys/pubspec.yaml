@@ -1,4 +1,4 @@
 name: phys
 transformers:
 - $dart2js:
-    minify: true
+    minify: false

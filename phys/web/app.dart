@@ -14,7 +14,7 @@ void animate(ignoredArg) {
   flow.run();
   timeCount++;
   info('time: $timeCount');
-  if (false && (timeCount % 10 == 0)) {
+  if (false && timeCount % 10 == 0) {
     animTimer.cancel();
     animTimer = null;
     timeCount++;
