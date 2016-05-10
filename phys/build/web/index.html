@@ -2,14 +2,19 @@
   <head>
     <style>
       body {
-        margin: 0;
         font-family: Sans, Arial;
       }
       #container {
-        position: absolute;
-        left: 35%;
-        top: 20%;
+        text-align: center;
+        margin: 1em auto;
+        width: 50%;
+        bottom: 5%;
         align: center;
+      }
+      #controls {
+        margin: auto;
+        width: 50%;
+        text-align: left;
       }
       input {
         border: none;
@@ -19,15 +24,31 @@
     </style>
   </head>
   <body>
+    <h1>Hexagonal force automata</h1>
+
+    <p>Wolfram models a fluid as particle interactions on a hexagonal
+      field (<a href="https://www.wolframscience.com/nksonline/page-378" target="_new">p. 378</a>).
+
+    <p>Each cell has incident forces to it at the beginning of each step.  The
+      automata evolution rule specifies how the cell transfers these forces
+      outwards by the end of the step.  Wolfram seems to pick a particular rule
+      which transfers the forces most symmetrically for this configuration, and
+      assumes that the count of incident fields is half, or 3/6.
+
+    <p>Solids within the flow are represented as an additional rule reflecting
+    incident vectors.
+
     <div id="container">
       <canvas id="canvas" width="400" height="400"></canvas>
-      <ul id="controls">
-        <li>Cell size: <input id="cellSize" value="1"/></li>
-        <li>Wall position (0 to 1): <input id="wallLeftR" value="0.6"/></li>
-        <li>draw delay (ms): <input id="delayInput" value="0"/></li>
-        <li id="info"></li>
-      </ul>
-      <button id="startButton">Run</button>
+      <div id="controls">
+        <ul>
+          <li>Cell size: <input id="cellSize" value="3"/></li>
+          <li>Wall position (0 to 1): <input id="wallLeftR" value="0.6"/></li>
+          <li>Draw delay (ms): <input id="delayInput" value="100"/></li>
+          <li>Status: <span id="info"></span></li>
+        </ul>
+        <button id="startButton">Run</button>
+      </div>
     </div>
     <script src="app.dart.js" type="application/javascript"></script>
   </body>

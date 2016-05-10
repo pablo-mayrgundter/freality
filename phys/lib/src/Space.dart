@@ -24,6 +24,7 @@ class Space {
     return ndx;
   }
 
+  /** Optimized for 2-dimensions. */
   static int coordToNdx2(final int radius, final int x, final int y) {
     int ndx = 0;
     ndx += wrap(radius, x);
@@ -86,5 +87,9 @@ class Space {
 
   void set(final int val, final List<int> coord) {
     space[coordToNdx(radius, coord)] = val;
+  }
+
+  void set2(final int val, final int x, final int y) {
+    space[coordToNdx2(radius, x, y)] = val;
   }
 }

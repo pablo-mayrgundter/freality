@@ -1,8 +1,8 @@
 import 'package:phys/src/Space2D.dart';
 
-// TODO(pablo): clearly need to generalize to multi-dimensional space.
 abstract class Force {
 
+  // TODO(pablo): provide n-dimensional generalization.
   void apply(Space2D before, Space2D after) {
     int radius = before.getRadius();
     for (int x = 1; x < radius - 1; x++) { 
