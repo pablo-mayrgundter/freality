@@ -507,7 +507,7 @@
   var dart = [["", "package:phys/src/fluid/Color.dart",, O, {
     "^": "",
     Color: {
-      "^": "Object;"
+      "^": "Object;r,g,b"
     }
   }], ["", "package:phys/src/fluid/Flow.dart",, O, {
     "^": "",
@@ -689,35 +689,298 @@
         this.next = tmp;
       },
       Flow$2: function(canvas, gridScale) {
-        var t1, t2, t3;
-        J.getContext$1$x(canvas, "2d");
+        var graphics, t1, t2, t3, i, val;
+        graphics = J.getContext$1$x(canvas, "2d");
         t1 = this.gridScale;
         t2 = J.$eq$(t1, 1);
         t3 = canvas.width;
         if (t2) {
           this.radius = t3;
-          t1 = t3;
+          t2 = t3;
         } else {
           if (typeof t3 !== "number")
             return t3.$div();
           if (typeof t1 !== "number")
             return H.iae(t1);
-          t1 = C.JSDouble_methods.toInt$0(t3 / 4 / t1);
-          this.radius = t1;
+          t2 = C.JSDouble_methods.toInt$0(t3 / 4 / t1);
+          this.radius = t2;
         }
-        t2 = new N.Space2D(null, null, 2, t1);
-        t2.Space$2(2, t1);
-        this.space = t2;
+        t3 = new N.Space2D(null, null, 2, t2);
+        t3.Space$2(2, t2);
+        this.space = t3;
+        t3 = this.radius;
+        t2 = new N.Space2D(null, null, 2, t3);
+        t2.Space$2(2, t3);
+        this.next = t2;
+        this.force = new R.HexForce();
+        this.palette = H.setRuntimeTypeInfo([], [O.Color]);
+        for (i = 0; i < 7; ++i) {
+          val = C.JSNumber_methods.toInt$0(255 * (i / 6));
+          this.palette.push(new O.Color(0, val, val));
+        }
+        t2 = this.radius;
+        this.hexGrid = G.HexGrid$(t2, t2, t1, graphics);
         t1 = this.radius;
+        t1.toString;
         if (typeof t1 !== "number")
-          return t1.$negate();
-        H.throwNoSuchMethod("", "wrap", [t1, -t1 - 1], null);
-        throw H.wrapException(new P.StateError("Wrap failed."));
+          return t1.$mul();
+        this.wallLo = C.JSNumber_methods.toInt$0(t1 * 0.25);
+        t1 = this.radius;
+        t1.toString;
+        if (typeof t1 !== "number")
+          return t1.$mul();
+        this.wallHi = C.JSNumber_methods.toInt$0(t1 * 0.75);
+        this.setWallLeftR$1(this.wallLeftR);
       },
       static: {
         Flow$: function(canvas, gridScale) {
           var t1 = new O.Flow(null, gridScale, null, null, null, null, null, null, null, null, 0.6, null, null, null, 35, 28);
           t1.Flow$2(canvas, gridScale);
+          return t1;
+        }
+      }
+    }
+  }], ["", "package:phys/src/Force.dart",, Q, {
+    "^": "",
+    Force: {
+      "^": "Object;",
+      apply$2: function(before, after) {
+        var radius, t1, t2, t3, t4, x, x0, t5, y, x1, t6, ndx, x2, t7, t8, t9, x3, t10, t11, t12, t13, y0, f, out;
+        radius = before.radius;
+        if (typeof radius !== "number")
+          return radius.$sub();
+        t1 = radius - 1;
+        t2 = after.space;
+        t3 = after.radius;
+        t4 = before.space;
+        x = 1;
+        for (; x < t1; x = x0)
+          for (x0 = x + 1, t5 = x - 1, y = 1; y < t1; y = y0) {
+            x1 = C.JSInt_methods.$mod(t5, radius);
+            t6 = x1 < 0;
+            ndx = t6 ? radius + x1 : x1;
+            x2 = C.JSInt_methods.$mod(y - 1, radius);
+            t7 = x2 < 0;
+            ndx += (t7 ? radius + x2 : x2) * radius;
+            t8 = t4.length;
+            if (ndx < 0 || ndx >= t8)
+              return H.ioore(t4, ndx);
+            t9 = t4[ndx];
+            if (typeof t9 !== "number")
+              return t9.$and();
+            x3 = C.JSInt_methods.$mod(x0, radius);
+            t10 = x3 < 0;
+            ndx = t10 ? radius + x3 : x3;
+            ndx += (t7 ? radius + x2 : x2) * radius;
+            if (ndx < 0 || ndx >= t8)
+              return H.ioore(t4, ndx);
+            t11 = t4[ndx];
+            if (typeof t11 !== "number")
+              return t11.$and();
+            ndx = t6 ? radius + x1 : x1;
+            x2 = C.JSInt_methods.$mod(y, radius);
+            t7 = x2 < 0;
+            ndx += (t7 ? radius + x2 : x2) * radius;
+            if (ndx < 0 || ndx >= t8)
+              return H.ioore(t4, ndx);
+            t12 = t4[ndx];
+            if (typeof t12 !== "number")
+              return t12.$and();
+            ndx = t10 ? radius + x3 : x3;
+            ndx += (t7 ? radius + x2 : x2) * radius;
+            if (ndx < 0 || ndx >= t8)
+              return H.ioore(t4, ndx);
+            t13 = t4[ndx];
+            if (typeof t13 !== "number")
+              return t13.$and();
+            y0 = y + 1;
+            ndx = t6 ? radius + x1 : x1;
+            x1 = C.JSInt_methods.$mod(y0, radius);
+            t6 = x1 < 0;
+            ndx += (t6 ? radius + x1 : x1) * radius;
+            if (ndx < 0 || ndx >= t8)
+              return H.ioore(t4, ndx);
+            t7 = t4[ndx];
+            if (typeof t7 !== "number")
+              return t7.$and();
+            ndx = t10 ? radius + x3 : x3;
+            ndx += (t6 ? radius + x1 : x1) * radius;
+            if (ndx < 0 || ndx >= t8)
+              return H.ioore(t4, ndx);
+            t8 = t4[ndx];
+            if (typeof t8 !== "number")
+              return t8.$and();
+            f = (t9 & 1 | t11 & 4 | t12 & 32 | t13 & 16 | t7 & 2 | t8 & 8) >>> 0;
+            switch (f) {
+              case 9:
+                out = 48;
+                break;
+              case 6:
+                out = 9;
+                break;
+              case 48:
+                out = 6;
+                break;
+              case 25:
+                out = 22;
+                break;
+              case 14:
+                out = 56;
+                break;
+              case 50:
+                out = 11;
+                break;
+              case 41:
+                out = 38;
+                break;
+              case 7:
+                out = 49;
+                break;
+              case 52:
+                out = 13;
+                break;
+              case 22:
+                out = 19;
+                break;
+              case 56:
+                out = 14;
+                break;
+              case 11:
+                out = 50;
+                break;
+              case 38:
+                out = 41;
+                break;
+              case 49:
+                out = 7;
+                break;
+              case 13:
+                out = 52;
+                break;
+              case 19:
+                out = 44;
+                break;
+              case 44:
+                out = 19;
+                break;
+              case 15:
+                out = 57;
+                break;
+              case 54:
+                out = 15;
+                break;
+              case 57:
+                out = 54;
+                break;
+              case 62:
+                out = 55;
+                break;
+              case 31:
+                out = 47;
+                break;
+              case 61:
+                out = 59;
+                break;
+              case 55:
+                out = 62;
+                break;
+              case 62:
+                out = 31;
+                break;
+              case 59:
+                out = 61;
+                break;
+              default:
+                out = f;
+            }
+            if (typeof t3 !== "number")
+              return H.iae(t3);
+            x1 = C.JSInt_methods.$mod(x, t3);
+            ndx = x1 < 0 ? t3 + x1 : x1;
+            x1 = C.JSInt_methods.$mod(y, t3);
+            ndx += (x1 < 0 ? t3 + x1 : x1) * t3;
+            if (ndx < 0 || ndx >= t2.length)
+              return H.ioore(t2, ndx);
+            t2[ndx] = out;
+          }
+      }
+    }
+  }], ["", "package:phys/src/fluid/HexForce.dart",, R, {
+    "^": "",
+    HexForce: {
+      "^": "Force;"
+    }
+  }], ["", "package:phys/src/fluid/HexGrid.dart",, G, {
+    "^": "",
+    HexGrid: {
+      "^": "Object;xc,yc,g,cols,rows,scale,count,xStride,yStride,yOffset,hex,x,y,radius,img",
+      next$1: function(color) {
+        var t1, t2, rs, gs, bs, t3, i, t4;
+        t1 = this.g;
+        t2 = color.r;
+        rs = C.JSInt_methods.toRadixString$1(t2, 16);
+        if (t2 < 16)
+          rs = "0" + rs;
+        gs = C.JSInt_methods.toRadixString$1(color.g, 16);
+        if (color.g < 16)
+          gs = "0" + gs;
+        t2 = color.b;
+        bs = C.JSInt_methods.toRadixString$1(t2, 16);
+        if (t2 < 16)
+          bs = "0" + bs;
+        J.set$fillStyle$x(t1, "#" + rs + gs + bs);
+        J.beginPath$0$x(this.g);
+        t1 = this.g;
+        t2 = this.x;
+        t3 = this.hex;
+        J.moveTo$2$x(t1, t2 + t3.xc[0], this.y + t3.yc[0]);
+        for (i = 1; t1 = this.hex, i < t1.size; ++i) {
+          t2 = this.g;
+          t3 = this.x;
+          t4 = t1.xc;
+          if (i >= 6)
+            return H.ioore(t4, i);
+          J.lineTo$2$x(t2, t3 + t4[i], this.y + t1.yc[i]);
+        }
+        J.closePath$0$x(this.g);
+        J.fill$0$x(this.g);
+        this.x = this.x + this.xStride;
+        t1 = this.y;
+        t2 = this.yOffset;
+        this.y = t1 + t2;
+        this.yOffset = t2 * -1;
+        ++this.count;
+      },
+      HexGrid$4: function(columns, rows, scale, graphics) {
+        var t1, t2, i, t3;
+        this.cols = columns;
+        this.rows = rows;
+        this.scale = scale;
+        this.g = graphics;
+        for (t1 = this.xc, t2 = this.yc, i = 0; i < 6; ++i) {
+          t3 = t1[i];
+          if (typeof scale !== "number")
+            return H.iae(scale);
+          t1[i] = t3 * scale;
+          t2[i] = t2[i] * scale;
+        }
+        this.x = 0;
+        this.y = 0;
+        this.hex = new V.Polygon(t1, t2, 6);
+        if (typeof scale !== "number")
+          return H.iae(scale);
+        this.xStride = 3 * scale;
+        t1 = 2 * scale;
+        this.yStride = t1;
+        this.yOffset = t1;
+        this.count = 0;
+        this.radius = scale;
+        this.img = J.createImageData$2$x(this.g, this.cols, rows);
+      },
+      static: {
+        HexGrid$: function(columns, rows, scale, graphics) {
+          var t1 = new G.HexGrid([1, 3, 4, 3, 1, 0], [0, 0, 2, 4, 4, 2], null, null, null, null, null, null, null, null, null, null, null, null, null);
+          t1.HexGrid$4(columns, rows, scale, graphics);
           return t1;
         }
       }
@@ -878,19 +1141,6 @@
       map$1: function(receiver, f) {
         return H.setRuntimeTypeInfo(new H.MappedListIterable(receiver, f), [null, null]);
       },
-      join$1: function(receiver, separator) {
-        var t1, list, i, t2;
-        t1 = receiver.length;
-        list = new Array(t1);
-        list.fixed$length = Array;
-        for (i = 0; i < receiver.length; ++i) {
-          t2 = H.S(receiver[i]);
-          if (i >= t1)
-            return H.ioore(list, i);
-          list[i] = t2;
-        }
-        return list.join(separator);
-      },
       elementAt$1: function(receiver, index) {
         if (index < 0 || index >= receiver.length)
           return H.ioore(receiver, index);
@@ -1004,6 +1254,26 @@
         }
         throw H.wrapException(new P.UnsupportedError("" + receiver));
       },
+      toRadixString$1: function(receiver, radix) {
+        var result, match, t1, exponent;
+        H.checkInt(radix);
+        if (radix < 2 || radix > 36)
+          throw H.wrapException(P.RangeError$range(radix, 2, 36, "radix", null));
+        result = receiver.toString(radix);
+        if (C.JSString_methods.codeUnitAt$1(result, result.length - 1) !== 41)
+          return result;
+        match = /^([\da-z]+)(?:\.([\da-z]+))?\(e\+(\d+)\)$/.exec(result);
+        if (match == null)
+          H.throwExpression(new P.UnsupportedError("Unexpected toString result: " + result));
+        t1 = J.getInterceptor$asx(match);
+        result = t1.$index(match, 1);
+        exponent = +t1.$index(match, 3);
+        if (t1.$index(match, 2) != null) {
+          result += t1.$index(match, 2);
+          exponent -= t1.$index(match, 2).length;
+        }
+        return result + C.JSString_methods.$mul("0", exponent);
+      },
       toString$0: function(receiver) {
         if (receiver === 0 && 1 / receiver < 0)
           return "-0.0";
@@ -1110,6 +1380,24 @@
         if (startIndex === 0 && endIndex0 === endIndex)
           return result;
         return result.substring(startIndex, endIndex0);
+      },
+      $mul: function(receiver, times) {
+        var s, result;
+        if (0 >= times)
+          return "";
+        if (times === 1 || receiver.length === 0)
+          return receiver;
+        if (times !== times >>> 0)
+          throw H.wrapException(C.C_OutOfMemoryError);
+        for (s = receiver, result = ""; true;) {
+          if ((times & 1) === 1)
+            result = s + result;
+          times = times >>> 1;
+          if (times === 0)
+            break;
+          s += s;
+        }
+        return result;
       },
       toString$0: function(receiver) {
         return receiver;
@@ -2840,9 +3128,6 @@
         t1 = reflectionInfo;
       return H.Closure_fromTearOff(receiver, functions, t1, !!isStatic, jsArguments, $name);
     },
-    throwNoSuchMethod: function(obj, $name, $arguments, expectedArgumentNames) {
-      throw H.wrapException(new P.NoSuchMethodError(obj, new H.Symbol0($name), $arguments, H.JsLinkedHashMap_JsLinkedHashMap$es6(P.Symbol, null), expectedArgumentNames));
-    },
     throwCyclicInit: function(staticName) {
       throw H.wrapException(new P.CyclicInitializationError("Cyclic initialization for static " + H.S(staticName)));
     },
@@ -3771,12 +4056,7 @@
         this._deleteTableEntry$2(table, "<non-identifier-key>");
         return table;
       },
-      $isInternalMap: 1,
-      static: {
-        JsLinkedHashMap_JsLinkedHashMap$es6: function($K, $V) {
-          return H.setRuntimeTypeInfo(new H.JsLinkedHashMap(0, null, null, null, null, null, 0), [$K, $V]);
-        }
-      }
+      $isInternalMap: 1
     },
     JsLinkedHashMap_values_closure: {
       "^": "Closure:2;$this",
@@ -3862,7 +4142,7 @@
       $.timeCount = t1;
       t1 = "time: " + t1;
       $.infoElt.textContent = t1;
-    }, "call$1", "app__animate$closure", 2, 0, 14],
+    }, "call$1", "app__animate$closure", 2, 0, 13],
     restartAnimation: function() {
       var t1 = $.animTimer;
       if (t1 != null)
@@ -3947,35 +4227,6 @@
           action.call$1(this.elementAt$1(0, i));
           if ($length !== this.get$length(this))
             throw H.wrapException(new P.ConcurrentModificationError(this));
-        }
-      },
-      join$1: function(_, separator) {
-        var $length, first, buffer, i, t1;
-        $length = this.get$length(this);
-        if (separator.length !== 0) {
-          if ($length === 0)
-            return "";
-          first = H.S(this.elementAt$1(0, 0));
-          if ($length !== this.get$length(this))
-            throw H.wrapException(new P.ConcurrentModificationError(this));
-          buffer = new P.StringBuffer(first);
-          for (i = 1; i < $length; ++i) {
-            buffer._contents += separator;
-            buffer._contents += H.S(this.elementAt$1(0, i));
-            if ($length !== this.get$length(this))
-              throw H.wrapException(new P.ConcurrentModificationError(this));
-          }
-          t1 = buffer._contents;
-          return t1.charCodeAt(0) == 0 ? t1 : t1;
-        } else {
-          buffer = new P.StringBuffer("");
-          for (i = 0; i < $length; ++i) {
-            buffer._contents += H.S(this.elementAt$1(0, i));
-            if ($length !== this.get$length(this))
-              throw H.wrapException(new P.ConcurrentModificationError(this));
-          }
-          t1 = buffer._contents;
-          return t1.charCodeAt(0) == 0 ? t1 : t1;
         }
       },
       map$1: function(_, f) {
@@ -4084,23 +4335,6 @@
     },
     FixedLengthListMixin: {
       "^": "Object;"
-    },
-    Symbol0: {
-      "^": "Object;__internal$_name<",
-      $eq: function(_, other) {
-        if (other == null)
-          return false;
-        return other instanceof H.Symbol0 && J.$eq$(this.__internal$_name, other.__internal$_name);
-      },
-      get$hashCode: function(_) {
-        var t1 = J.get$hashCode$(this.__internal$_name);
-        if (typeof t1 !== "number")
-          return H.iae(t1);
-        return 536870911 & 664597 * t1;
-      },
-      toString$0: function(_) {
-        return 'Symbol("' + H.S(this.__internal$_name) + '")';
-      }
     }
   }], ["dart._js_names", "dart:_js_names",, H, {
     "^": "",
@@ -4795,16 +5029,6 @@
       map$1: function(_, convert) {
         return H.setRuntimeTypeInfo(new P._MapStream(convert, this), [H.getRuntimeTypeArgument(this, "Stream", 0), null]);
       },
-      join$1: function(_, separator) {
-        var t1, result, buffer;
-        t1 = {};
-        result = H.setRuntimeTypeInfo(new P._Future(0, $.Zone__current, null), [P.String]);
-        buffer = new P.StringBuffer("");
-        t1.subscription = null;
-        t1.first = true;
-        t1.subscription = this.listen$4$cancelOnError$onDone$onError(new P.Stream_join_closure(t1, this, separator, result, buffer), true, new P.Stream_join_closure0(result, buffer), new P.Stream_join_closure1(result));
-        return result;
-      },
       forEach$1: function(_, action) {
         var t1, future;
         t1 = {};
@@ -4827,44 +5051,6 @@
         future = H.setRuntimeTypeInfo(new P._Future(0, $.Zone__current, null), [[P.List, H.getRuntimeTypeArgument(this, "Stream", 0)]]);
         this.listen$4$cancelOnError$onDone$onError(new P.Stream_toList_closure(this, result), true, new P.Stream_toList_closure0(result, future), future.get$_completeError());
         return future;
-      }
-    },
-    Stream_join_closure: {
-      "^": "Closure;_box_0,$this,separator,result,buffer",
-      call$1: function(element) {
-        var e, s, t1, exception, t2;
-        t1 = this._box_0;
-        if (!t1.first)
-          this.buffer._contents += this.separator;
-        t1.first = false;
-        try {
-          this.buffer._contents += H.S(element);
-        } catch (exception) {
-          t2 = H.unwrapException(exception);
-          e = t2;
-          s = H.getTraceFromException(exception);
-          t1 = t1.subscription;
-          $.Zone__current.toString;
-          P._cancelAndError(t1, this.result, e, s);
-        }
-      },
-      $signature: function() {
-        return H.computeSignature(function(T) {
-          return {func: 1, args: [T]};
-        }, this.$this, "Stream");
-      }
-    },
-    Stream_join_closure1: {
-      "^": "Closure:2;result",
-      call$1: function(e) {
-        this.result._completeError$1(e);
-      }
-    },
-    Stream_join_closure0: {
-      "^": "Closure:0;result,buffer",
-      call$0: function() {
-        var t1 = this.buffer._contents;
-        this.result._complete$1(t1.charCodeAt(0) == 0 ? t1 : t1);
       }
     },
     Stream_forEach_closure: {
@@ -5922,13 +6108,6 @@
             throw H.wrapException(new P.ConcurrentModificationError(receiver));
         }
       },
-      join$1: function(receiver, separator) {
-        var t1;
-        if (this.get$length(receiver) === 0)
-          return "";
-        t1 = P.StringBuffer__writeAll("", receiver, separator);
-        return t1.charCodeAt(0) == 0 ? t1 : t1;
-      },
       map$1: function(receiver, f) {
         return H.setRuntimeTypeInfo(new H.MappedListIterable(receiver, f), [null, null]);
       },
@@ -6088,27 +6267,6 @@
         for (t1 = new P._LinkedHashSetIterator(this, this._collection$_modifications, null, null), t1._collection$_cell = this._collection$_first; t1.moveNext$0();)
           f.call$1(t1._collection$_current);
       },
-      join$1: function(_, separator) {
-        var iterator, buffer, t1;
-        iterator = new P._LinkedHashSetIterator(this, this._collection$_modifications, null, null);
-        iterator._collection$_cell = this._collection$_first;
-        if (!iterator.moveNext$0())
-          return "";
-        buffer = new P.StringBuffer("");
-        if (separator === "") {
-          do
-            buffer._contents += H.S(iterator._collection$_current);
-          while (iterator.moveNext$0());
-        } else {
-          buffer._contents = H.S(iterator._collection$_current);
-          for (; iterator.moveNext$0();) {
-            buffer._contents += separator;
-            buffer._contents += H.S(iterator._collection$_current);
-          }
-        }
-        t1 = buffer._contents;
-        return t1.charCodeAt(0) == 0 ? t1 : t1;
-      },
       $isEfficientLength: 1
     },
     SetBase: {
@@ -6142,19 +6300,6 @@
     print: function(object) {
       var line = H.S(object);
       H.printString(line);
-    },
-    NoSuchMethodError_toString_closure: {
-      "^": "Closure:13;_box_0,sb",
-      call$2: function(key, value) {
-        var t1, t2, t3;
-        t1 = this.sb;
-        t2 = this._box_0;
-        t1._contents += t2.comma;
-        t3 = t1._contents += H.S(key.get$__internal$_name());
-        t1._contents = t3 + ": ";
-        t1._contents += H.S(P.Error_safeToString(value));
-        t2.comma = ", ";
-      }
     },
     bool: {
       "^": "Object;"
@@ -6386,34 +6531,6 @@
         }
       }
     },
-    NoSuchMethodError: {
-      "^": "Error;_core$_receiver,_memberName,_core$_arguments,_namedArguments,_existingArgumentNames",
-      toString$0: function(_) {
-        var t1, sb, t2, argument, memberName, receiverText, actualParameters, formalParameters;
-        t1 = {};
-        sb = new P.StringBuffer("");
-        t1.comma = "";
-        t2 = this._core$_arguments;
-        if (t2 != null)
-          for (t2 = J.get$iterator$ax(t2); t2.moveNext$0();) {
-            argument = t2.get$current();
-            sb._contents += t1.comma;
-            sb._contents += H.S(P.Error_safeToString(argument));
-            t1.comma = ", ";
-          }
-        this._namedArguments.forEach$1(0, new P.NoSuchMethodError_toString_closure(t1, sb));
-        memberName = this._memberName.__internal$_name;
-        receiverText = P.Error_safeToString(this._core$_receiver);
-        actualParameters = H.S(sb);
-        t1 = this._existingArgumentNames;
-        if (t1 == null)
-          return "NoSuchMethodError: method not found: '" + H.S(memberName) + "'\nReceiver: " + H.S(receiverText) + "\nArguments: [" + actualParameters + "]";
-        else {
-          formalParameters = J.join$1$ax(t1, ", ");
-          return "NoSuchMethodError: incorrect number of arguments passed to method named '" + H.S(memberName) + "'\nReceiver: " + H.S(receiverText) + "\nTried calling: " + H.S(memberName) + "(" + actualParameters + ")\nFound: " + H.S(memberName) + "(" + H.S(formalParameters) + ")";
-        }
-      }
-    },
     UnsupportedError: {
       "^": "Error;message",
       toString$0: function(_) {
@@ -6441,6 +6558,16 @@
           return "Concurrent modification during iteration.";
         return "Concurrent modification during iteration: " + H.S(P.Error_safeToString(t1)) + ".";
       }
+    },
+    OutOfMemoryError: {
+      "^": "Object;",
+      toString$0: function(_) {
+        return "Out of Memory";
+      },
+      get$stackTrace: function() {
+        return;
+      },
+      $isError: 1
     },
     StackOverflowError: {
       "^": "Object;",
@@ -6525,26 +6652,6 @@
         var t1;
         for (t1 = this.get$iterator(this); t1.moveNext$0();)
           f.call$1(t1.get$current());
-      },
-      join$1: function(_, separator) {
-        var iterator, buffer, t1;
-        iterator = this.get$iterator(this);
-        if (!iterator.moveNext$0())
-          return "";
-        buffer = new P.StringBuffer("");
-        if (separator === "") {
-          do
-            buffer._contents += H.S(iterator.get$current());
-          while (iterator.moveNext$0());
-        } else {
-          buffer._contents = H.S(iterator.get$current());
-          for (; iterator.moveNext$0();) {
-            buffer._contents += separator;
-            buffer._contents += H.S(iterator.get$current());
-          }
-        }
-        t1 = buffer._contents;
-        return t1.charCodeAt(0) == 0 ? t1 : t1;
       },
       toList$1$growable: function(_, growable) {
         return P.List_List$from(this, true, H.getRuntimeTypeArgument(this, "Iterable", 0));
@@ -6643,9 +6750,6 @@
           return string;
         }
       }
-    },
-    Symbol: {
-      "^": "Object;"
     }
   }], ["dart.dom.html", "dart:html",, W, {
     "^": "",
@@ -6705,13 +6809,36 @@
       "%": "HTMLCanvasElement"
     },
     CanvasRenderingContext2D: {
-      "^": "Interceptor;",
+      "^": "Interceptor;fillStyle}",
+      beginPath$0: function(receiver) {
+        return receiver.beginPath();
+      },
+      createImageData$2: function(receiver, imagedata_OR_sw, sh) {
+        if (sh != null && typeof imagedata_OR_sw === "number")
+          return P.convertNativeToDart_ImageData(receiver.createImageData(imagedata_OR_sw, sh));
+        throw H.wrapException(P.ArgumentError$("Incorrect number or type of arguments"));
+      },
       putImageData$7: function(receiver, imagedata, dx, dy, dirtyX, dirtyY, dirtyWidth, dirtyHeight) {
         receiver.putImageData(P.convertDartToNative_ImageData(imagedata), dx, dy);
         return;
       },
       putImageData$3: function($receiver, imagedata, dx, dy) {
         return this.putImageData$7($receiver, imagedata, dx, dy, null, null, null, null);
+      },
+      closePath$0: function(receiver) {
+        return receiver.closePath();
+      },
+      lineTo$2: function(receiver, x, y) {
+        return receiver.lineTo(x, y);
+      },
+      moveTo$2: function(receiver, x, y) {
+        return receiver.moveTo(x, y);
+      },
+      fill$1: function(receiver, winding) {
+        receiver.fill(winding);
+      },
+      fill$0: function($receiver) {
+        return this.fill$1($receiver, "nonzero");
       },
       "%": "CanvasRenderingContext2D"
     },
@@ -6814,6 +6941,7 @@
     },
     ImageData: {
       "^": "Interceptor;data=",
+      $isImageData: 1,
       "%": "ImageData"
     },
     InputElement: {
@@ -7417,6 +7545,20 @@
     }
   }], ["html_common", "dart:html_common",, P, {
     "^": "",
+    convertNativeToDart_ImageData: function(nativeImageData) {
+      var t1, data;
+      t1 = J.getInterceptor(nativeImageData);
+      if (!!t1.$isImageData) {
+        data = t1.get$data(nativeImageData);
+        if (data.constructor === Array)
+          if (typeof CanvasPixelArray !== "undefined") {
+            data.constructor = CanvasPixelArray;
+            data.BYTES_PER_ELEMENT = 1;
+          }
+        return nativeImageData;
+      }
+      return new P._TypedImageData(nativeImageData.data, nativeImageData.height, nativeImageData.width);
+    },
     convertDartToNative_ImageData: function(imageData) {
       if (imageData instanceof P._TypedImageData)
         return {data: imageData.data, height: imageData.height, width: imageData.width};
@@ -7424,6 +7566,7 @@
     },
     _TypedImageData: {
       "^": "Object;data>,height,width",
+      $isImageData: 1,
       $isInterceptor: 1
     }
   }]];
@@ -7523,6 +7666,9 @@
       return receiver;
     return J.getNativeInterceptor(receiver);
   };
+  J.set$fillStyle$x = function(receiver, value) {
+    return J.getInterceptor$x(receiver).set$fillStyle(receiver, value);
+  };
   J.get$data$x = function(receiver) {
     return J.getInterceptor$x(receiver).get$data(receiver);
   };
@@ -7567,8 +7713,20 @@
   J._removeEventListener$3$x = function(receiver, a0, a1, a2) {
     return J.getInterceptor$x(receiver)._removeEventListener$3(receiver, a0, a1, a2);
   };
+  J.beginPath$0$x = function(receiver) {
+    return J.getInterceptor$x(receiver).beginPath$0(receiver);
+  };
+  J.closePath$0$x = function(receiver) {
+    return J.getInterceptor$x(receiver).closePath$0(receiver);
+  };
+  J.createImageData$2$x = function(receiver, a0, a1) {
+    return J.getInterceptor$x(receiver).createImageData$2(receiver, a0, a1);
+  };
   J.elementAt$1$ax = function(receiver, a0) {
     return J.getInterceptor$ax(receiver).elementAt$1(receiver, a0);
+  };
+  J.fill$0$x = function(receiver) {
+    return J.getInterceptor$x(receiver).fill$0(receiver);
   };
   J.forEach$1$ax = function(receiver, a0) {
     return J.getInterceptor$ax(receiver).forEach$1(receiver, a0);
@@ -7576,11 +7734,14 @@
   J.getContext$1$x = function(receiver, a0) {
     return J.getInterceptor$x(receiver).getContext$1(receiver, a0);
   };
-  J.join$1$ax = function(receiver, a0) {
-    return J.getInterceptor$ax(receiver).join$1(receiver, a0);
+  J.lineTo$2$x = function(receiver, a0, a1) {
+    return J.getInterceptor$x(receiver).lineTo$2(receiver, a0, a1);
   };
   J.map$1$ax = function(receiver, a0) {
     return J.getInterceptor$ax(receiver).map$1(receiver, a0);
+  };
+  J.moveTo$2$x = function(receiver, a0, a1) {
+    return J.getInterceptor$x(receiver).moveTo$2(receiver, a0, a1);
   };
   J.putImageData$3$x = function(receiver, a0, a1, a2) {
     return J.getInterceptor$x(receiver).putImageData$3(receiver, a0, a1, a2);
@@ -7613,6 +7774,7 @@
   C.PlainJavaScriptObject_methods = J.PlainJavaScriptObject.prototype;
   C.UnknownJavaScriptObject_methods = J.UnknownJavaScriptObject.prototype;
   C.C_DynamicRuntimeType = new H.DynamicRuntimeType();
+  C.C_OutOfMemoryError = new P.OutOfMemoryError();
   C.C__DelayedDone = new P._DelayedDone();
   C.C__RootZone = new P._RootZone();
   C.Duration_0 = new P.Duration(0);
@@ -7874,7 +8036,7 @@
   Isolate = Isolate.$finishIsolateConstructor(Isolate);
   $ = new Isolate();
   init.metadata = [null];
-  init.types = [{func: 1}, {func: 1, v: true}, {func: 1, args: [,]}, {func: 1, v: true, args: [{func: 1, v: true}]}, {func: 1, ret: P.String, args: [P.$int]}, {func: 1, args: [, P.String]}, {func: 1, args: [P.String]}, {func: 1, args: [{func: 1, v: true}]}, {func: 1, v: true, args: [,], opt: [P.StackTrace]}, {func: 1, args: [,], opt: [,]}, {func: 1, args: [, P.StackTrace]}, {func: 1, v: true, args: [, P.StackTrace]}, {func: 1, args: [,,]}, {func: 1, args: [P.Symbol,,]}, {func: 1, v: true, args: [,]}];
+  init.types = [{func: 1}, {func: 1, v: true}, {func: 1, args: [,]}, {func: 1, v: true, args: [{func: 1, v: true}]}, {func: 1, ret: P.String, args: [P.$int]}, {func: 1, args: [, P.String]}, {func: 1, args: [P.String]}, {func: 1, args: [{func: 1, v: true}]}, {func: 1, v: true, args: [,], opt: [P.StackTrace]}, {func: 1, args: [,], opt: [,]}, {func: 1, args: [, P.StackTrace]}, {func: 1, v: true, args: [, P.StackTrace]}, {func: 1, args: [,,]}, {func: 1, v: true, args: [,]}];
   function convertToFastObject(properties) {
     function MyClass() {
     }
