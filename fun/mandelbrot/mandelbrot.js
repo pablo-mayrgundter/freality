@@ -1,6 +1,6 @@
 function mandelbrot() {
-  var brushSize = 2;
-  var regionWidth = 4, regionHeight = 4, regionXOffset = -2, regionYOffset = -2;
+  var brushSize = 1;
+  var regionWidth = 3, regionHeight = 2.4, regionXOffset = -2, regionYOffset = -1.2;
   var itrMax = 100;
   gfx.fillStyle = 'black';
   gfx.fillRect(0, 0, imageWidth, imageHeight);
@@ -8,8 +8,7 @@ function mandelbrot() {
     for (var w = 0; w < imageWidth; w++) {
       var z1 = c1 = ((w / imageWidth) * regionWidth) + regionXOffset;
       var z2 = c2 = ((h / imageHeight) * regionHeight) + regionYOffset;
-      var itr = 0;
-      for (; itr < itrMax; itr++) {
+      for (var itr = 0; itr < itrMax; itr++) {
         var z1_2 = z1*z1;
         var z2_2 = z2*z2;
         var z1_t = z1_2 - z2_2 + c1;
