@@ -1,8 +1,6 @@
 function mandelbrot() {
-  regionWidth = 4;
-  regionHeight = 4;
-  regionXOffset = -2;
-  regionYOffset = -2;
+  var brushSize = 2;
+  var regionWidth = 4, regionHeight = 4, regionXOffset = -2, regionYOffset = -2;
   var itrMax = 100;
   gfx.fillStyle = 'black';
   gfx.fillRect(0, 0, imageWidth, imageHeight);
