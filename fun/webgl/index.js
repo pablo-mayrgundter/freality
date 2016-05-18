@@ -3,8 +3,8 @@
 var gl;
 var canvas;
 var shader;
-var earth, atmos;
-var earthTex, atmosTex;
+var earth;
+var earthTex;
 
 function init(canvasEltId) {
   canvas = $(canvasEltId);
@@ -24,13 +24,9 @@ function init(canvasEltId) {
   initShaders();
   earthTex = new Texture('earth.jpg');
   earthTex.init();
-  atmosTex = new Texture('textures/earth-atmos.jpg');
-  atmosTex.init();
 
   earth = new Sphere(2, earthTex);
   earth.init();
-  atmos = new Sphere(2.01, atmosTex);
-  atmos.init();
 
   initKeyHandler();
   initMouseHandler();
