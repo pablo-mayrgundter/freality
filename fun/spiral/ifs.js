@@ -1,4 +1,16 @@
+var regionWidth, regionHeight, regionDepth,
+  regionXOffset, regionYOffset, regionZOffset,
+  xScale, yScale, zScale;
+var brushSize = 2;
+var maxItr = 10000;
+var x = Math.random();
+var y = Math.random();
+var z = Math.random();
+var status;
+var points = [];
+var ndx = 0;
 var zoom = 1;
+
 function ifs() {
   maxItr = 1000;
   xScale = yScale = zScale = 1;
@@ -16,10 +28,10 @@ function ifs() {
   draw();
 }
 
-function keyLeft() { }
-function keyRight() { }
-function keyUp() { erase(); zoom+=0.1; draw(); }
-function keyDown() { erase(); zoom-=0.1; draw(); }
+keyLeft = function() {}
+keyRight = function () {}
+keyUp = function() { erase(); zoom+=0.1; draw(); }
+keyDown = function() { erase(); zoom-=0.1; draw(); }
 
 function erase() {
   gfx.fillStyle = 'rgb(0,0,0)';
