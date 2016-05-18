@@ -32,14 +32,9 @@ function drawScene(time) {
 
   // Ordered with opaque earth first, then transparent atmosphere
   // second.  Blending is switched on at atmos.
-  var shapes = [earth, atmos];
+  var shapes = [earth];
   for (var i in shapes) {
     var shape = shapes[i];
-    if (shape == atmos) {
-      //gl.disable(gl.DEPTH_TEST);
-      gl.enable(gl.BLEND);
-      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-    }
     gl.bindBuffer(gl.ARRAY_BUFFER, shape.shapeVertices);
     gl.vertexAttribPointer(shader.aPos, shape.shapeVertices.itemSize, gl.FLOAT, false, 0, 0);
  
