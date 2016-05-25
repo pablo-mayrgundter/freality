@@ -1,12 +1,8 @@
-#include <iostream>
+#include <algorithm>  // std::min/max
+#include <stdio.h>
 #include <stdlib.h>
 #include <sys/ioctl.h>
 #include <termios.h>
-
-using std::cin;
-using std::cout;
-using std::cerr;
-using std::endl;
 
 int cols, rows;         // see setupTerm
 int row = 0, col = 0;   /* turtle location */
@@ -36,10 +32,16 @@ int setupTerm() {
   if (tcsetattr(0, TCSAFLUSH, &newtermios) < 0) {
     return -1;
   }
+
+  // Switch to alternate screen mode.
+  printf("\033[?1049h");
+
   return 1;
 }
 
 int ttyreset() {
+  printf("\033[?1049l");
+
   if (tcsetattr(0, TCSAFLUSH, &oldtermios) < 0) {
     return -1;
   }
@@ -129,7 +131,7 @@ int readCmd() {
 
 int main() {
   if (!setupTerm()) {
-    cerr << "term setup error" << endl;
+    fputs("term setup error", stderr);
     return -1;
   }
    clear();
