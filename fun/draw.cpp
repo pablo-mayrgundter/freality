@@ -16,19 +16,19 @@ const char* icon = ">";
 int color = 40;
 
 int setupTerm() {
-  struct termios newtermios;
   // Get terminal size.
   // http://stackoverflow.com/questions/1022957/getting-terminal-width-in-c
-  struct ttysize ts;
-  ioctl(0, TIOCGSIZE, &ts);
-  rows = ts.ts_lines;
-  cols = ts.ts_cols;
+  struct winsize ws;
+  ioctl(0, TIOCGWINSZ, &ws);
+  rows = ws.ws_row;
+  cols = ws.ws_col;
 
   // Turn terminal to raw mode.
   // http://www.minek.com/files/unix_examples/raw.html
   if (tcgetattr(0, &oldtermios) < 0) {
     return -1;
   }
+  struct termios newtermios;
   newtermios = oldtermios;
   newtermios.c_lflag &= ~(ICANON);
   newtermios.c_cc[VMIN] = 1;
@@ -128,11 +128,11 @@ int readCmd() {
 }
 
 int main() {
-  clear();
   if (!setupTerm()) {
     cerr << "term setup error" << endl;
     return -1;
   }
+   clear();
   draw(icon);
   while (readCmd() != -1);
   draw(rows, 0, "\033[K"); // clear prompt without scrolling drawing
