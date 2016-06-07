@@ -529,8 +529,10 @@
         if (bits === 0)
           return 0;
         for (popCount = 0, i = 0; i < 6; ++i) {
+          if (typeof bits !== "number")
+            return bits.$and();
           popCount += bits & 1;
-          bits = C.JSNumber_methods._shrOtherPositive$1(bits, 1);
+          bits = bits >>> 1;
         }
         return popCount;
       },
@@ -541,10 +543,7 @@
         t1 = t1.space;
         if (ndx >>> 0 !== ndx || ndx >= t1.length)
           return H.ioore(t1, ndx);
-        t1 = t1[ndx];
-        if (typeof t1 !== "number")
-          return t1.$div();
-        return this.popCount$1(t1 / 2);
+        return this.popCount$1(t1[ndx]);
       }, "call$2", "get$coordPopCount", 4, 0, 5],
       run$0: function() {
         var t1, t2, t3, t4, t5, t6, t7, y, t8, t9, x, ndx, t10, t11, t12, x0, tmp;

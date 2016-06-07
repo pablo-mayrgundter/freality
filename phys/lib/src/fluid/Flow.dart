@@ -71,7 +71,7 @@ class Flow {
   }
 
   int coordPopCount(int x, int y) {
-    return popCount(space.get2(x, y) / 2);
+    return popCount(space.get2(x, y));
   }
 
   void run() {
