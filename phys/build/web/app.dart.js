@@ -512,7 +512,7 @@
   }], ["", "package:phys/src/fluid/Flow.dart",, O, {
     "^": "",
     Flow: {
-      "^": "Object;radius,gridScale,frame,graphics,palette,hexGrid,grid,space,next,force,wallLeftR,wallLeft,wallLo,wallHi,forceRight,forceLeft",
+      "^": "Object;radius,flowGraph,space,next,force,wallLeftR,wallLeft,wallLo,wallHi,forceRight,forceLeft",
       setWallLeftR$1: function(wallLeftR) {
         var t1;
         this.wallLeftR = wallLeftR;
@@ -529,15 +529,81 @@
         if (bits === 0)
           return 0;
         for (popCount = 0, i = 0; i < 6; ++i) {
-          if (typeof bits !== "number")
-            return bits.$and();
           popCount += bits & 1;
-          bits = bits >>> 1;
+          bits = C.JSNumber_methods._shrOtherPositive$1(bits, 1);
         }
         return popCount;
       },
+      coordPopCount$2: [function(x, y) {
+        var t1, ndx;
+        t1 = this.space;
+        ndx = N.Space_coordToNdx2(t1.radius, x, y);
+        t1 = t1.space;
+        if (ndx >>> 0 !== ndx || ndx >= t1.length)
+          return H.ioore(t1, ndx);
+        t1 = t1[ndx];
+        if (typeof t1 !== "number")
+          return t1.$div();
+        return this.popCount$1(t1 / 2);
+      }, "call$2", "get$coordPopCount", 4, 0, 5],
       run$0: function() {
-        var img, data, t1, y, t2, x, t3, t4, x0, ndx, pixColor, t5, t6, t7, t8, t9, t10, t11, tmp;
+        var t1, t2, t3, t4, t5, t6, t7, y, t8, t9, x, ndx, t10, t11, t12, x0, tmp;
+        this.flowGraph.drawOnce$0();
+        this.force.apply$2(this.space, this.next);
+        t1 = this.radius;
+        if (typeof t1 !== "number")
+          return H.iae(t1);
+        t2 = this.wallLo;
+        t3 = this.next;
+        t4 = this.forceRight;
+        t5 = this.wallHi;
+        t6 = this.forceLeft;
+        t7 = this.wallLeft;
+        y = 0;
+        for (; y < t1; ++y) {
+          t8 = t3.space;
+          t9 = t3.radius;
+          if (typeof t9 !== "number")
+            return H.iae(t9);
+          x = C.JSInt_methods.$mod(0, t9);
+          ndx = x < 0 ? t9 + x : x;
+          x = C.JSInt_methods.$mod(y, t9);
+          t10 = x < 0;
+          ndx += (t10 ? t9 + x : x) * t9;
+          t11 = t8.length;
+          if (ndx < 0 || ndx >= t11)
+            return H.ioore(t8, ndx);
+          t8[ndx] = t4;
+          if (typeof t2 !== "number")
+            return H.iae(t2);
+          if (y >= t2) {
+            if (typeof t5 !== "number")
+              return H.iae(t5);
+            t12 = y <= t5;
+          } else
+            t12 = false;
+          if (t12) {
+            if (typeof t7 !== "number")
+              return t7.$mod();
+            x0 = C.JSInt_methods.$mod(t7, t9);
+            ndx = x0 < 0 ? t9 + x0 : x0;
+            ndx += (t10 ? t9 + x : x) * t9;
+            if (ndx < 0 || ndx >= t11)
+              return H.ioore(t8, ndx);
+            t8[ndx] = t6;
+          }
+        }
+        tmp = this.space;
+        this.space = t3;
+        this.next = tmp;
+      }
+    }
+  }], ["", "package:phys/src/fluid/FlowGraph.dart",, U, {
+    "^": "",
+    FlowGraph: {
+      "^": "Object;gridScale,hexGrid,radius,palette,coordColorFn",
+      drawOnce$0: function() {
+        var img, data, t1, y, t2, x, t3, pixColor, ndx, t4;
         if (J.$eq$(this.gridScale, 1)) {
           img = this.hexGrid.img;
           data = J.get$data$x(img);
@@ -556,19 +622,8 @@
               if (!(x < t2))
                 break;
               t2 = this.palette;
-              t3 = this.space;
-              t4 = t3.radius;
-              if (typeof t4 !== "number")
-                return H.iae(t4);
-              x0 = C.JSInt_methods.$mod(x, t4);
-              ndx = x0 < 0 ? t4 + x0 : x0;
-              x0 = C.JSInt_methods.$mod(y, t4);
-              ndx += (x0 < 0 ? t4 + x0 : x0) * t4;
-              t3 = t3.space;
-              if (ndx < 0 || ndx >= t3.length)
-                return H.ioore(t3, ndx);
-              t3 = this.popCount$1(t3[ndx]);
-              if (t3 >= t2.length)
+              t3 = this.coordColorFn$2(x, y);
+              if (t3 >>> 0 !== t3 || t3 >= t2.length)
                 return H.ioore(t2, t3);
               pixColor = t2[t3];
               t3 = this.radius;
@@ -614,19 +669,8 @@
                 break;
               t1 = this.hexGrid;
               t2 = this.palette;
-              t3 = this.space;
-              t4 = t3.radius;
-              if (typeof t4 !== "number")
-                return H.iae(t4);
-              x0 = C.JSInt_methods.$mod(x, t4);
-              ndx = x0 < 0 ? t4 + x0 : x0;
-              x0 = C.JSInt_methods.$mod(y, t4);
-              ndx += (x0 < 0 ? t4 + x0 : x0) * t4;
-              t3 = t3.space;
-              if (ndx < 0 || ndx >= t3.length)
-                return H.ioore(t3, ndx);
-              t3 = this.popCount$1(t3[ndx]);
-              if (t3 >= t2.length)
+              t3 = this.coordColorFn$2(x, y);
+              if (t3 >>> 0 !== t3 || t3 >= t2.length)
                 return H.ioore(t2, t3);
               t1.next$1(t2[t3]);
               ++x;
@@ -648,71 +692,22 @@
           t1.yOffset = t1.yStride;
           t1.count = 0;
         }
-        this.force.apply$2(this.space, this.next);
-        t1 = this.radius;
-        if (typeof t1 !== "number")
-          return H.iae(t1);
-        t2 = this.wallLo;
-        t3 = this.next;
-        t4 = this.forceRight;
-        t5 = t3.space;
-        t6 = t3.radius;
-        t7 = this.wallHi;
-        t8 = this.forceLeft;
-        t9 = this.wallLeft;
-        y = 0;
-        for (; y < t1; ++y) {
-          if (typeof t6 !== "number")
-            return H.iae(t6);
-          x = C.JSInt_methods.$mod(0, t6);
-          ndx = x < 0 ? t6 + x : x;
-          x = C.JSInt_methods.$mod(y, t6);
-          t10 = x < 0;
-          ndx += (t10 ? t6 + x : x) * t6;
-          t11 = t5.length;
-          if (ndx < 0 || ndx >= t11)
-            return H.ioore(t5, ndx);
-          t5[ndx] = t4;
-          if (y >= t2 && y <= t7) {
-            if (typeof t9 !== "number")
-              return t9.$mod();
-            x0 = C.JSInt_methods.$mod(t9, t6);
-            ndx = x0 < 0 ? t6 + x0 : x0;
-            ndx += (t10 ? t6 + x : x) * t6;
-            if (ndx < 0 || ndx >= t11)
-              return H.ioore(t5, ndx);
-            t5[ndx] = t8;
-          }
-        }
-        tmp = this.space;
-        this.space = t3;
-        this.next = tmp;
       },
-      Flow$2: function(canvas, gridScale) {
+      FlowGraph$2: function(canvas, gridScale) {
         var graphics, t1, t2, t3, i, val;
         graphics = J.getContext$1$x(canvas, "2d");
         t1 = this.gridScale;
         t2 = J.$eq$(t1, 1);
         t3 = canvas.width;
-        if (t2) {
+        if (t2)
           this.radius = t3;
-          t2 = t3;
-        } else {
+        else {
           if (typeof t3 !== "number")
             return t3.$div();
           if (typeof t1 !== "number")
             return H.iae(t1);
-          t2 = C.JSDouble_methods.toInt$0(t3 / 4 / t1);
-          this.radius = t2;
+          this.radius = C.JSDouble_methods.toInt$0(t3 / 4 / t1);
         }
-        t3 = new N.Space2D(null, null, 2, t2);
-        t3.Space$2(2, t2);
-        this.space = t3;
-        t3 = this.radius;
-        t2 = new N.Space2D(null, null, 2, t3);
-        t2.Space$2(2, t3);
-        this.next = t2;
-        this.force = new R.HexForce();
         this.palette = H.setRuntimeTypeInfo([], [O.Color]);
         for (i = 0; i < 7; ++i) {
           val = C.JSNumber_methods.toInt$0(255 * (i / 6));
@@ -720,22 +715,14 @@
         }
         t2 = this.radius;
         this.hexGrid = G.HexGrid$(t2, t2, t1, graphics);
-        t1 = this.radius;
-        t1.toString;
-        if (typeof t1 !== "number")
-          return t1.$mul();
-        this.wallLo = C.JSNumber_methods.toInt$0(t1 * 0.25);
-        t1 = this.radius;
-        t1.toString;
-        if (typeof t1 !== "number")
-          return t1.$mul();
-        this.wallHi = C.JSNumber_methods.toInt$0(t1 * 0.75);
-        this.setWallLeftR$1(this.wallLeftR);
+      },
+      coordColorFn$2: function(arg0, arg1) {
+        return this.coordColorFn.call$2(arg0, arg1);
       },
       static: {
-        Flow$: function(canvas, gridScale) {
-          var t1 = new O.Flow(null, gridScale, null, null, null, null, null, null, null, null, 0.6, null, null, null, 35, 28);
-          t1.Flow$2(canvas, gridScale);
+        FlowGraph$: function(canvas, gridScale) {
+          var t1 = new U.FlowGraph(gridScale, null, null, null, null);
+          t1.FlowGraph$2(canvas, gridScale);
           return t1;
         }
       }
@@ -745,72 +732,70 @@
     Force: {
       "^": "Object;",
       apply$2: function(before, after) {
-        var radius, t1, t2, t3, t4, x, x0, t5, y, x1, t6, ndx, x2, t7, t8, t9, x3, t10, t11, t12, t13, y0, f, out;
+        var radius, t1, x, x0, t2, y, x1, t3, ndx, x2, t4, t5, t6, t7, x3, t8, t9, t10, t11, y0, f, out;
         radius = before.radius;
         if (typeof radius !== "number")
           return radius.$sub();
         t1 = radius - 1;
-        t2 = after.space;
-        t3 = after.radius;
-        t4 = before.space;
         x = 1;
         for (; x < t1; x = x0)
-          for (x0 = x + 1, t5 = x - 1, y = 1; y < t1; y = y0) {
-            x1 = C.JSInt_methods.$mod(t5, radius);
-            t6 = x1 < 0;
-            ndx = t6 ? radius + x1 : x1;
+          for (x0 = x + 1, t2 = x - 1, y = 1; y < t1; y = y0) {
+            x1 = C.JSInt_methods.$mod(t2, radius);
+            t3 = x1 < 0;
+            ndx = t3 ? radius + x1 : x1;
             x2 = C.JSInt_methods.$mod(y - 1, radius);
-            t7 = x2 < 0;
-            ndx += (t7 ? radius + x2 : x2) * radius;
-            t8 = t4.length;
-            if (ndx < 0 || ndx >= t8)
-              return H.ioore(t4, ndx);
-            t9 = t4[ndx];
-            if (typeof t9 !== "number")
-              return t9.$and();
-            x3 = C.JSInt_methods.$mod(x0, radius);
-            t10 = x3 < 0;
-            ndx = t10 ? radius + x3 : x3;
-            ndx += (t7 ? radius + x2 : x2) * radius;
-            if (ndx < 0 || ndx >= t8)
-              return H.ioore(t4, ndx);
-            t11 = t4[ndx];
-            if (typeof t11 !== "number")
-              return t11.$and();
-            ndx = t6 ? radius + x1 : x1;
-            x2 = C.JSInt_methods.$mod(y, radius);
-            t7 = x2 < 0;
-            ndx += (t7 ? radius + x2 : x2) * radius;
-            if (ndx < 0 || ndx >= t8)
-              return H.ioore(t4, ndx);
-            t12 = t4[ndx];
-            if (typeof t12 !== "number")
-              return t12.$and();
-            ndx = t10 ? radius + x3 : x3;
-            ndx += (t7 ? radius + x2 : x2) * radius;
-            if (ndx < 0 || ndx >= t8)
-              return H.ioore(t4, ndx);
-            t13 = t4[ndx];
-            if (typeof t13 !== "number")
-              return t13.$and();
-            y0 = y + 1;
-            ndx = t6 ? radius + x1 : x1;
-            x1 = C.JSInt_methods.$mod(y0, radius);
-            t6 = x1 < 0;
-            ndx += (t6 ? radius + x1 : x1) * radius;
-            if (ndx < 0 || ndx >= t8)
-              return H.ioore(t4, ndx);
-            t7 = t4[ndx];
+            t4 = x2 < 0;
+            ndx += (t4 ? radius + x2 : x2) * radius;
+            t5 = before.space;
+            t6 = t5.length;
+            if (ndx < 0 || ndx >= t6)
+              return H.ioore(t5, ndx);
+            t7 = t5[ndx];
             if (typeof t7 !== "number")
               return t7.$and();
-            ndx = t10 ? radius + x3 : x3;
-            ndx += (t6 ? radius + x1 : x1) * radius;
-            if (ndx < 0 || ndx >= t8)
-              return H.ioore(t4, ndx);
-            t8 = t4[ndx];
-            if (typeof t8 !== "number")
-              return t8.$and();
-            f = (t9 & 1 | t11 & 4 | t12 & 32 | t13 & 16 | t7 & 2 | t8 & 8) >>> 0;
+            x3 = C.JSInt_methods.$mod(x0, radius);
+            t8 = x3 < 0;
+            ndx = t8 ? radius + x3 : x3;
+            ndx += (t4 ? radius + x2 : x2) * radius;
+            if (ndx < 0 || ndx >= t6)
+              return H.ioore(t5, ndx);
+            t9 = t5[ndx];
+            if (typeof t9 !== "number")
+              return t9.$and();
+            ndx = t3 ? radius + x1 : x1;
+            x2 = C.JSInt_methods.$mod(y, radius);
+            t4 = x2 < 0;
+            ndx += (t4 ? radius + x2 : x2) * radius;
+            if (ndx < 0 || ndx >= t6)
+              return H.ioore(t5, ndx);
+            t10 = t5[ndx];
+            if (typeof t10 !== "number")
+              return t10.$and();
+            ndx = t8 ? radius + x3 : x3;
+            ndx += (t4 ? radius + x2 : x2) * radius;
+            if (ndx < 0 || ndx >= t6)
+              return H.ioore(t5, ndx);
+            t11 = t5[ndx];
+            if (typeof t11 !== "number")
+              return t11.$and();
+            y0 = y + 1;
+            ndx = t3 ? radius + x1 : x1;
+            x1 = C.JSInt_methods.$mod(y0, radius);
+            t3 = x1 < 0;
+            ndx += (t3 ? radius + x1 : x1) * radius;
+            if (ndx < 0 || ndx >= t6)
+              return H.ioore(t5, ndx);
+            t4 = t5[ndx];
+            if (typeof t4 !== "number")
+              return t4.$and();
+            ndx = t8 ? radius + x3 : x3;
+            ndx += (t3 ? radius + x1 : x1) * radius;
+            if (ndx < 0 || ndx >= t6)
+              return H.ioore(t5, ndx);
+            t5 = t5[ndx];
+            if (typeof t5 !== "number")
+              return t5.$and();
+            f = (t7 & 1 | t9 & 4 | t10 & 32 | t11 & 16 | t4 & 2 | t5 & 8) >>> 0;
             switch (f) {
               case 9:
                 out = 48;
@@ -893,22 +878,33 @@
               default:
                 out = f;
             }
-            if (typeof t3 !== "number")
-              return H.iae(t3);
-            x1 = C.JSInt_methods.$mod(x, t3);
-            ndx = x1 < 0 ? t3 + x1 : x1;
-            x1 = C.JSInt_methods.$mod(y, t3);
-            ndx += (x1 < 0 ? t3 + x1 : x1) * t3;
-            if (ndx < 0 || ndx >= t2.length)
-              return H.ioore(t2, ndx);
-            t2[ndx] = out;
+            t3 = after.space;
+            t4 = after.radius;
+            if (typeof t4 !== "number")
+              return H.iae(t4);
+            x1 = C.JSInt_methods.$mod(x, t4);
+            ndx = x1 < 0 ? t4 + x1 : x1;
+            x1 = C.JSInt_methods.$mod(y, t4);
+            ndx += (x1 < 0 ? t4 + x1 : x1) * t4;
+            if (ndx < 0 || ndx >= t3.length)
+              return H.ioore(t3, ndx);
+            t3[ndx] = out;
           }
       }
     }
   }], ["", "package:phys/src/fluid/HexForce.dart",, R, {
     "^": "",
     HexForce: {
-      "^": "Force;"
+      "^": "Force;",
+      HexForce$0: function() {
+      },
+      static: {
+        HexForce$: function() {
+          var t1 = new R.HexForce();
+          t1.HexForce$0();
+          return t1;
+        }
+      }
     }
   }], ["", "package:phys/src/fluid/HexGrid.dart",, G, {
     "^": "",
@@ -992,6 +988,23 @@
     }
   }], ["", "package:phys/src/Space.dart",, N, {
     "^": "",
+    Space_coordToNdx2: function(radius, x, y) {
+      var t1, t2;
+      t1 = N.Space_wrap(radius, x);
+      t2 = N.Space_wrap(radius, y);
+      if (typeof radius !== "number")
+        return H.iae(radius);
+      return 0 + t1 + t2 * radius;
+    },
+    Space_wrap: function(radius, x) {
+      var t1;
+      if (typeof x !== "number")
+        return x.$mod();
+      if (typeof radius !== "number")
+        return H.iae(radius);
+      t1 = C.JSNumber_methods.$mod(x, radius);
+      return t1 < 0 ? radius + t1 : t1;
+    },
     Space: {
       "^": "Object;",
       Space$2: function(dimension, radius) {
@@ -4122,13 +4135,13 @@
       }
     },
     initHooks_closure0: {
-      "^": "Closure:5;getUnknownTag",
+      "^": "Closure:6;getUnknownTag",
       call$2: function(o, tag) {
         return this.getUnknownTag(o, tag);
       }
     },
     initHooks_closure1: {
-      "^": "Closure:6;prototypeForTag",
+      "^": "Closure:7;prototypeForTag",
       call$1: function(tag) {
         return this.prototypeForTag(tag);
       }
@@ -4142,7 +4155,7 @@
       $.timeCount = t1;
       t1 = "time: " + t1;
       $.infoElt.textContent = t1;
-    }, "call$1", "app__animate$closure", 2, 0, 13],
+    }, "call$1", "app__animate$closure", 2, 0, 14],
     restartAnimation: function() {
       var t1 = $.animTimer;
       if (t1 != null)
@@ -4151,7 +4164,32 @@
       $.animTimer = P.Timer_Timer$periodic(P.Duration$(0, 0, 0, H.Primitives_parseInt(J.get$value$x($.delayInput), null, null), 0, 0), S.app__animate$closure());
     },
     cellSizeInputOnChangeHandler: function() {
-      var t1 = O.Flow$(document.querySelector("#canvas"), H.Primitives_parseInt(J.get$value$x($.cellSizeInput), null, null));
+      var t1, t2, t3;
+      t1 = new O.Flow(null, null, null, null, null, 0.6, null, null, null, 35, 28);
+      t2 = U.FlowGraph$(document.querySelector("#canvas"), H.Primitives_parseInt(J.get$value$x($.cellSizeInput), null, null));
+      t1.flowGraph = t2;
+      t2.coordColorFn = t1.get$coordPopCount();
+      t2 = t1.flowGraph.radius;
+      t1.radius = t2;
+      t3 = new N.Space2D(null, null, 2, t2);
+      t3.Space$2(2, t2);
+      t1.space = t3;
+      t3 = t1.radius;
+      t2 = new N.Space2D(null, null, 2, t3);
+      t2.Space$2(2, t3);
+      t1.next = t2;
+      t1.force = R.HexForce$();
+      t2 = t1.radius;
+      t2.toString;
+      if (typeof t2 !== "number")
+        return t2.$mul();
+      t1.wallLo = C.JSNumber_methods.toInt$0(t2 * 0.25);
+      t2 = t1.radius;
+      t2.toString;
+      if (typeof t2 !== "number")
+        return t2.$mul();
+      t1.wallHi = C.JSNumber_methods.toInt$0(t2 * 0.75);
+      t1.setWallLeftR$1(t1.wallLeftR);
       $.flow = t1;
       t1.run$0();
     },
@@ -4566,7 +4604,7 @@
       }
     },
     _AsyncRun__initializeScheduleImmediate_closure: {
-      "^": "Closure:7;_box_0,div,span",
+      "^": "Closure:8;_box_0,div,span",
       call$1: function(callback) {
         var t1, t2;
         ++init.globalState.topEventLoop._activeJsAsyncCount;
@@ -4739,7 +4777,7 @@
         P._Future__propagateToListeners(this, listeners);
       }, function(error) {
         return this._completeError$2(error, null);
-      }, "_completeError$1", "call$2", "call$1", "get$_completeError", 2, 2, 8, 0],
+      }, "_completeError$1", "call$2", "call$1", "get$_completeError", 2, 2, 9, 0],
       $isFuture: 1,
       static: {
         _Future__chainForeignFuture: function(source, target) {
@@ -4892,7 +4930,7 @@
       }
     },
     _Future__chainForeignFuture_closure0: {
-      "^": "Closure:9;target",
+      "^": "Closure:10;target",
       call$2: function(error, stackTrace) {
         this.target._completeError$2(error, stackTrace);
       },
@@ -5435,7 +5473,7 @@
       }
     },
     _cancelAndErrorClosure_closure: {
-      "^": "Closure:10;subscription,future",
+      "^": "Closure:11;subscription,future",
       call$2: function(error, stackTrace) {
         return P._cancelAndError(this.subscription, this.future, error, stackTrace);
       }
@@ -5499,7 +5537,7 @@
       }],
       _handleError$2: [function(error, stackTrace) {
         this._addError$2(error, stackTrace);
-      }, "call$2", "get$_handleError", 4, 0, 11],
+      }, "call$2", "get$_handleError", 4, 0, 12],
       _handleDone$0: [function() {
         this._async$_close$0();
       }, "call$0", "get$_handleDone", 0, 0, 1],
@@ -6119,7 +6157,7 @@
       $isEfficientLength: 1
     },
     Maps_mapToString_closure: {
-      "^": "Closure:12;_box_0,result",
+      "^": "Closure:13;_box_0,result",
       call$2: function(k, v) {
         var t1, t2;
         t1 = this._box_0;
@@ -8036,7 +8074,7 @@
   Isolate = Isolate.$finishIsolateConstructor(Isolate);
   $ = new Isolate();
   init.metadata = [null];
-  init.types = [{func: 1}, {func: 1, v: true}, {func: 1, args: [,]}, {func: 1, v: true, args: [{func: 1, v: true}]}, {func: 1, ret: P.String, args: [P.$int]}, {func: 1, args: [, P.String]}, {func: 1, args: [P.String]}, {func: 1, args: [{func: 1, v: true}]}, {func: 1, v: true, args: [,], opt: [P.StackTrace]}, {func: 1, args: [,], opt: [,]}, {func: 1, args: [, P.StackTrace]}, {func: 1, v: true, args: [, P.StackTrace]}, {func: 1, args: [,,]}, {func: 1, v: true, args: [,]}];
+  init.types = [{func: 1}, {func: 1, v: true}, {func: 1, args: [,]}, {func: 1, v: true, args: [{func: 1, v: true}]}, {func: 1, ret: P.String, args: [P.$int]}, {func: 1, ret: P.$int, args: [P.$int, P.$int]}, {func: 1, args: [, P.String]}, {func: 1, args: [P.String]}, {func: 1, args: [{func: 1, v: true}]}, {func: 1, v: true, args: [,], opt: [P.StackTrace]}, {func: 1, args: [,], opt: [,]}, {func: 1, args: [, P.StackTrace]}, {func: 1, v: true, args: [, P.StackTrace]}, {func: 1, args: [,,]}, {func: 1, v: true, args: [,]}];
   function convertToFastObject(properties) {
     function MyClass() {
     }

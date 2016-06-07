@@ -1,10 +1,7 @@
-import 'dart:html';
-
 import 'package:phys/src/Force.dart';
 import 'package:phys/src/Space2D.dart';
-import 'package:phys/src/fluid/Color.dart';
-import 'package:phys/src/fluid/HexGrid.dart';
 import 'package:phys/src/fluid/HexForce.dart';
+import 'package:phys/src/fluid/FlowGraph.dart';
 
 /**
  * Wolfram models a fluid as particle interactions on a hexagonal
@@ -27,17 +24,11 @@ import 'package:phys/src/fluid/HexForce.dart';
  */
 class Flow {
 
-  int radius, gridScale;
-  var frame = null;
-  var graphics;
-  List<Color> palette = null;
-  var hexGrid;
-
-  HexGrid grid;
+  int radius;
+  FlowGraph flowGraph;
   Space2D space, next;
   Force force;
   double wallLeftR = 0.6;
-
   int wallLeft;
   int wallLo;
   int wallHi;
@@ -50,32 +41,13 @@ class Flow {
       HexForce.UL |
       HexForce.DL;
 
-  Flow(var canvas, int this.gridScale) {
-    var graphics = canvas.getContext('2d');
-    if (gridScale == 1) {
-      radius = canvas.width;
-    } else {
-      radius = (canvas.width / 4 / gridScale).toInt();
-    }
+  Flow(var canvas, int gridScale) {
+    flowGraph = new FlowGraph(canvas, gridScale);
+    flowGraph.prepDraw(this.coordPopCount);
+    radius = flowGraph.radius;
     space = new Space2D(radius);
-    /*
-    if (space.wrap(radius, -radius - 1) != -1 ||
-        space.wrap(radius, -1) != -1 ||
-        space.wrap(radius, radius - 1) != 9 ||
-        space.wrap(radius, radius + 1) != 1) {
-      throw new StateError("Wrap failed.");
-    }
-    */
     next = new Space2D(radius);
     force = new HexForce();
-
-    palette = new List<Color>();
-    // Only 6 bits can be set in the force field.
-    for (int i = 0; i < 7; i++) {
-      int val = (255.0 * (i.toDouble() / 6.0)).toInt();
-      palette.add(new Color(0, val, val));
-    }
-    hexGrid = new HexGrid(radius, radius, gridScale, graphics);
     wallLo = (radius.toDouble() * 0.25).toInt();
     wallHi = (radius.toDouble() * 0.75).toInt();
     setWallLeftR(wallLeftR);
@@ -98,31 +70,12 @@ class Flow {
     return popCount;
   }
 
+  int coordPopCount(int x, int y) {
+    return popCount(space.get2(x, y) / 2);
+  }
+
   void run() {
-    // draw.
-    if (gridScale == 1) {
-      ImageData img = hexGrid.getImage();
-      var data = img.data;
-      for (int y = 0; y < radius; y++) {
-        for (int x = 0; x < radius; x++) {
-          Color pixColor = palette[popCount(space.get2(x, y))];
-          int ndx = (y * radius + x) * 4;
-          data[ndx] = pixColor.r;
-          data[ndx + 1] = pixColor.g;
-          data[ndx + 2] = pixColor.b;
-          data[ndx + 3] = 255;
-        }
-      }
-      hexGrid.g.putImageData(img, 0, 0);
-    } else {
-      for (int y = 0; y < radius; y++) {
-        for (int x = 0; x < radius; x++) {
-          hexGrid.next(palette[popCount(space.get2(x, y))]);
-        }
-        hexGrid.line();
-      }
-      hexGrid.reset();
-    }
+    flowGraph.drawOnce();
     force.apply(space, next);
     for (int y = 0; y < radius; y++) {
       // Continuous left-to-right feed from the left side.
