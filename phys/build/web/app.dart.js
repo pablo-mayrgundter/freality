@@ -908,7 +908,7 @@
   }], ["", "package:phys/src/fluid/HexGrid.dart",, G, {
     "^": "",
     HexGrid: {
-      "^": "Object;xc,yc,g,cols,rows,scale,count,xStride,yStride,yOffset,hex,x,y,radius,img",
+      "^": "Object;xc,yc,g,cols,rows,scale,count,xStride,yStride,yOffset,hex,x,y,img",
       next$1: function(color) {
         var t1, t2, rs, gs, bs, t3, i, t4;
         t1 = this.g;
@@ -969,12 +969,11 @@
         this.yStride = t1;
         this.yOffset = t1;
         this.count = 0;
-        this.radius = scale;
         this.img = J.createImageData$2$x(this.g, this.cols, rows);
       },
       static: {
         HexGrid$: function(columns, rows, scale, graphics) {
-          var t1 = new G.HexGrid([1, 3, 4, 3, 1, 0], [0, 0, 2, 4, 4, 2], null, null, null, null, null, null, null, null, null, null, null, null, null);
+          var t1 = new G.HexGrid([1, 3, 4, 3, 1, 0], [0, 0, 2, 4, 4, 2], null, null, null, null, null, null, null, null, null, null, null, null);
           t1.HexGrid$4(columns, rows, scale, graphics);
           return t1;
         }

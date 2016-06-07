@@ -29,9 +29,7 @@ class Flow {
   Space2D space, next;
   Force force;
   double wallLeftR = 0.6;
-  int wallLeft;
-  int wallLo;
-  int wallHi;
+  int wallLeft, wallLo, wallHi;
   final int forceRight =
       HexForce.R |
       HexForce.UR |

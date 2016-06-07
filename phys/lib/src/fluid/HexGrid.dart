@@ -17,7 +17,6 @@ class HexGrid {
   int cols, rows, scale, count, xStride, yStride, yOffset;
   Polygon hex;
   int x, y;
-  int radius;
   ImageData img;
 
   HexGrid(int columns, int rows, int scale, var graphics) {
@@ -36,7 +35,6 @@ class HexGrid {
     yStride = 2 * scale;
     yOffset = yStride;
     count = 0;
-    radius = scale;
     img = g.createImageData(cols, rows);
   }
 
