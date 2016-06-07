@@ -6,9 +6,8 @@ function mandelbrot() {
   gfx.fillStyle = 'black';
   gfx.fillRect(0, 0, imageWidth, imageHeight);
   img = gfx.getImageData(0, 0, imageWidth, imageHeight);
-  console.log(img);
   for (var i = 0; i < img.data.length; i+=4) {
-    img.data[i + 3] = 255;
+    img.data[i + 3] = 255; // max alpha
   }
   for (var h = 0; h < imageHeight; h++) {
     for (var w = 0; w < imageWidth; w++) {
