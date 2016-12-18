@@ -1,13 +1,14 @@
 <html>
   <head>
+    <script src="../../board/Board.js"></script>
+    <script src="../../board/BoardDrawer.js"></script>
+    <link rel="stylesheet" href="../../board/board.css"/>
     <script src="../Util.js"></script>
-    <script src="../Board.js"></script>
-    <script src="../BoardDrawer.js"></script>
     <script src="GOL.js"></script>
     <script src="../Game.js"></script>
     <link rel="stylesheet" href="../index.css"/>
   </head>
   <body onload="game = new Game(new GOL(), getPageElement('gameCanvas')); go()">
-    <canvas id="gameCanvas" width="600" height="600"></canvas>
+    <canvas id="gameCanvas" class="board" width="600" height="600"></canvas>
   </body>
 </html>

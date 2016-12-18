@@ -56,6 +56,10 @@ Board.prototype.set = function(x, y, name, value) {
   this.nxtCells[y][x][name] = value;
 };
 
+Board.prototype.clear = function(x, y, name) {
+  delete this.nxtCells[y][x][name];
+};
+
 Board.prototype.setCur = function(x, y, name, value) {
   this.curCells[y][x][name] = value;
 };

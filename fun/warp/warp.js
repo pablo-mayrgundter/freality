@@ -48,12 +48,13 @@ function renderNode(n) {
   n.y = y;
   if (n.id == 10) {
     n.x = -1;
-    synth.set("tone1.freq", n.y * maxFreq);
+    // synth.set("tone1.freq", n.y * maxFreq);
+    // synth.set("tone1.freq", 600);
     n.y = -1;
   }
   if (n.id == 100) {
     n.x = 1;
-    synth.set("tone2.freq", n.y * maxFreq);
+    //    synth.set("tone2.freq", n.y * maxFreq);
     n.y = -1;
   }
   if (n.id == 200) {

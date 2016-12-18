@@ -1,0 +1,10 @@
+.board {
+  cursor: crosshair;
+  border: none;
+  margin: 0 auto;
+}
+
+.board {
+  display: block;
+  margin: 5% auto;
+}

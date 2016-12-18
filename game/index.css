@@ -2,15 +2,10 @@ body {
   background-color: black;
 }
 
-#gameCanvas, #ruleIn, #ruleOut {
+#ruleIn, #ruleOut {
   cursor: crosshair;
   border: none;
   margin: 0 auto;
-}
-
-#gameCanvas {
-  display: block;
-  margin: 5% auto;
 }
 
 #controls {
