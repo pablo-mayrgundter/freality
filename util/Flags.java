@@ -130,15 +130,15 @@ public class Flags {
     if (val == null)
       return defVal;
     else if (defVal instanceof Integer)
-      return (T) new Integer(val);
+      return (T) Integer.valueOf(val);
     else if (defVal instanceof Long)
-      return (T) new Long(val);
+      return (T) Long.valueOf(val);
     else if (defVal instanceof Float)
-      return (T) new Float(val);
+      return (T) Float.valueOf(val);
     else if (defVal instanceof Double)
-      return (T) new Double(val);
+      return (T) Double.valueOf(val);
     else if (defVal instanceof Boolean)
-      return (T) new Boolean(val);
+      return (T) Boolean.valueOf(val);
     //      if (!(val instanceof defVal))
     //        throw new IllegalArgumentException("Illegal value for flag: " + val);
     return (T) val;
