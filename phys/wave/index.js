@@ -46,13 +46,13 @@ function pond(c, phase) {
   //c.fillStyle = `rgb(0, 0, ${intensity})`;
   c.fillStyle = '#000000';
   for (let i = 0; i < N; i++) {
-    for (let j = 0; j < N; j++) {
+    //for (let j = 0; j < N; j++) {
       const dX = i / N * Tau;
       const x = -Math.PI + dX;
       const y = Math.sin(dX + phase);
       c.fillRect(xToC(x), yToC(y), 0.03, 0.03);
       c.fillRect(xToC(y), yToC(x), 0.03, 0.03);
-    }
+    //}
   }
 }
 
