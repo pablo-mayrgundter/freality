@@ -16,8 +16,9 @@ function anim(timestamp) {
   const d = Math.PI * 2 * (i++ / 100);
   clear(c);
   axes(c);
-  sinX(c, d);
-  sinY(c, d);
+  //sinX(c, d);
+  //sinY(c, d);
+  pond(c, d);
   window.requestAnimationFrame(anim);
 }
 
@@ -38,6 +39,20 @@ function axes(c) {
   line(c,  -1,   0,   1,   0);
   // Y-axis
   line(c,   0,  -1,   0,   1);
+}
+
+function pond(c, phase) {
+  const N = 100, Tau = Math.PI * 2;
+  //c.fillStyle = `rgb(0, 0, ${intensity})`;
+  c.fillStyle = '#000000';
+  for (let i = 0; i < N; i++) {
+    //for (let y = 0; y < N; y++) {
+      const dX = i / N * Tau;
+      const x = -Math.PI + dX;
+      const y = Math.sin(dX + phase);
+      c.fillRect(xToC(x), yToC(y), xToC(x + 0.01), yToC(y + 0.01));
+    //}
+  }
 }
 
 function sinX(c, phase) {
