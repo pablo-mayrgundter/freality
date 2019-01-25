@@ -19,8 +19,8 @@ function anim(timestamp) {
   //sinX(c, d);
   //sinY(c, d);
   //pixelWaves(c, d);
-  //mergeSplit(c, d);
-  rotateBlobs(c, d);
+  mergeSplit(c, d);
+  //rotateBlobs(c, d);
   window.requestAnimationFrame(anim);
 }
 
@@ -64,11 +64,9 @@ function mergeSplit(c, phase) {
     for (let j = 0; j < N; j++) {
       const x1 = -Math.PI + i / N * Tau;
       const x2 = -Math.PI + j / N * Tau;
-      const y1 = Math.sin(x1 + phase);
-      const y2 = Math.cos(x2 + phase);
-      const y3 = Math.sin(-x1 + phase);
-      const y4 = Math.cos(-x2 + phase);
-      const intensity = 64 * y1 + 64 * y2 + 64 * y3 + 64 * y4;
+      const y1 = Math.sin(x1 + phase) + Math.cos(x2 + phase);
+      const y2 = Math.sin(-x1 + phase) + Math.cos(-x2 + phase);
+      const intensity = 128 * y1 + 128 * y2;
       c.fillStyle = `rgb(${intensity}, ${intensity}, ${intensity})`;
       c.fillRect(xToC(x1), yToC(x2), 0.03, 0.03);
     }
