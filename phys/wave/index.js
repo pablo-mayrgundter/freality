@@ -42,16 +42,17 @@ function axes(c) {
 }
 
 function pond(c, phase) {
-  const N = 100, Tau = Math.PI * 2;
+  const N = 100, Tau = 2 * Math.PI;
   //c.fillStyle = `rgb(0, 0, ${intensity})`;
   c.fillStyle = '#000000';
   for (let i = 0; i < N; i++) {
-    //for (let y = 0; y < N; y++) {
+    for (let j = 0; j < N; j++) {
       const dX = i / N * Tau;
       const x = -Math.PI + dX;
       const y = Math.sin(dX + phase);
-      c.fillRect(xToC(x), yToC(y), xToC(x + 0.01), yToC(y + 0.01));
-    //}
+      c.fillRect(xToC(x), yToC(y), 0.03, 0.03);
+      c.fillRect(xToC(y), yToC(x), 0.03, 0.03);
+    }
   }
 }
 
