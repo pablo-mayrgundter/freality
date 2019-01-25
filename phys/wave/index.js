@@ -13,12 +13,11 @@ function init() {
 let i = 0;
 
 function anim(timestamp) {
-  const cur = Date.now();
-  const d = Math.PI * 2 * (i / 100);
+  const d = Math.PI * 2 * (i++ / 100);
   clear(c);
   axes(c);
-  sin(c, d);
-  i++;
+  sinX(c, d);
+  sinY(c, d);
   window.requestAnimationFrame(anim);
 }
 
@@ -41,13 +40,24 @@ function axes(c) {
   line(c,   0,  -1,   0,   1);
 }
 
-function sin(c, phase) {
+function sinX(c, phase) {
   begin(c);
   for (let i = 0; i < 100; i++) {
     const d = i / 100 * (Math.PI * 2);
     const x = -Math.PI + d;
     const y = Math.sin(x + phase);
     c.lineTo(xToC(x), yToC(y));
+  }
+  end(c);
+}
+
+function sinY(c, phase) {
+  begin(c);
+  for (let i = 0; i < 100; i++) {
+    const d = i / 100 * (Math.PI * 2);
+    const x = -Math.PI + d;
+    const y = Math.sin(x + phase);
+    c.lineTo(xToC(y), yToC(x));
   }
   end(c);
 }
