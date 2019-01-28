@@ -11,16 +11,21 @@ function init() {
 }
 
 let i = 0;
-const N = 100, Pi = Math.PI, Tau = 2 * Pi;
+const N = 128, Pi = Math.PI, Tau = 2 * Pi;
+const fromX = -2 * Tau;
+const width = 4 * Tau;
+const pixelSize = 0.02;
 
 function anim(timestamp) {
-  const phaseDelta = (i++ / 30) * Tau;
+  const phaseDelta = i++ / (N / 8);
   clear(c);
   //axes(c);
-  //sinX(c, d);
-  //sinY(c, d);
-  //pixelWaves(c, d);
-  //mergeSplit(c, d);
+  //sinX(c, phaseDelta);
+  //sinX(c, phaseDelta, Pi);
+  //sinY(c, phaseDelta);
+  //sinY(c, phaseDelta, Pi);
+  //pixelWaves(c, phaseDelta);
+  //mergeSplit(c, phaseDelta);
   randomWaves(c, phaseDelta);
   window.requestAnimationFrame(anim);
 }
@@ -41,8 +46,8 @@ const
 function randomWaves(c, pD) {
   for (let i = 0; i < N; i++) {
     for (let j = 0; j < N; j++) {
-      const x = -Pi + i / N * Tau;
-      const y = -Pi + j / N * Tau;
+      const x = fromX + i / N * width;
+      const y = fromX + j / N * width;
 
       const x1 = x + c1 * Math.sin(f2 * x + pD);
       const y1 = y + c2 * Math.cos(f2 * y + pD);
@@ -65,7 +70,7 @@ function randomWaves(c, pD) {
       const g = i2 * a4 + i1 * a3 + i3 * a2;
       const b = i1 * a4 + i3 * a3 + i2 * a2;
       c.fillStyle = `rgb(${r}, ${g}, ${b})`;
-      c.fillRect(xToC(x), yToC(y), 0.03, 0.03);
+      c.fillRect(xToC(x), yToC(y), pixelSize, pixelSize);
     }
   }
 }
@@ -74,45 +79,47 @@ function mergeSplit(c, pD) {
   const f = 1;
   for (let i = 0; i < N; i++) {
     for (let j = 0; j < N; j++) {
-      const x1 = -Pi + i / N * Tau;
-      const x2 = -Pi + j / N * Tau;
+      const x1 = fromX + i / N * width;
+      const x2 = fromX + j / N * width;
       const y1 = Math.sin(f * x1 + pD) + Math.cos(f * x2 + pD);
       const y2 = Math.sin(f * -x1 + pD) + Math.cos(f * -x2 + pD);
       const intensity = 128 * y1 + 128 * y2;
       c.fillStyle = `rgb(${intensity}, ${intensity}, ${intensity})`;
-      c.fillRect(xToC(x1), yToC(x2), 0.03, 0.03);
+      c.fillRect(xToC(x1), yToC(x2), pixelSize, pixelSize);
     }
   }
 }
 
 function pixelWaves(c, phase) {
-  c.fillStyle = '#000000';
-  for (let i = 0; i < N; i++) {
-    const dX = i / N * Tau;
-    const x = -Pi + dX;
-    const y = Math.sin(dX + phase);
-    c.fillRect(xToC(x), yToC(y), 0.03, 0.03);
-    c.fillRect(xToC(y), yToC(x), 0.03, 0.03);
+  c.fillStyle = 'black';
+  for (let i = 0; i <= N; i++) {
+    const d = i / N * width;
+    const x = fromX + d;
+    const y = Math.sin(d);
+    c.fillRect(xToC(x), yToC(y), pixelSize, pixelSize);
+    c.fillRect(xToC(y), yToC(x), pixelSize, pixelSize);
   }
 }
 
-function sinX(c, phase) {
+function sinX(c, phase, offset) {
+  offset = offset || 0;
   begin(c);
-  for (let i = 0; i < 100; i++) {
-    const d = i / 100 * (Pi * 2);
-    const x = -Pi + d;
-    const y = Math.sin(x + phase);
+  for (let i = 0; i <= N; i++) {
+    const d = i / N * width;
+    const x = fromX + d;
+    const y = Math.sin(offset + x + phase);
     c.lineTo(xToC(x), yToC(y));
   }
   end(c);
 }
 
-function sinY(c, phase) {
+function sinY(c, phase, offset) {
+  offset = offset || 0;
   begin(c);
-  for (let i = 0; i < 100; i++) {
-    const d = i / 100 * (Pi * 2);
-    const x = -Pi + d;
-    const y = Math.sin(x + phase);
+  for (let i = 0; i <= N; i++) {
+    const d = i / N * width;
+    const x = fromX + d;
+    const y = Math.sin(offset + x + phase);
     c.lineTo(xToC(y), yToC(x));
   }
   end(c);
@@ -120,14 +127,14 @@ function sinY(c, phase) {
 
 function axes(c) {
   // X-axis
-  line(c,  -1,   0,   1,   0);
+  line(c,  fromX,   0,   width,   0);
   // Y-axis
-  line(c,   0,  -1,   0,   1);
+  line(c,   0,  fromX,   0,   width);
 }
 
 function clear(c) {
-  c.fillStyle = '#fff';
-  c.fillRect(0, 0, xToC(4), yToC(4));
+  c.fillStyle = 'lightgreen';
+  c.fillRect(0, 0, xToC(Tau * 2), yToC(Tau * 2));
 }
 
 function line(c, x1, y1, x2, y2) {
@@ -138,11 +145,11 @@ function line(c, x1, y1, x2, y2) {
 }
 
 function xToC(x) {
-  return 0.25 * x + 1;
+  return x / (Tau * 2) + 1;
 }
 
 function yToC(y) {
-  return 0.25 * y + 1;
+  return y / (Tau * 2) + 1;
 }
 
 function begin(c) {
