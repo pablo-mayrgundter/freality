@@ -1,4 +1,10 @@
 let c;
+let i = 0;
+const N = 128, Pi = Math.PI, Tau = 2 * Pi;
+const fromX = -2 * Tau;
+const width = 4 * Tau;
+const pixelSize = 0.02;
+let op;
 
 function init() {
   const canvas = document.getElementById('canvas');
@@ -6,123 +12,173 @@ function init() {
   canvas.width = size;
   canvas.height = size;
   c = canvas.getContext('2d');
-  c.scale(canvas.width / 2, canvas.height / 2);
-  window.requestAnimationFrame(anim);
+  let xS = canvas.width / 2, yS = canvas.height / 2;
+  c.scale(xS, yS);
+  c.font = '0.25px Arial';
+  c.fillStyle = 'blue';
+  c.textAlign = 'center';
+  c.fillText('Click me', 1, 1);
 }
 
-let i = 0;
-const N = 128, Pi = Math.PI, Tau = 2 * Pi;
-const fromX = -2 * Tau;
-const width = 4 * Tau;
-const pixelSize = 0.02;
-
-function anim(timestamp) {
-  const phaseDelta = i++ / (N / 8);
-  clear(c);
+function opInit() {
+  const first = op == null;
   //axes(c);
-  //sinX(c, phaseDelta);
-  //sinX(c, phaseDelta, Pi);
-  //sinY(c, phaseDelta);
-  //sinY(c, phaseDelta, Pi);
-  //pixelWaves(c, phaseDelta);
-  //mergeSplit(c, phaseDelta);
-  randomWaves(c, phaseDelta);
+  //op = new SinX().anim();
+  //op = new PixelWaves().anim();
+  //op = new MergeSplit().anim();
+  op = new RandomWaves();
+  //op = new RandomWaves2().anim();
+  if (first) {
+    anim();
+  }
+}
+
+function anim() {
+  op.anim();
   window.requestAnimationFrame(anim);
 }
 
-function r1(max) {
-  max = max || Tau;
-  return 2 * max * Math.random() - max;
+class Op {
+  constructor() {
+    this.c1 = r1(); this.c2 = r1(); this.c3 = r1(); this.c4 = r1();
+    this.c5 = r1(); this.c6 = r1(); this.c7 = r1(); this.c8 = r1();
+    this.f1 = r1(); this.f2 = r1(this.f1); this.f3 = r1(this.f2);
+    this.f4 = r1(this.f3); this.f5 = r1(this.f4); this.f6 = r1(this.f5);
+    this.i1 = r1(64); this.i2 = r1(64); this.i3 = r1(64); this.i4 = r1(64);
+    this.i = 0;
+    c.fillStyle = 'black';
+  }
+
+  anim() {
+    const phaseDelta = this.i++ / (N / 8);
+    const fill = c.fillStyle;
+    clear(c);
+    c.fillStyle = fill;
+    this.run(c, phaseDelta);
+  }
+
+  run(c, pD) {}
 }
 
-const c1 = r1(), c2 = r1(), c3 = r1(), c4 = r1(), c5 = r1(), c6 = r1(), c7 = r1(), c8 = r1();
-const f1 = r1(), f2 = r1(f1), f3 = r1(f2), f4 = r1(f3), f5 = r1(f4), f6 = r1(f5);
-const
-  i1 = r1(64), i2 = r1(64), i3 = r1(64),
-  i4 = r1(64), i5 = r1(64), i6 = r1(64),
-  i7 = r1(64), i8 = r1(64), i9 = r1(64),
-  i10 = r1(64);
+class RandomWaves2 extends Op {
+  run(c, pD) {
+    for (let i = 0; i < N; i++) {
+      for (let j = 0; j < N; j++) {
+        const x = fromX + i / N * width;
+        const y = fromX + j / N * width;
 
-function randomWaves(c, pD) {
-  for (let i = 0; i < N; i++) {
-    for (let j = 0; j < N; j++) {
-      const x = fromX + i / N * width;
-      const y = fromX + j / N * width;
+        const x1 = this.c1 * Math.cos(x + pD + this.f2);
+        const y1 = this.c2 * Math.sin(y + pD + this.f1);
 
-      const x1 = x + c1 * Math.sin(f2 * x + pD);
-      const y1 = y + c2 * Math.cos(f2 * y + pD);
+        const x2 = x1 + this.c3 * Math.cos(pD + this.f3);
+        const y2 = y1 + this.c4 * Math.sin(pD + this.f4);
 
-      const x2 = x1 + c3 * Math.sin(f3 * x1);
-      const y2 = y1 + c4 * Math.cos(f3 * y1);
+        const x3 = x2 + this.c5 * Math.cos(pD + this.f5);
+        const y3 = y2 + this.c6 * Math.sin(pD + this.f6);
 
-      const x3 = x2 + c5 * Math.sin(f4 * x2);
-      const y3 = y2 + c6 * Math.cos(f4 * y2);
+        const a1 = x1 + y1;
+        const a2 = x2 + y2;
+        const a3 = x3 + y3;
 
-      const x4 = x3 + c7 * Math.sin(f5 * x3);
-      const y4 = y3 + c8 * Math.cos(f5 * y3);
+        const r = this.i2 * a2 + this.i1 * a1;
+        const g = this.i2 * a3 + this.i1 * a2;
+        const b = this.i2 * a1 + this.i1 * a3;
+        c.fillStyle = `rgb(${r}, ${g}, ${b})`;
+        c.fillRect(xToC(x), yToC(y), pixelSize, pixelSize);
+      }
+    }
+  }
+}
 
-      const a1 = x1 + y1;
-      const a2 = x2 + y2;
-      const a3 = x3 + y3;
-      const a4 = x4 + y4;
+class RandomWaves extends Op {
+  run(c, pD) {
+    for (let i = 0; i < N; i++) {
+      for (let j = 0; j < N; j++) {
+        const x = fromX + i / N * width;
+        const y = fromX + j / N * width;
 
-      const r = i3 * a4 + i2 * a3 + i1 * a2;
-      const g = i2 * a4 + i1 * a3 + i3 * a2;
-      const b = i1 * a4 + i3 * a3 + i2 * a2;
-      c.fillStyle = `rgb(${r}, ${g}, ${b})`;
+        const x1 = x + this.c1 * Math.cos(this.f2 * x + pD);
+        const y1 = y + this.c2 * Math.sin(this.f2 * y + pD);
+
+        const x2 = x1 + this.c3 * Math.cos(this.f3 * x1);
+        const y2 = y1 + this.c4 * Math.sin(this.f3 * y1);
+
+        const x3 = x2 + this.c5 * Math.cos(this.f4 * x2);
+        const y3 = y2 + this.c6 * Math.sin(this.f4 * y2);
+
+        const x4 = x3 + this.c7 * Math.cos(this.f5 * x3);
+        const y4 = y3 + this.c8 * Math.sin(this.f5 * y3);
+
+        const a1 = x1 + y1;
+        const a2 = x2 + y2;
+        const a3 = x3 + y3;
+        const a4 = x4 + y4;
+
+        const r = this.i3 * a4 + this.i2 * a3 + this.i1 * a2;
+        const g = this.i2 * a4 + this.i1 * a3 + this.i3 * a2;
+        const b = this.i1 * a4 + this.i3 * a3 + this.i2 * a2;
+        c.fillStyle = `rgb(${r}, ${g}, ${b})`;
+        c.fillRect(xToC(x), yToC(y), pixelSize, pixelSize);
+      }
+    }
+  }
+}
+
+class MergeSplit extends Op {
+  run(c, pD) {
+    const f = 1;
+    for (let i = 0; i < N; i++) {
+      for (let j = 0; j < N; j++) {
+        const x1 = fromX + i / N * width;
+        const x2 = fromX + j / N * width;
+        const y1 = Math.cos(f * x1 + pD) + Math.sin(f * x2 + pD);
+        const y2 = Math.cos(f * -x1 + pD) + Math.sin(f * -x2 + pD);
+        const intensity = 128 * y1 + 128 * y2;
+        c.fillStyle = `rgb(${intensity}, ${intensity}, ${intensity})`;
+        c.fillRect(xToC(x1), yToC(x2), pixelSize, pixelSize);
+      }
+    }
+  }
+}
+
+class PixelWaves extends Op {
+  run(c, phase) {
+    for (let i = 0; i <= N; i++) {
+      const d = i / N * width;
+      const x = fromX + d;
+      const y = Math.sin(d + phase);
       c.fillRect(xToC(x), yToC(y), pixelSize, pixelSize);
+      c.fillRect(xToC(y), yToC(x), pixelSize, pixelSize);
     }
   }
 }
 
-function mergeSplit(c, pD) {
-  const f = 1;
-  for (let i = 0; i < N; i++) {
-    for (let j = 0; j < N; j++) {
-      const x1 = fromX + i / N * width;
-      const x2 = fromX + j / N * width;
-      const y1 = Math.sin(f * x1 + pD) + Math.cos(f * x2 + pD);
-      const y2 = Math.sin(f * -x1 + pD) + Math.cos(f * -x2 + pD);
-      const intensity = 128 * y1 + 128 * y2;
-      c.fillStyle = `rgb(${intensity}, ${intensity}, ${intensity})`;
-      c.fillRect(xToC(x1), yToC(x2), pixelSize, pixelSize);
+class SinX extends Op {
+  run(c, phase, offset) {
+    offset = offset || 0;
+    begin(c);
+    for (let i = 0; i <= N; i++) {
+      const d = i / N * width;
+      const x = fromX + d;
+      const y = Math.sin(offset + x + phase);
+      c.lineTo(xToC(x), yToC(y));
     }
+    end(c);
   }
 }
 
-function pixelWaves(c, phase) {
-  c.fillStyle = 'black';
-  for (let i = 0; i <= N; i++) {
-    const d = i / N * width;
-    const x = fromX + d;
-    const y = Math.sin(d);
-    c.fillRect(xToC(x), yToC(y), pixelSize, pixelSize);
-    c.fillRect(xToC(y), yToC(x), pixelSize, pixelSize);
+class SinY extends Op {
+  run(c, phase, offset) {
+    offset = offset || 0;
+    begin(c);
+    for (let i = 0; i <= N; i++) {
+      const d = i / N * width;
+      const x = fromX + d;
+      const y = Math.sin(offset + x + phase);
+      c.lineTo(xToC(y), yToC(x));
+    }
+    end(c);
   }
-}
-
-function sinX(c, phase, offset) {
-  offset = offset || 0;
-  begin(c);
-  for (let i = 0; i <= N; i++) {
-    const d = i / N * width;
-    const x = fromX + d;
-    const y = Math.sin(offset + x + phase);
-    c.lineTo(xToC(x), yToC(y));
-  }
-  end(c);
-}
-
-function sinY(c, phase, offset) {
-  offset = offset || 0;
-  begin(c);
-  for (let i = 0; i <= N; i++) {
-    const d = i / N * width;
-    const x = fromX + d;
-    const y = Math.sin(offset + x + phase);
-    c.lineTo(xToC(y), yToC(x));
-  }
-  end(c);
 }
 
 function axes(c) {
@@ -133,7 +189,7 @@ function axes(c) {
 }
 
 function clear(c) {
-  c.fillStyle = 'lightgreen';
+  c.fillStyle = 'white';
   c.fillRect(0, 0, xToC(Tau * 2), yToC(Tau * 2));
 }
 
@@ -160,6 +216,11 @@ function begin(c) {
 
 function end(c) {
   c.stroke();
+}
+
+function r1(max) {
+  max = max || Tau;
+  return 2 * max * Math.random() - max;
 }
 
 init();
