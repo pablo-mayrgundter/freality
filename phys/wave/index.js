@@ -14,10 +14,19 @@ function init() {
   c = canvas.getContext('2d');
   let xS = canvas.width / 2, yS = canvas.height / 2;
   c.scale(xS, yS);
-  c.font = '0.25px Arial';
-  c.fillStyle = 'blue';
-  c.textAlign = 'center';
-  c.fillText('Click me', 1, 1);
+  const params = getHashParams();
+  if (params) {
+    op = new RandomWaves();
+    for (i in params) {
+      op[i] = params[i];
+    }
+    anim();
+  } else {
+    c.font = '0.25px Arial';
+    c.fillStyle = 'blue';
+    c.textAlign = 'center';
+    c.fillText('Click me', 1, 1);
+  }
 }
 
 function opInit() {
@@ -27,6 +36,7 @@ function opInit() {
   //op = new PixelWaves().anim();
   //op = new MergeSplit().anim();
   op = new RandomWaves();
+  setHashParams(op);
   //op = new RandomWaves2().anim();
   if (first) {
     anim();
