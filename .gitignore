@@ -1,4 +1,6 @@
 *#*
 *.class
 *~
+# Prevent deleted items from coming back into the cache.
 space
+math/complexity/flame-anim.gif
