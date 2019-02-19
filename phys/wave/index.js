@@ -1,3 +1,5 @@
+import {getHashParams, setHashParams} from '/net/web/hashparams.js';
+
 let c;
 let i = 0;
 const N = 128, Pi = Math.PI, Tau = 2 * Pi;
@@ -6,7 +8,7 @@ const width = 4 * Tau;
 const pixelSize = 0.02;
 let op;
 
-function init() {
+export function init() {
   const canvas = document.getElementById('canvas');
   const size = Math.min(window.innerWidth, window.innerHeight);
   canvas.width = size;
@@ -27,6 +29,7 @@ function init() {
     c.textAlign = 'center';
     c.fillText('Click me', 1, 1);
   }
+  document.getElementById('canvas').onclick = opInit;
 }
 
 function opInit() {
