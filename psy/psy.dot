@@ -1,0 +1,33 @@
+digraph Psy {
+
+  subgraph cluster_Brain_theory {
+    graph [label="Brain theory"]
+
+    Gabor -> Pribram [
+      label="holography",
+      ref="https://en.wikipedia.org/wiki/Holonomic_brain_theory"];
+
+    Pribram -> Bohm [label="Holonomic Brain Theory, 1975", dir=none];
+
+    Pribram -> Lashley [label="engram experiments", dir=none];
+  }
+
+  subgraph cluster_Neuroanatomy {
+    graph [
+      label="Neuroanatomy",
+      ref="https://www.neuroscientificallychallenged.com/blog/how-many-glial-cells-in-the-brain"
+    ]
+
+    Helen_Bradford_Thompson [
+      label="Helen Bradford Thompson\nNeuron counting visually, extrapolation: 9B\n1899",
+    ]
+
+    Holger_Hyden [
+      label="Holger_Hyden \n 10x more glia than neuron in brainstem\n1960s"
+    ]
+
+    Suzana_Herculano_Houzel [
+      label="Suzana Herculano-Houzel et al.\nisotropic fractionation\n86B neurons; 86Bglial+endothelial\n2009",
+    ]
+  }
+}
