@@ -157,7 +157,7 @@ public final class Server {
           type = "image/" + ftype;
         } else if (ftype.matches("(html|xml|txt|css)")) {
           type = "text/" + ftype;
-        } else if (ftype.matches("(js|jsm)")) {
+        } else if (ftype.matches("(js|mjs)")) {
           type = "text/javascript";
         }
       }
