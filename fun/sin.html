@@ -1,0 +1,79 @@
+<html>
+<body style="margin: 0">
+<canvas width=600 height=400 id="canvas" style="border: solid 1px red"></canvas>
+<script language="Javascript">
+const Tau = Math.PI * 2;
+const c = document.getElementById('canvas');
+c.width = document.body.offsetWidth;
+c.height = document.body.offsetHeight;
+const ctx = c.getContext('2d');
+const bgColor = 'white', fgColor = 'black';
+const cWidth = c.offsetWidth, cHeight = c.offsetHeight;
+const gWidth = 4 * Tau, gHeight = 4 * Tau;
+const xMax = gWidth / 2, yMax = gHeight / 2;
+const xScale = cWidth / gWidth, yScale = cHeight / gHeight;
+const xOff = cWidth / 2, yOff = cHeight / 2;
+const xc = xReal => xScale * xReal + xOff;
+const yc = yReal => yScale * -yReal + yOff;
+
+const clear = () => {
+  ctx.fillStyle = bgColor;
+  ctx.fillRect(0, 0, cWidth, cHeight);
+  ctx.fillStyle = fgColor;
+}
+
+const axes = () => {
+  // Horizontal
+  ctx.beginPath();
+  ctx.moveTo(xc(-2 * Tau), yc(0));
+  ctx.lineTo(xc(2 * Tau), yc(0));
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(xc(0), yc(-2 * Tau));
+  ctx.lineTo(xc(0), yc(2 * Tau));
+  ctx.stroke();
+};
+
+const plot = f => {
+  let x = -xMax, y = 0;
+  ctx.beginPath();
+  ctx.moveTo(xc(x), yc(y));
+  const d = 1/100;
+  while (x < xMax) {
+    x += d;
+    y = f(x);
+    ctx.lineTo(xc(x), yc(y));
+  }
+  ctx.stroke();
+};
+
+let t = 0;
+let mouseX = cWidth, mouseY = cHeight;
+const f1 = x => {
+  xDelta = (mouseX - (cWidth / 2)) / xScale * 0.1;
+  t += xDelta * xDelta * xDelta;
+  return 0.02 * mouseY * Math.sin(x + t);
+};
+
+document.onmousemove = (e) => {
+  e = e || window.event;
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+};
+
+const frame = () => {
+  clear();
+  axes();
+  plot(f1);
+};
+
+frame();
+
+const anim = timestamp => {
+  frame();
+  requestAnimationFrame(anim);
+};
+
+requestAnimationFrame(anim);
+</script>
