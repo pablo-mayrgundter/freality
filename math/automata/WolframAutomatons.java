@@ -1,4 +1,4 @@
-package math;
+package math.automata;
 
 import gfx.FullScreenableFrame;
 
