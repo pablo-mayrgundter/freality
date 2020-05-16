@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <body style="margin: 0; overflow: hidden">
-<script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.js"></script>
+<!--<script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.js"></script>-->
+<script src="/lib/three-68.min.js"></script>
 <script id="frag1" type="x-shader/x-fragment">
   uniform float iGlobalTime;
   uniform vec2 iResolution;
@@ -107,7 +108,7 @@
     gl_FragColor.rgb = c;
   }
 </script>
-<script id="general" type="x-shader/x-vertex">
+<script id="main" type="x-shader/x-vertex">
   attribute vec3 in_Position;
   varying vec2 fragCoord;
   void main() {

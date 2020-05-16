@@ -112,14 +112,14 @@ function frame() {
   // frames.
   if (morphSpeed > 0) {
     animId = window.requestAnimationFrame(frame);
-    if (!soundRunning) {
-      startSound();
-    }
+    //if (!soundRunning) {
+    //  startSound();
+    //}
   } else {
     animId = null;
-    if (soundRunning) {
-      stopSound();
-    }
+    //if (soundRunning) {
+    //  stopSound();
+    //}
   }
 }
 

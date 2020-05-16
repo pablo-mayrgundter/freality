@@ -74,7 +74,7 @@ function GameObject() {
   uniforms.iResolution.value.y = window.innerHeight;
   this.material = new THREE.ShaderMaterial({
       uniforms: uniforms,
-      vertexShader: document.getElementById('general').textContent,
+      vertexShader: document.getElementById('main').textContent,
       fragmentShader: document.getElementById('frag1').textContent
     });
   this.obj = new THREE.Mesh(this.geometry, this.material);
