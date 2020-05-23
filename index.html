@@ -2,18 +2,24 @@
   <head>
     <style>
       body {
-        background: grey;
+        background: #ccc;
         font-family: Monaco;
+        overscroll-behavior: none;
+      }
+      h1 {
+        font-size: 10pt;
+        margin-top: 1.5em;
       }
       #nav {
         position: absolute;
         top: 0;
         left: 0;
-        width: 220px;
+        width: 210px;
         height: 100%;
-        padding-right: 3em;
+        padding: 1em;
         text-align: center;
         overflow-y: scroll;
+        overscroll-behavior: none;
       }
       #main {
         position: absolute;
@@ -21,6 +27,7 @@
         right: 0;
         width: 83%;
         height: 100%;
+        border: none;
       }
     </style>
   </head>
@@ -28,43 +35,43 @@
     <div id="nav">
       I hope you enjoy some of these softwares!
 
-      <p>Mandelbrot<br/>
+      <h1>Mandelbrot</h1>
       <a href="fun/mandelbrot/index.html" target="main">
         <img src="fun/mandelbrot/mandelbrot-thumb-2.png" width="200"/></a>
 
-      <p>Magnetic Field<br/>
+      <h1>Magnetic Field</h1>
       <a href="fun/magnetic-field.html" target="main">
         <img src="fun/magnetic-field-ss.png" width="200" /></a>
 
-      <p>Fluid Heating<br/>
+      <h1>Fluid Heating</h1>
       <a href="phys/fluid/index.html" target="main">
         <img src="phys/fluid/ss.png" width="200" /></a>
 
-      <p>Warp<br/>
+      <h1>Warp</h1>
       <a href="fun/warp/index.html" target="main">
         <img src="fun/warp/ss.png"/></a>
 
-      <p>Grid<br/>
+      <h1>Grid</h1>
       <a href="game/gol/index.html" target="main">
         <img src="game/gol/ss.png"/></a>
 
-      <p>Sine<br/>
+      <h1>Sine</h1>
       <a href="fun/sine.html" target="main">
         <img src="fun/sine-ss.png" width="200"/></a>
 
-<!--      <p>Sine Toy<br/>
+<!--      <h1>Sine Toy</h1>
       <a href="fun/sine-toy.html" target="main">
         <img src="fun/sine-toy-ss.png" width="200"/></a>
 -->
-      <p>Celestiary<br/>
+      <h1>Celestiary</h1>
       <a href="https://celestiary.appspot.com/" target="new">
         <img src="pablo/celestiary/ss.png" width="200"/></a>
 <!--
-      <p>Flame<br/>
+      <h1>Flame</h1>
       <a href="math/complexity/flame-anim.gif" target="main">
         <img src="math/complexity/wall_thumb.png" width="200"/></a>
 -->
     </div>
-    <iframe name="main" id="main" src="fun/mandelbrot/index.html" border="0"/>
+    <iframe name="main" id="main" src="" border="0" style="background: green"/>
   </body>
 </html>

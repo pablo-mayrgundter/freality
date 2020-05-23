@@ -1,18 +1,38 @@
 <html>
   <head>
     <style>
-      #canvas {
-        margin: 5%;
-        border: solid 1px black;
+      body {
+        margin: 0;
+        background: black;
+        color: white;
+        font-family: monospace;
+      }
+      canvas {
+        height: 100%;
+        border: none;
+      }
+      button {
+        background: none;
+        color: white;
+        border: solid 1px white;
+      }
+      #info {
+        position: absolute;
+        top: 0;
+        left: 25%;
+        margin: 2em;
       }
     </style>
   </head>
   <body>
-    <p id="info"></p>
-    Cell size: <input id="cellSize" value="5"/><br/>
-    Wall position (0 to 1): <input id="wallLeftR" value="0.6"/><br/>
-    <button id="startButton">Start</button><br/>
-    <canvas id="canvas" width="500" height="500"></canvas>
+    <center>
+      <div id="info">
+        Cell size: <input id="cellSize" value="5"/><br/>
+        Wall position (0 to 1): <input id="wallLeftR" value="0.6"/><br/>
+        <button id="startButton">Start</button><br/>
+      </div>
+      <canvas id="canvas" width="600" height="600"></canvas>
+    </center>
     <script src="Flow.dart.js" type="text/javascript"></script>
   </body>
 </html>
