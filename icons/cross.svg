@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="400" height="560" viewBox="0 0 400 560">
+  <title>Christian Cross Sign</title>
+  <path transform="translate(2,2) scale(2,2)"
+     d="m 0 80 H80 V0 H120 V80 H200 V120 H120 V280 H80 V120 H0 V80 Z"/>
+</svg>
