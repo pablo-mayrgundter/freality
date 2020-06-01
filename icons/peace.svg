@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="250" height="250" viewBox="0 0 250 250">
+  <title>Peace Sign</title>
+  <g fill="none" stroke="black" stroke-width="20">
+    <circle cx="125" cy="125" r="106"/>
+    <path d="M125,19 v212 M125,125 l-75,75 M125,125 l75,75"/>
+  </g>
+</svg>
