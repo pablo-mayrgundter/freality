@@ -1,0 +1,29 @@
+svg {
+  overflow: visible;
+}
+
+object {
+  position: absolute;
+}
+
+.county {
+  fill: lightblue;
+  stroke: grey;
+}
+
+text {
+  font-size: 8pt;
+  font-family: sans-serif;
+  text-transform: uppercase;
+}
+
+#nj {
+  top: 465px;
+  left: 505px;
+  width: 160px;
+}
+
+#ny {
+  top: 0px;
+  left: 100px;
+}
