@@ -1,0 +1,35 @@
+<html>
+  <script>
+    const elt = id => document.getElementById(id);
+    const print = (elt, msg) => { elt.innerHTML += msg; };
+    const ex = (func, arg) => {
+      const console = elt('console');
+      print(console, `input: ${arg}\n`);
+      if (typeof func == 'function') {
+        const out = func(arg);
+        print(console, `output: ${out}\n\n`);
+        return out;
+      }
+      return func;
+    };
+
+    // https://www.youtube.com/watch?v=3VQ382QG-y4
+    // identity
+    i = a => a;
+    // self-application
+    self = f => f(f);
+    // first, or const
+    first = (a, b) => a;
+    // second
+    second = (a, b) => b;
+    // swap
+    swap = f => a => b => f(b)(a);
+
+    function init() {
+      //sub = (a, b) => { return a - b; };
+      //ex(ex(ex(swap, sub), 1), 2);
+    }
+  </script>
+  <body onload="init()">
+    <h1>Lambda examples</h1>
+    <div id="console" style="font-family: monospace; white-space: pre"/>
