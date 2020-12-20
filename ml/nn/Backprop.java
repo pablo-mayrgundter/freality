@@ -1,12 +1,10 @@
-package com.freality.ml.nn;
-
 /**
  * This is a 2 layer back-propagation neural-network design based on
  * Tom Mitchell's book Machine Learning.
  * <p>
  * http://www.cs.cmu.edu/~tom/mlbook.html
  *
- * @author <a href="mailto:pablo@freality.com">Pablo Mayrgundter</a>
+ * @author Pablo Mayrgundter
  */
 public class Backprop {
 

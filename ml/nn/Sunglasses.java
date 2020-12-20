@@ -1,5 +1,3 @@
-package com.freality.ml.nn;
-
 import java.io.*;
 import java.util.*;
 
