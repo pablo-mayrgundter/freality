@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<body style="margin: 0; overflow: hidden">
+<script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.js"></script>
+<script id="frag1" type="x-shader/x-fragment">
+  uniform float iGlobalTime;
+  uniform vec2 iResolution;
+  uniform vec2 iMouse;
+  uniform float iZoom;
+  uniform int iIter;
+  uniform sampler2D iChannel0;
+  varying vec2 fragCoord;
+  void main() {
+    const highp float width = 900.0;
+    const highp float height = 900.0;
+    highp float c1 = fragCoord.x / width * 4.0;
+    highp float c2 = fragCoord.y / height * 4.0;
+    highp float z1 = c1;
+    highp float z2 = c2;
+    const int maxItr = 1000;
+    highp float z1_2, z2_2;
+    highp float itrCount = 0.0;
+    bool escaped = false;
+    for (int i = 0; i < maxItr; i++) {
+      z1_2 = z1*z1;
+      z2_2 = z2*z2;
+      highp float z1_t = z1_2 - z2_2 + c1;
+      z2 = 2.0 * z1 * z2 + c2;
+      z1 = z1_t;
+      itrCount += 1.0;
+      if ((z1_2 + z2_2) > 4.0) {
+        escaped = true;
+        break;
+      }
+    }
+    highp float brightness = itrCount / 100.0;
+    vec3 col = vec3(0.0, 0.0, brightness);
+    gl_FragColor = vec4(col, escaped ? 0.0 : 1.0);
+  }
+</script>
+<script id="main" type="x-shader/x-vertex">
+  attribute vec3 in_Position;
+  varying vec2 fragCoord;
+  void main() {
+    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+    gl_Position = projectionMatrix * mvPosition;
+    fragCoord = position.xy;
+  }
+</script>
+<script src="../flame.js"></script>

@@ -1,0 +1,22 @@
+{
+  "name": "Wikipedia Fetcher",
+  "version": "1.0",
+  "description": "Fetches data from Wikipedia",
+  "manifest_version": 2,
+  "permissions": [
+    "https://simple.wiktionary.org/"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "page_action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+   {
+     "matches": ["http://localhost:8090/fun/def-graph/index.html"],
+     "js": ["contentScript.js"]
+   }
+  ]
+}

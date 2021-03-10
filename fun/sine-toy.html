@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<body style="margin: 0; overflow: hidden">
+<script id="flame.frag" type="x-shader/x-fragment">
+  uniform float time;
+  uniform vec2 rez;
+  uniform vec2 mouse;
+  uniform float zoom;
+  uniform int iter;
+  varying vec2 fragCoord;
+
+  const float Tau = 6.28571428571428571428;
+  float randCount = mouse.x * 0.001 * mouse.y * 0.001;
+
+  // Random.
+  float R() {
+    randCount++;
+    return 2. * fract(randCount * Tau) - 1.;
+  }
+
+  void main() {
+    const float fR = 8.*Tau;
+    float f1 = fR, f2 = fR, f3 = fR, f4 = fR;
+    const float iR = 1.*Tau;
+    float i1 = iR, i2 = iR, i3 = iR;
+    const float cR = 1.*Tau;
+    float c1 = cR, c2 = cR, c3 = cR, c4 = cR;
+    float x = fragCoord.x / rez.x;
+    float y = fragCoord.y / rez.y;
+    // phase delta
+    float pD = time;
+    float r, g, b;
+    for (int n = 0; n < 50; n++) {
+      if (n > iter) break;
+      i1 = i1 * R();
+      i2 = i2 * R();
+      i3 = i3 * R();
+      f1 = f1 * R();
+      f2 = f2 * R();
+      c1 = c1 * R(), c2 = c2 * R(), c3 = c3 * R(), c4 = c4 * R();
+      x = x + c1 * cos(f1 * x + pD) - y + c2 * sin(f2 * y + pD);
+      y = y + c3 * tan(f3 * y + pD) - x + c4 * atan(f4 * x + pD);
+      r += r + i1 * x + i2 * y;
+      g += g + i2 * x + i3 * y;
+      b += b + i3 * x + i1 * y;
+    }
+    gl_FragColor.r = r;
+    gl_FragColor.g = g;
+    gl_FragColor.b = b;
+  }
+</script>
+<script id="main.vert" type="x-shader/x-vertex">
+  attribute vec3 in_Position;
+  varying vec2 fragCoord;
+  void main() {
+    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+    gl_Position = projectionMatrix * mvPosition;
+    fragCoord = position.xy;
+  }
+</script>
+<script type="module" src="sine-toy.js"></script>

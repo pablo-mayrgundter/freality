@@ -1,6 +1,7 @@
 function mandelbrot(gfx, imageWidth, imageHeight, x, y, w, h) {
   console.log(`${imageWidth},${imageHeight},${x},${y},${w},${h}`);
-  const itrMax = 1000;
+  const itrMax = 10000;
+  const logMax = Math.log(itrMax);
   gfx.fillStyle = 'black';
   gfx.fillRect(0, 0, imageWidth, imageHeight);
   const img = gfx.getImageData(0, 0, imageWidth, imageHeight);
@@ -17,19 +18,18 @@ function mandelbrot(gfx, imageWidth, imageHeight, x, y, w, h) {
         z2 = 2*z1*z2 + c2;
         z1 = z1_t;
         if ((z1_2 + z2_2) >= 4) {
-          const brightness = Math.floor(itr * 5);
-          img.data[ndx + 2] = brightness;
+          const saturation = 256 * Math.log(itr) / logMax;
           if (itr % 2 == 0) {
-            img.data[ndx + 2] = brightness;
+            img.data[ndx + 2] = saturation;
           } else {
-            img.data[ndx + 1] = brightness;
+            img.data[ndx + 2] = 0.9 * saturation;
           }
           escaped = true;
           break;
         }
       }
       if (!escaped) {
-        img.data[ndx] = 1; // mark for below.
+        img.data[ndx + 3] = 255; // mark for below.
       }
     }
   }
@@ -38,7 +38,7 @@ function mandelbrot(gfx, imageWidth, imageHeight, x, y, w, h) {
       for (let imgRow = 0; imgRow < imageHeight; imgRow++) {
         for (let imgCol = 0; imgCol < imageWidth; imgCol++) {
           const ndx = (4 * imgCol) + (4 * imgRow * img.width);
-          if (img.data[ndx] == 1) {
+          if (img.data[ndx + 4] == 255) {
             continue;
           }
           const tmp = img.data[ndx + 2];

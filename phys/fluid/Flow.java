@@ -1,22 +1,24 @@
 package phys.fluid;
 
-import gfx.FullScreenableFrame;
-import gfx.TextGraphics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.Random;
+import javax.swing.JFrame;
+
+import gfx.FullScreenableFrame;
+import gfx.TextGraphics;
 import phys.Space;
 import phys.Space2D;
 import phys.Force;
 import util.Flags;
 
-import java.awt.Color;
-import java.awt.image.BufferedImage;
-import javax.swing.JFrame;
 
 /**
  * Wolfram models a fluid as particle interactions on a hexagonal
@@ -155,7 +157,7 @@ final class Flow {
     force = new HexForce();
 
     if (NUM > 0) {
-      final java.util.Random r = new java.util.Random();
+      Random r = new Random();
       for (int i = 0; i < NUM; i++) {
         spaceCur.set(HexForce.DEBUG_ALL, r.nextInt(cols), r.nextInt(rows));
       }
@@ -216,7 +218,7 @@ final class Flow {
     if (SCREEN_GFX) {
       for (int y = 0; y < rows; y++) {
         for (int x = 0; x < cols; x++) {
-          final int popCount = util.Bits.popCount(spaceCur.get(x, y));
+          int popCount = util.Bits.popCount(spaceCur.get(x, y));
           if (hexSize == 0) {
             directImg.setRGB(x, y, palette[popCount].getRGB());
           } else {
@@ -238,7 +240,7 @@ final class Flow {
     } else {
       for (int y = 0; y < rows; y++) {
         for (int x = 0; x < cols; x++) {
-          final int popCount = util.Bits.popCount(spaceCur.get(x, y));
+          int popCount = util.Bits.popCount(spaceCur.get(x, y));
           graphics.setBackground(palette[popCount]);
           graphics.drawLine(x, y, x + 1, y + 1);
         }
@@ -294,8 +296,8 @@ final class Flow {
     }
   }
 
-  public static void main (final String [] args) {
-    final Flow f = new Flow(NUM, COLUMNS);
+  public static void main (String [] args) {
+    Flow f = new Flow(NUM, COLUMNS);
     f.run();
   }
 }

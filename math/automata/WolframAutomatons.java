@@ -39,7 +39,6 @@ class WolframAutomatons {
 					  i / 4 % 2 == 1, // > 4 ?
 					  i / 2 % 2 == 1, // > 2 ?
 					  i % 2 == 1}); // > 1 ?
-      
       drawer.reset();
       for (int j = 0; j < f.getHeight(); j++) {
 	drawer.update(aut.next());

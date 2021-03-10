@@ -1,0 +1,13 @@
+body {
+  font-family: Monaco;
+}
+
+#canvas {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 90%;
+  height: 90%;
+  margin: auto;
+  padding: 1em;
+}

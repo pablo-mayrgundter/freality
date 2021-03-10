@@ -1,0 +1,15 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../drake/index.css"/>
+  <body>
+    <h1>Laplace Calculator</h1>
+
+    <p><p>In <a href="/wiki/Statistics" title="Statistics">statistics</a>, <b>additive smoothing</b>, also called <b><a href="/wiki/Pierre-Simon_Laplace" title="Pierre-Simon Laplace">Laplace</a> smoothing</b><sup id="cite_ref-1" class="reference"><a href="#cite_note-1">&#91;1&#93;</a></sup> (not to be confused with <a href="/wiki/Laplacian_smoothing" title="Laplacian smoothing">Laplacian smoothing</a> as used in <a href="/wiki/Image_processing" class="mw-redirect" title="Image processing">image processing</a>), or <b><a href="/wiki/George_James_Lidstone" title="George James Lidstone">Lidstone</a> smoothing</b>, is a technique used to <a href="/wiki/Smoothing" title="Smoothing">smooth</a> <a href="/wiki/Categorical_data" class="mw-redirect" title="Categorical data">categorical data</a>. Given an observation \({\textstyle \scriptstyle {\mathbf {x} \ =\ \left\langle x_{1},\,x_{2},\,\ldots ,\,x_{d}\right\rangle }}\) from a <a href="/wiki/Multinomial_distribution" title="Multinomial distribution">multinomial distribution</a> with \({\textstyle \scriptstyle {N}}\) trials, a "smoothed" version of the data gives the <a href="/wiki/Estimator" title="Estimator">estimator</a>:
+
+    <p>\({\displaystyle {\hat {\theta }}_{i}={\frac {x_{i}+\alpha }{N+\alpha d}}\qquad (i=1,\ldots ,d),}\),
+
+    <p>where the "pseudocount" α > 0 is a smoothing parameter. α = 0 corresponds to no smoothing. (This parameter is explained in § Pseudocount below.) Additive smoothing is a type of shrinkage estimator, as the resulting estimate will be between the empirical probability (relative frequency) \({\textstyle \scriptstyle {\frac {x_{i}}{N}}}\), and the uniform probability \({\textstyle \scriptstyle {\frac {1}{d}}}\). Invoking Laplace's rule of succession, some authors have argued[citation needed] that α should be 1 (in which case the term add-one smoothing[2][3] is also used)[further explanation needed], though in practice a smaller value is typically chosen.
+
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS_CHTML' async></script>
+    <script type="module" src="/net/web/hashparams.js"></script>
+<!--    <script type="module" src="./index.js"></script>-->

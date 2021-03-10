@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<body style="margin: 0; overflow: hidden">
+<script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.js"></script>
+<script id="frag1" type="x-shader/x-fragment">
+precision highp float;
+uniform vec3      iResolution;           // viewport resolution (in pixels)
+uniform float     iTime;                 // shader playback time (in seconds)
+uniform float     iTimeDelta;            // render time (in seconds)
+uniform int       iFrame;                // shader playback frame
+uniform float     iChannelTime[4];       // channel playback time (in seconds)
+uniform vec3      iChannelResolution[4]; // channel resolution (in pixels)
+uniform vec4      iMouse;                // mouse pixel coords. xy: current (if MLB down), zw: click
+uniform sampler2D iChannel0;
+uniform sampler2D iChannel1;
+uniform sampler2D iChannel2;
+uniform sampler2D iChannel3;
+uniform vec4      iDate;                 // (year, month, day, time in seconds)
+uniform float     iSampleRate;           // sound sample rate (i.e., 44100)
+vec2 mainSound(float time) {
+    return vec2(sin(time * 1000.0), sin(time * 1000.0));
+}
+</script>
+<script id="main" type="x-shader/x-vertex">
+precision highp float;
+uniform vec3      iResolution;           // viewport resolution (in pixels)
+uniform float     iTime;                 // shader playback time (in seconds)
+uniform float     iBlockOffset;
+uniform float     iSampleRate;           // sound sample rate (i.e., 44100)
+attribute vec3 in_Position;
+uniform vec2 fragCoord;
+vec2 mainSound(float time) {
+    return vec2(sin(time * 1000.0), sin(time * 1000.0));
+}
+void main() {
+  //vec2 uv = fragCoord.xy / iResolution.xy;
+  //fragColor = vec4(uv, 0.5 + 0.5 * sin(iTime), 1.0);
+
+   // compute time `t` based on the pixel we're about to write
+   // the 512.0 means the texture is 512 pixels across so it's
+   // using a 2 dimensional texture, 512 samples per row
+   float t = iBlockOffset + ((fragCoord.x-0.5) + (fragCoord.y-0.5)*512.0)/iSampleRate;
+
+   // Get the 2 values for left and right channels
+   vec2 y = mainSound(iTime);
+
+   // convert them from -1 to 1 to 0 to 65536
+   vec2 v  = floor((0.5 + 0.5 * y) * 65536.0);
+
+   // separate them into low and high bytes
+   vec2 vl = mod(v, 256.0) / 255.0;
+   vec2 vh = floor(v / 256.0) / 255.0;
+
+   // write them out where
+   // RED   = channel 0 low byte
+   // GREEN = channel 0 high byte
+   // BLUE  = channel 1 low byte
+   // ALPHA = channel 2 high byte
+   //fragColor = vec4(vl.x, vh.x, vl.y, vh.y);
+   gl_Position = vec4(vl.x, vh.x, vl.y, vh.y); //vec4(s, s, s, 1.0);
+}
+</script>
+<script src="sound.js"></script>

@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../drake/index.css"/>
+  <body>
+    <h1>Laplace Calculator</h1>
+
+    <p>In statistics, additive smoothing, also called Laplace smoothing[1] (not to be confused with Laplacian smoothing as used in image processing), or Lidstone smoothing, is a technique used to smooth categorical data. Given an observation \({\textstyle \scriptstyle {\mathbf {x} \ =\ \left\langle x_{1},\,x_{2},\,\ldots ,\,x_{d}\right\rangle }}\) from a multinomial distribution with \({\textstyle \scriptstyle {N}}\) trials, a "smoothed" version of the data gives the estimator:
+
+    <p>\({\displaystyle {\hat {\theta }}_{i}={\frac {x_{i}+\alpha }{N+\alpha d}}\qquad (i=1,\ldots ,d),}\),
+
+    <p>where the "pseudocount" α > 0 is a smoothing parameter. α = 0 corresponds to no smoothing. (This parameter is explained in § Pseudocount below.) Additive smoothing is a type of shrinkage estimator, as the resulting estimate will be between the empirical probability (relative frequency) \({\textstyle \scriptstyle {\frac {x_{i}}{N}}}\), and the uniform probability \({\textstyle \scriptstyle {\frac {1}{d}}}\). Invoking Laplace's rule of succession, some authors have argued[citation needed] that α should be 1 (in which case the term add-one smoothing[2][3] is also used)[further explanation needed], though in practice a smaller value is typically chosen.
+
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS_CHTML' async></script>
+  <script type="module" src="/net/web/hashparams.js"></script>
+  <script type="text/javascript" src="/lib/wikipedia.js"></script>
+  <script type="text/javascript">
+    WIKIPEDIA.getData('http://en.wikipedia.org/wiki/Additive_smoothing', (info) => {
+      alert(info.summary.title);
+      console.log(info);
+    });
+  </script>
