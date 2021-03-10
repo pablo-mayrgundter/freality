@@ -1,0 +1,65 @@
+/Users/pablo/http
+net.http.Server.port=8080
+net.http.Server.log=true
+net.http.Server.index=index.html
+net.http.Server.ssl=false
+MIME: text/html; charset=UTF-8
+Wed, 10 Mar 2021 08:02:50 GMT 200 path(hello.html)
+HTTP/1.0 200 OK
+Content-Length: 102675
+Content-Type: text/html; charset=UTF-8
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 10 Mar 2021 08:02:50 GMT
+
+
+
+MIME: text/html; charset=UTF-8
+Wed, 10 Mar 2021 08:02:56 GMT 200 path(hello.html)
+HTTP/1.0 200 OK
+Content-Length: 102675
+Content-Type: text/html; charset=UTF-8
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 10 Mar 2021 08:02:56 GMT
+
+
+
+MIME: text/javascript; charset=UTF-8
+Wed, 10 Mar 2021 08:02:56 GMT 200 path(hello.js)
+HTTP/1.0 200 OK
+Content-Length: 241708
+Content-Type: text/javascript; charset=UTF-8
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 10 Mar 2021 08:02:56 GMT
+
+
+
+MIME: application/wasm
+Wed, 10 Mar 2021 08:02:56 GMT 200 path(hello.wasm)
+HTTP/1.0 200 OK
+Content-Length: 155166
+Content-Type: application/wasm
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 10 Mar 2021 08:02:56 GMT
+
+
+
+MIME: image/ico
+Wed, 10 Mar 2021 08:02:56 GMT 404 path(favicon.ico)
+HTTP/1.0 404 File not found
+Content-Length: 0
+Content-Type: image/ico
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 10 Mar 2021 08:02:56 GMT
+
+
+
