@@ -1,0 +1,485 @@
+/Users/pablo/http
+net.http.Server.port=8080
+net.http.Server.log=true
+net.http.Server.index=index.html
+net.http.Server.ssl=false
+MIME: text/html; charset=UTF-8
+Wed, 31 Mar 2021 21:31:21 GMT 200 path(index.html)
+HTTP/1.0 200 OK
+Content-Length: 2074
+Content-Type: text/html; charset=UTF-8
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:31:21 GMT
+
+
+
+MIME: image/png
+MIME: image/png
+Wed, 31 Mar 2021 21:31:21 GMT 200 path(fun/mandelbrot/mandelbrot-thumb-2.png)
+HTTP/1.0 200 OK
+Content-Length: 68236
+Content-Type: image/png
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:31:21 GMT
+
+
+
+Wed, 31 Mar 2021 21:31:21 GMT 200 path(fun/magnetic-field-ss.png)
+HTTP/1.0 200 OK
+Content-Length: 1104654
+Content-Type: image/png
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:31:21 GMT
+
+
+
+MIME: image/png
+Wed, 31 Mar 2021 21:31:21 GMT 200 path(pablo/celestiary/ss.png)
+HTTP/1.0 200 OK
+Content-Length: 297437
+Content-Type: image/png
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:31:21 GMT
+
+
+
+MIME: image/png
+Wed, 31 Mar 2021 21:31:21 GMT 200 path(phys/fluid/ss.png)
+HTTP/1.0 200 OK
+Content-Length: 58257
+Content-Type: image/png
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:31:21 GMT
+
+
+
+MIME: image/png
+Wed, 31 Mar 2021 21:31:21 GMT 200 path(fun/warp/ss.png)
+HTTP/1.0 200 OK
+Content-Length: 29675
+Content-Type: image/png
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:31:21 GMT
+
+
+
+MIME: image/png
+Wed, 31 Mar 2021 21:31:21 GMT 200 path(game/gol/ss.png)
+HTTP/1.0 200 OK
+Content-Length: 21346
+Content-Type: image/png
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:31:21 GMT
+
+
+
+MIME: image/png
+Wed, 31 Mar 2021 21:31:21 GMT 200 path(fun/sine-ss.png)
+HTTP/1.0 200 OK
+Content-Length: 368933
+Content-Type: image/png
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:31:21 GMT
+
+
+
+MIME: image/ico
+Wed, 31 Mar 2021 21:31:22 GMT 404 path(favicon.ico)
+HTTP/1.0 404 File not found
+Content-Length: 0
+Content-Type: image/ico
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:31:22 GMT
+
+
+
+MIME: text/html; charset=UTF-8
+Wed, 31 Mar 2021 21:31:24 GMT 200 path(index.html)
+HTTP/1.0 200 OK
+Content-Length: 2074
+Content-Type: text/html; charset=UTF-8
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:31:24 GMT
+
+
+
+MIME: image/png
+MIME: image/png
+Wed, 31 Mar 2021 21:31:24 GMT 200 path(fun/mandelbrot/mandelbrot-thumb-2.png)
+HTTP/1.0 200 OK
+Content-Length: 68236
+Content-Type: image/png
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:31:24 GMT
+
+
+
+Wed, 31 Mar 2021 21:31:24 GMT 200 path(fun/magnetic-field-ss.png)
+HTTP/1.0 200 OK
+Content-Length: 1104654
+Content-Type: image/png
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:31:24 GMT
+
+
+
+MIME: image/png
+Wed, 31 Mar 2021 21:31:24 GMT 200 path(pablo/celestiary/ss.png)
+HTTP/1.0 200 OK
+Content-Length: 297437
+Content-Type: image/png
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:31:24 GMT
+
+
+
+MIME: image/png
+Wed, 31 Mar 2021 21:31:24 GMT 200 path(phys/fluid/ss.png)
+HTTP/1.0 200 OK
+Content-Length: 58257
+Content-Type: image/png
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:31:24 GMT
+
+
+
+MIME: image/png
+MIME: image/png
+Wed, 31 Mar 2021 21:31:24 GMT 200 path(fun/warp/ss.png)
+HTTP/1.0 200 OK
+Content-Length: 29675
+Content-Type: image/png
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:31:24 GMT
+
+
+
+Wed, 31 Mar 2021 21:31:24 GMT 200 path(game/gol/ss.png)
+HTTP/1.0 200 OK
+Content-Length: 21346
+Content-Type: image/png
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:31:24 GMT
+
+
+
+MIME: image/png
+Wed, 31 Mar 2021 21:31:24 GMT 200 path(fun/sine-ss.png)
+HTTP/1.0 200 OK
+Content-Length: 368933
+Content-Type: image/png
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:31:24 GMT
+
+
+
+MIME: image/ico
+Wed, 31 Mar 2021 21:31:24 GMT 404 path(favicon.ico)
+HTTP/1.0 404 File not found
+Content-Length: 0
+Content-Type: image/ico
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:31:24 GMT
+
+
+
+MIME: text/html; charset=UTF-8
+Wed, 31 Mar 2021 21:31:56 GMT 200 path(index.html)
+HTTP/1.0 200 OK
+Content-Length: 2152
+Content-Type: text/html; charset=UTF-8
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:31:56 GMT
+
+
+
+MIME: image/png
+Wed, 31 Mar 2021 21:31:56 GMT 200 path(fun/magnetic-field-ss.png)
+HTTP/1.0 200 OK
+Content-Length: 1104654
+Content-Type: image/png
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:31:56 GMT
+
+
+
+MIME: image/png
+Wed, 31 Mar 2021 21:31:56 GMT 200 path(fun/mandelbrot/mandelbrot-thumb-2.png)
+HTTP/1.0 200 OK
+Content-Length: 68236
+Content-Type: image/png
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:31:56 GMT
+
+
+
+MIME: image/png
+MIME: image/png
+Wed, 31 Mar 2021 21:31:56 GMT 200 path(pablo/celestiary/ss.png)
+HTTP/1.0 200 OK
+Content-Length: 297437
+Content-Type: image/png
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:31:56 GMT
+
+
+
+Wed, 31 Mar 2021 21:31:56 GMT 200 path(phys/fluid/ss.png)
+HTTP/1.0 200 OK
+Content-Length: 58257
+Content-Type: image/png
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:31:56 GMT
+
+
+
+MIME: image/png
+MIME: image/png
+MIME: image/png
+Wed, 31 Mar 2021 21:31:56 GMT 200 path(fun/sine-ss.png)
+HTTP/1.0 200 OK
+Content-Length: 368933
+Content-Type: image/png
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:31:56 GMT
+
+
+
+Wed, 31 Mar 2021 21:31:56 GMT 200 path(fun/warp/ss.png)
+HTTP/1.0 200 OK
+Content-Length: 29675
+Content-Type: image/png
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:31:56 GMT
+
+
+
+Wed, 31 Mar 2021 21:31:56 GMT 200 path(game/gol/ss.png)
+HTTP/1.0 200 OK
+Content-Length: 21346
+Content-Type: image/png
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:31:56 GMT
+
+
+
+MIME: text/html; charset=UTF-8
+Wed, 31 Mar 2021 21:32:09 GMT 200 path(index.html)
+HTTP/1.0 200 OK
+Content-Length: 2145
+Content-Type: text/html; charset=UTF-8
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:32:09 GMT
+
+
+
+MIME: image/png
+Wed, 31 Mar 2021 21:32:09 GMT 200 path(fun/mandelbrot/mandelbrot-thumb-2.png)
+HTTP/1.0 200 OK
+Content-Length: 68236
+Content-Type: image/png
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:32:09 GMT
+
+
+
+MIME: image/png
+Wed, 31 Mar 2021 21:32:09 GMT 200 path(fun/magnetic-field-ss.png)
+HTTP/1.0 200 OK
+Content-Length: 1104654
+Content-Type: image/png
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:32:09 GMT
+
+
+
+MIME: image/png
+Wed, 31 Mar 2021 21:32:09 GMT 200 path(pablo/celestiary/ss.png)
+HTTP/1.0 200 OK
+Content-Length: 297437
+Content-Type: image/png
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:32:09 GMT
+
+
+
+MIME: image/png
+MIME: image/png
+MIME: image/png
+Wed, 31 Mar 2021 21:32:09 GMT 200 path(game/gol/ss.png)
+HTTP/1.0 200 OK
+Content-Length: 21346
+Content-Type: image/png
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:32:09 GMT
+
+
+
+Wed, 31 Mar 2021 21:32:09 GMT 200 path(phys/fluid/ss.png)
+HTTP/1.0 200 OK
+Content-Length: 58257
+Content-Type: image/png
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:32:09 GMT
+
+
+
+Wed, 31 Mar 2021 21:32:09 GMT 200 path(fun/warp/ss.png)
+HTTP/1.0 200 OK
+Content-Length: 29675
+Content-Type: image/png
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:32:09 GMT
+
+
+
+MIME: text/html; charset=UTF-8
+MIME: image/png
+Wed, 31 Mar 2021 21:32:09 GMT 200 path(fun/mandelbrot/index.html)
+HTTP/1.0 200 OK
+Content-Length: 483
+Content-Type: text/html; charset=UTF-8
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:32:09 GMT
+
+
+
+Wed, 31 Mar 2021 21:32:09 GMT 200 path(fun/sine-ss.png)
+HTTP/1.0 200 OK
+Content-Length: 368933
+Content-Type: image/png
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:32:09 GMT
+
+
+
+MIME: text/javascript; charset=UTF-8
+MIME: text/javascript; charset=UTF-8
+Wed, 31 Mar 2021 21:32:09 GMT 200 path(fun/mandelbrot/mandelbrot.js)
+HTTP/1.0 200 OK
+Content-Length: 1766
+Content-Type: text/javascript; charset=UTF-8
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:32:09 GMT
+
+
+
+Wed, 31 Mar 2021 21:32:09 GMT 200 path(fun/canvas.js)
+HTTP/1.0 200 OK
+Content-Length: 1963
+Content-Type: text/javascript; charset=UTF-8
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:32:09 GMT
+
+
+
+MIME: text/html; charset=UTF-8
+Wed, 31 Mar 2021 21:32:38 GMT 200 path(fun/magnetic-field.html)
+HTTP/1.0 200 OK
+Content-Length: 3333
+Content-Type: text/html; charset=UTF-8
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:32:38 GMT
+
+
+
+MIME: text/javascript; charset=UTF-8
+MIME: text/javascript; charset=UTF-8
+Wed, 31 Mar 2021 21:32:38 GMT 200 path(lib/three-68.min.js)
+HTTP/1.0 200 OK
+Content-Length: 424407
+Content-Type: text/javascript; charset=UTF-8
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:32:38 GMT
+
+
+
+Wed, 31 Mar 2021 21:32:38 GMT 200 path(fun/flame.js)
+HTTP/1.0 200 OK
+Content-Length: 2451
+Content-Type: text/javascript; charset=UTF-8
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:32:38 GMT
+
+
+
