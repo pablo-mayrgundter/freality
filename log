@@ -483,3 +483,63 @@ Date: Wed, 31 Mar 2021 21:32:38 GMT
 
 
 
+MIME: text/html; charset=UTF-8
+Wed, 31 Mar 2021 21:37:32 GMT 200 path(fun/mandelbrot/shader.html)
+HTTP/1.0 200 OK
+Content-Length: 1465
+Content-Type: text/html; charset=UTF-8
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:37:32 GMT
+
+
+
+MIME: text/javascript; charset=UTF-8
+Wed, 31 Mar 2021 21:37:32 GMT 200 path(fun/flame.js)
+HTTP/1.0 200 OK
+Content-Length: 2451
+Content-Type: text/javascript; charset=UTF-8
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:37:32 GMT
+
+
+
+MIME: image/ico
+Wed, 31 Mar 2021 21:37:32 GMT 404 path(favicon.ico)
+HTTP/1.0 404 File not found
+Content-Length: 0
+Content-Type: image/ico
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:37:32 GMT
+
+
+
+MIME: text/html; charset=UTF-8
+Wed, 31 Mar 2021 21:37:38 GMT 200 path(fun/mandelbrot/shader.html)
+HTTP/1.0 200 OK
+Content-Length: 1465
+Content-Type: text/html; charset=UTF-8
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:37:38 GMT
+
+
+
+MIME: text/javascript; charset=UTF-8
+Wed, 31 Mar 2021 21:37:38 GMT 200 path(fun/flame.js)
+HTTP/1.0 200 OK
+Content-Length: 2451
+Content-Type: text/javascript; charset=UTF-8
+Cache-Control: private, max-age=0
+Expires: -1
+Server: yo
+Date: Wed, 31 Mar 2021 21:37:38 GMT
+
+
+
