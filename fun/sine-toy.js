@@ -1,4 +1,4 @@
-import * as THREE from '/lib/three-68.min.js';
+import * as THREE from '../lib/three.module.js';
 import * as hash from '../net/web/hashparams.js';
 
 let uniforms = hash.getHashParams();
@@ -78,7 +78,6 @@ function makeScene(flameObject) {
     flameObject.update();
     webgl.render(scene, camera);
     requestAnimationFrame(render);
-    console.log('.');
   }
   scene.add(flameObject.obj);
   render();

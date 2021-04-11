@@ -1,3 +1,6 @@
+import * as THREE from '../../lib/three.module.js';
+import OrbitControls from '../../lib/OrbitControls.js';
+
 var scene;
 var camera;
 var renderer;
@@ -17,7 +20,7 @@ var init = function() {
   camera.position.z = 500;
   camera.position.y = 500;
   camera.rotation.x = Math.PI / 4;
-  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls = new OrbitControls(camera, renderer.domElement);
 
   scene.fog = new THREE.FogExp2(0x000055, 0.0003);
 }
@@ -45,14 +48,19 @@ function addTorus(args) {
   args = args || {};
   args.pos = args.pos || [0,0,0];
   args.rot = args.rot || [0,0,0];
-  var torus = THREE.SceneUtils.createMultiMaterialObject( 
+  var mat = new THREE.MeshBasicMaterial({
+      color: c | 0x3f3f3f,
+      wireframe: true,
+      transparent: true
+    });
+  var torus = new THREE.Object3D(
       // radius of entire torus, diameter of tube (less than total radius), 
       // segments around radius, segments around torus ("sides")
       new THREE.TorusGeometry(args.radius || 25,
                               args.diameter || 3,
                               args.surfaceRes || 8,
                               args.torusRes || 5),
-      materialPalette[Math.floor(Math.random() * materialPalette.length)]);
+      mat);
   torus.position.fromArray(args.pos);
   torus.rotation.fromArray(args.rot);
   torus.spin = args.spin || 0.1;
@@ -164,8 +172,9 @@ function lasers() {
     // twice, one will move later.
     verts.push(new THREE.Vector3(t.position.x, t.position.y, t.position.z));
     verts.push(new THREE.Vector3(t.position.x, t.position.y, t.position.z));
-    laserGeometry.computeLineDistances();
-    scene.add(new THREE.Line(laserGeometry, laserMaterial));
+    const laser = new THREE.Line(laserGeometry, laserMaterial);
+    laser.computeLineDistances();
+    scene.add(laser);
   }
 }
 

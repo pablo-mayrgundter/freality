@@ -10,10 +10,10 @@
   varying vec2 fragCoord;
 
   const float Tau = 6.28571428571428571428;
-  float randCount = mouse.x * 0.001 * mouse.y * 0.001;
 
   // Random.
   float R() {
+    float randCount = mouse.x * 0.001 * mouse.y * 0.001;
     randCount++;
     return 2. * fract(randCount * Tau) - 1.;
   }

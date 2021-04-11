@@ -1,3 +1,5 @@
+import * as THREE from '../lib/three.module.js';
+
 const uniforms = {
   iGlobalTime: {
     type: "f",
@@ -44,9 +46,9 @@ function init(item) {
   camera.position.x = 0;
   camera.position.y = 0;
   camera.position.z = 970;
-  const webgl = new THREE.WebGLRenderer();
-  webgl.setSize(window.innerWidth, window.innerHeight);
-  document.body.appendChild(webgl.domElement);
+  const renderer = new THREE.WebGLRenderer();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
 
   function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -54,7 +56,6 @@ function init(item) {
     renderer.setSize(window.innerWidth, window.innerHeight);
   }
   window.addEventListener('resize', onWindowResize, false);
-  renderer = webgl;
   const light = new THREE.HemisphereLight(0xeeeeee, 0x888888, 1);
   light.position.set(0, 20, 0);
   scene.add(light);
