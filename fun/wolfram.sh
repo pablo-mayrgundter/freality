@@ -1,3 +1,5 @@
+echo 'Usage: ./wolfram.sh $COLUMNS $LINES "0 0 0 1 1 1 1 0"'
+
 width=$1
 height=$2
 
@@ -9,13 +11,18 @@ while (( w < width )) ; do
     output[$w]=0
     ((w++))
 done
-
 input[ $[width/2] ]=1
 rule=($3)
 
+r=0
+while (( r < 8 )) ; do
+    echo "$r: ${rule[$r]}"
+    ((r++))
+done
+
 color[0]='\033[1;40m' # Background
 color[1]='\033[1;46m' # Foreground
-#h=1
+h=1
 #while (( h < height )) ; do
 while (( 1 )) ; do
 
