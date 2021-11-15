@@ -1,4 +1,4 @@
-import {getHashParams, setHashParams} from '/net/web/hashparams.js';
+import {getHashParams, setHashParams} from '../../net/web/hashparams.js';
 
 let c;
 let i = 0;
@@ -34,13 +34,13 @@ export function init() {
 
 function opInit() {
   const first = op == null;
-  //axes(c);
-  //op = new SinX().anim();
-  //op = new PixelWaves().anim();
-  //op = new MergeSplit().anim();
+  axes(c);
+  //op = new SinX();
+  //op = new PixelWaves();
+  //op = new MergeSplit();
   op = new RandomWaves();
   setHashParams(op);
-  //op = new RandomWaves2().anim();
+  //op = new RandomWaves2();
   if (first) {
     anim();
   }
