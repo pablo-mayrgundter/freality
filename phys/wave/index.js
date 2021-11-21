@@ -233,7 +233,7 @@ function end(c) {
 
 function r1(max) {
   max = max || Tau;
-  return 2 * max * Math.random() - max;
+  return (2 * max * Math.random() - max).toPrecision(2);
 }
 
 init();

@@ -3,14 +3,14 @@ package crypto;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.ByteBuffer; 
+import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 
 /**
- * Based on pseudocode from Wikipedia and 
+ * Based on pseudocode from Wikipedia and
  * http://www.itl.nist.gov/fipspubs/fip180-1.htm
  *
  * SHA1.java time to digest 930M file:
@@ -59,7 +59,7 @@ final class SHA1 {
     for (i = 16; i < 80; i++) {
       w[i] = Integer.rotateLeft(w[i-3] ^ w[i-8] ^ w[i-14] ^ w[i-16], 1);
     }
-        
+
     // Initialize hash value for this chunk:
     f = k = temp = 0;
     a = h0;
@@ -67,7 +67,7 @@ final class SHA1 {
     c = h2;
     d = h3;
     e = h4;
-            
+
     for (i = 0; i < 20; i++) {
       f = (b & c) | ((~b) & d);
       k = 0x5A827999;
@@ -149,13 +149,13 @@ final class SHA1 {
         for (j = 16; j < 80; j++) {
           w[j] = 0;
         }
-                
+
         // Compute/add 1 digest line.
         // Extend the sixteen 32-bit (4 byte) words into eighty 32-bit (4 byte) words:
         for (j = 16; j < 80; j++) {
           w[j] = Integer.rotateLeft(w[j-3] ^ w[j-8] ^ w[j-14] ^ w[j-16], 1);
         }
-                
+
         // Initialize hash value for this chunk:
         f = k = temp = 0;
         a = h0;
@@ -163,7 +163,7 @@ final class SHA1 {
         c = h2;
         d = h3;
         e = h4;
-                
+
         for (j = 0; j < 20; j++) {
           f = (b & c) | ((~b) & d);
           k = 0x5A827999;
@@ -187,7 +187,7 @@ final class SHA1 {
           k = 0xCA62C1D6;
           finishValues(j);
         }
-                
+
         // Add this chunk's hash to result so far:
         h0 += a;
         h1 += b;
@@ -196,7 +196,7 @@ final class SHA1 {
         h4 += e;
       }
     }
-        
+
     final ByteBuffer padded = pad(src, fc.size() * 8);
     addDigest(padded);
     if (padded.limit() == 128) {
@@ -213,7 +213,7 @@ final class SHA1 {
       final ReadableByteChannel channel = Channels.newChannel(System.in);
 
       final ByteBuffer src = ByteBuffer.allocateDirect(4096);
-            
+
       int streamLength = 0;
       int readLength;
       while ((readLength = channel.read(src)) != -1) {
@@ -231,7 +231,7 @@ final class SHA1 {
           src.clear();
         }
       }
-            
+
       final ByteBuffer padded = pad(src, streamLength * 8);
       addDigest(padded);
       if (padded.limit() == 128) {
@@ -241,7 +241,7 @@ final class SHA1 {
     } else {
       processFile(new java.io.File(args[0]));
     }
-        
+
     System.out.println(toHexString(h0)
                        + toHexString(h1)
                        + toHexString(h2)

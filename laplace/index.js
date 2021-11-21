@@ -4,13 +4,14 @@ function $(id) {
   return document.getElementById(id);
 }
 
-function num(input) {
-  return parseFloat(input.value);
+function num(value) {
+  return parseFloat(value);
 }
 
 function numberWithCommas(x) {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return x.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
+
 
 class Model {
   constructor() {
@@ -34,7 +35,7 @@ class Model {
 class Form {
   constructor(model) {
     this.model = model;
-    const f = document.forms.default;
+    const f = document.forms.params.elements;
     this.N = f.N;
     this.Rs = f.Rs;
     this.Fp = f.Fp;
@@ -47,16 +48,17 @@ class Form {
     this.button.onclick = update;
   }
   toModel() {
-    this.model.Rs = num(this.Rs);
-    this.model.Fp = num(this.Fp);
-    this.model.Ne = num(this.Ne);
-    this.model.Fl = num(this.Fl);
-    this.model.Fi = num(this.Fi);
-    this.model.Fc = num(this.Fc);
-    this.model.L = num(this.L);
+    this.model.Rs = num(this.Rs.value);
+    this.model.Fp = num(this.Fp.value);
+    this.model.Ne = num(this.Ne.value);
+    this.model.Fl = num(this.Fl.value);
+    this.model.Fi = num(this.Fi.value);
+    this.model.Fc = num(this.Fc.value);
+    this.model.L = num(this.L.value);
   }
   fromModel(m) {
-    this.N.value = numberWithCommas(this.model.N);
+    console.log('here', this.N, this.model.N.value);
+    this.N.value = numberWithCommas(this.model.N.value);
     this.Rs.value = this.model.Rs;
     this.Fp.value = this.model.Fp;
     this.Ne.value = this.model.Ne;
