@@ -33,22 +33,22 @@ class Grid {
   void draw(final int x, final int y, final int pos, int pathType) {
     // Fill draw.
     Graphics g = layers.getGraphics(level - 1);
-    setColor(g, levels - level, 0);
-    int off = w * (int)Math.pow(2, level - 1);
-    if (pathType > 0 && level < levels) {
+    setColor(g, LEVELS - level, 0);
+    int off = WIDTH * (int)Math.pow(2, level - 1);
+    if (pathType > 0 && level < LEVELS) {
       if (path[level - 1] != pos) {
         return;
       }
       setColor(g, level, pathType);
-      g.fillRect(x - w/2 + off/2, y - h/2 + off/2, off, off);
+      g.fillRoundRect(x + off/2, y + off/2, off, off, ROUND, ROUND);
     }
 
     // Grid draw.
-    layers.getGraphics(0).drawRect(x - w/2 + off/2, y - h/2 + off/2, off, off);
+    layers.getGraphics(0).drawRoundRect(x + off/2, y + off/2, off, off, ROUND, ROUND);
 
     // Recurse.
     if (level > 1) {
-      off = w * (int)Math.pow(2, level - 1);
+      off = WIDTH * (int)Math.pow(2, level - 1);
       neigh[0].draw(x, y, 0, pathType);
       neigh[1].draw(x + off, y, 1, pathType);
       neigh[3].draw(x, y + off, 2, pathType);
@@ -57,7 +57,7 @@ class Grid {
   }
 
   void setColor(final Graphics g, final float level, final int pathType) {
-    final float l = level/levels;
+    final float l = level/LEVELS;
     // Arbitrary color channel separation.
     g.setColor(new Color(0.75f*l + (float)pathType / 32f,
                          0.5f*l + (float)pathType / 16f,
@@ -65,24 +65,37 @@ class Grid {
   }
 
   static final int FANOUT = 4;
-  static final int levels = Flags.getInt("levels", 7);
-  static final int size = Flags.getInt("size", 5);
-  static final int w = size, h = size;
+  static final int LEVELS = Flags.getInt("levels", 8);
+  static final int size = Flags.getInt("size", 3);
+  static final int WIDTH = size, HEIGHT = size;
   static final int SLEEP = Flags.getInt("sleep", 100);
-  static final int [] path = new int[levels];
+  static final int COUNT = Flags.getInt("count", -1);
+  static final int ROUND = Flags.getInt("round", 20);
+  static final int [] path = new int[LEVELS];
+
   static void genPath() {
-    for (int i = 0; i < levels; i++) {
+    for (int i = 0; i < LEVELS; i++) {
       path[i] = (int)(Math.random() * 4.0);
     }
-    path[levels - 1] = 0;
+    path[LEVELS - 1] = 0;
+  }
+
+
+  static boolean run(Grid grid, LayeredImage layers, Graphics gfx, BufferedImage img) {
+    genPath();
+    grid.draw(0, 0, 0, 1 + (int)(Math.random() * 7.0));
+    layers.draw(img.getGraphics());
+    gfx.drawImage(img, 0, 0, null);
+    try { Thread.sleep(SLEEP); } catch(Exception e) { return false; }
+    return true;
   }
 
   public static void main(final String [] args) {
     final FullScreenableFrame f = new FullScreenableFrame();
-    System.out.println(f);
-    final LayeredImage layers = new LayeredImage(levels, f.getWidth(), f.getHeight());
-    final Grid grid = new Grid(levels, layers);
-    final Graphics g2d = f.getDrawGraphics();
+    System.out.println(Flags.toStr());
+    final LayeredImage layers = new LayeredImage(LEVELS, f.getWidth(), f.getHeight());
+    final Grid grid = new Grid(LEVELS, layers);
+    final Graphics gfx = f.getDrawGraphics();
     final BufferedImage compositeImg =
       new BufferedImage(f.getWidth(), f.getHeight(), BufferedImage.TYPE_INT_ARGB);
     // Grid is expensive to draw, render only once.
@@ -90,12 +103,12 @@ class Grid {
       grid.draw(0, 0, 0, 0);
     }
 
-    while (true) {
-      genPath();
-      grid.draw(0, 0, 0, 1 + (int)(Math.random() * 7.0));
-      layers.draw(compositeImg.getGraphics());
-      g2d.drawImage(compositeImg, 0, 0, null);
-      try { Thread.sleep(SLEEP); } catch(Exception e) { break; }
+    if (COUNT > 0) {
+      for (int i = 0; i < COUNT; i++)
+        if (!run(grid, layers, gfx, compositeImg)) break;
+    } else {
+      while (true)
+        if (!run(grid, layers, gfx, compositeImg)) break;
     }
   }
 }

@@ -1,5 +1,7 @@
 package util;
 
+import java.util.LinkedHashMap;
+
 /**
  * Helper class to assemble flags in bulk then check them once.
  * Usage:
@@ -19,6 +21,11 @@ package util;
 public class Flags {
 
   static boolean flagsOk = true;
+  static LinkedHashMap<String, String> usedFlags = new LinkedHashMap<>();
+
+  public static String toStr() {
+    return usedFlags.toString();
+  }
 
   public static void clear() {
     flagsOk = true;
@@ -44,15 +51,18 @@ public class Flags {
   // String flags.
 
   public static String get(String name) {
-    String val = System.getProperty(name);
+    final String val = System.getProperty(name);
+    usedFlags.put(name, val);
     if (val == null) {
       flagsOk = false;
     }
-    return null;
+    return val;
   }
 
   public static String get(String name, String defaultVal) {
-    return System.getProperty(name, defaultVal);
+    final String val = System.getProperty(name, defaultVal);
+    usedFlags.put(name, val);
+    return val;
   }
 
   // Int flags.
@@ -62,7 +72,7 @@ public class Flags {
   }
 
   public static int getInt(String name, int defaultVal) {
-    String strVal = System.getProperty(name);
+    String strVal = get(name);
     if (strVal != null) {
       return Integer.parseInt(strVal);
     }
@@ -76,7 +86,7 @@ public class Flags {
   }
 
   public static boolean getBool(String name, boolean defaultVal) {
-    String strVal = System.getProperty(name);
+    String strVal = get(name);
     if (strVal != null) {
       return Boolean.parseBoolean(strVal);
     }
@@ -90,7 +100,7 @@ public class Flags {
   }
 
   public static double getDouble(String name, double defaultVal) {
-    String strVal = System.getProperty(name);
+    String strVal = get(name);
     if (strVal != null) {
       return Double.parseDouble(strVal);
     }
@@ -115,10 +125,10 @@ public class Flags {
   @SuppressWarnings("unchecked")
   public <T> T get(String propName, String abbrevPropName, T defVal) {
     String qName = clazz.getName() + "." + propName;
-    String val = System.getProperty(qName);
+    String val = get(qName);
 
     if (val == null && abbrevPropName != null) {
-      val = System.getProperty(abbrevPropName);
+      val = get(abbrevPropName);
     }
 
     if (val == null) {
