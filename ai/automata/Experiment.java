@@ -6,7 +6,8 @@ import util.Bits;
 
 
 /**
- * 
+ * Usage:
+ *   java -Dwidth=$[COLUMNS] -Dheight=$[LINES - 1] ai/automata/Experiment
  */
 class Experiment {
   public static void main (final String [] args) throws Exception {
