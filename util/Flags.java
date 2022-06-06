@@ -135,7 +135,9 @@ public class Flags {
       val = defVal + "";
     }
 
-    System.out.println(qName + "=" + val);
+    if (getBool("debug")) {
+      System.out.println(qName + "=" + val);
+    }
 
     if (val == null)
       return defVal;
