@@ -78,8 +78,9 @@ public class BitsTest extends TestCase {
 
   void testGet(final Bits bits, final int value) {
     for (int i = 0, n = bits.getLength(); i < n; i++) {
-      assertEquals(value, bits.get(i),
-                   "Expected bit to be %d at index %d of %d", value, i, n);
+      final int actual = bits.get(i);
+      assertEquals(value, actual,
+                   "Expected bit to be %d at index %d of %d, got %d", value, i, n, actual);
     }
   }
 

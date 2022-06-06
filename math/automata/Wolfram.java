@@ -45,6 +45,7 @@ public class Wolfram {
   public static void apply(final Bits src, final int srcNdx,
                            final Bits dst, final int dstNdx,
                            final byte rule) {
+    System.err.printf("Wolfram#apply %s, %d, %s, %d, %d", "", srcNdx, "", dstNdx, rule);
     final int l = srcNdx == 0 ? src.get(src.getLength() - 1) : src.get(srcNdx - 1);
     final int c = src.get(srcNdx);
     final int r = srcNdx == src.getLength() - 1 ? src.get(0) : src.get(srcNdx + 1);

@@ -27,6 +27,6 @@ public class AllTests {
    *   java util.AllTests
    */
   public static void main(final String [] args) {
-    suite().run();
+    System.out.println("AllTests: running tests\n" + suite().run());
   }
 }

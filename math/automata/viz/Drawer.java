@@ -1,46 +1,47 @@
 package math.automata.viz;
 
-import gfx.vt.VT100;
+import gfx.TextGraphics;
 import util.Bits;
 import java.util.List;
+
 
 public final class Drawer {
 
   final List<Bits> mBufs;
+  final TextGraphics mGraphics;
 
-  public Drawer (final List<Bits> bufs) {
+  public Drawer(final List<Bits> bufs) {
     mBufs = bufs;
+    mGraphics = new TextGraphics(bufs.get(0).getLength(), bufs.size());
   }
 
-  public void draw (final int depth) {
-    System.out.print(VT100.CURSOR_HOME);
+  public void draw(final int depth) {
+    mGraphics.clear();
+    mGraphics.setBackground(java.awt.Color.BLUE);
     for (int i = 0; i < depth; i++)
-      System.out.println(drawBits(mBufs.get(i)));
-    System.out.print(VT100.BG_BLACK);
+      drawBits(i, mBufs.get(i));
+    mGraphics.setBackground(java.awt.Color.WHITE);
   }
 
-  public static String drawBits (final Bits b) {
+  public String drawBits(final int row, final Bits b) {
     String s = "";
-    for (int j = 0, n = b.getLength(); j < n; j++)
-      s += ((b.get(j) == 1 ? VT100.BG_WHITE : VT100.BG_BLACK) + " ");
+    for (int j = 0, n = b.getLength(); j < n; j++) {
+      final int bit = b.get(j);
+      if (bit != 0) {
+        mGraphics.drawPixel(j, row);
+      }
+    }
     return s;
   }
-
-  static final String SET = VT100.BG_BLUE, NOT = VT100.BG_BLACK;
-  public String drawBitsWithRules (final Bits b, final byte [] rules) {
+  /*
+  public String drawBitsWithRules(final Bits b, final byte [] rules) {
     return drawBitsWithRules(b, rules, "% 4d");
   }
 
-  public String drawBitsWithRules (final Bits b, final byte [] rules, final String format) {
+  public String drawBitsWithRules(final Bits b, final byte [] rules, final String format) {
     String s = "";
     for (int j = 0, n = b.getLength(); j < n; j++)
       s += (b.get(j) == 1 ? SET : NOT) + String.format(format, rules[j] & 0xFF);
     return s + NOT;
-  }
-
-  public void clear() {
-    System.out.print(VT100.CLEAR_SCREEN);
-    System.out.print(VT100.CURSOR_HOME);
-    System.out.print(VT100.BG_BLACK);
-  }
+    }*/
 }

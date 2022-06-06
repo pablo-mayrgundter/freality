@@ -55,7 +55,7 @@ class Wolfram2D {
   public static void main(final String [] args) {
     final int from = Integer.parseInt(System.getProperty("from", "0"));
     final int to = Integer.parseInt(System.getProperty("to", "255"));
-    final int sleep = Integer.parseInt(System.getProperty("sleep", "500"));
+    final int sleep = Integer.parseInt(System.getProperty("sleep", "1"));
     final Wolfram2D w = new Wolfram2D(WIDTH, HEIGHT);
 
     for (int rule = from; rule <= to; rule++) {

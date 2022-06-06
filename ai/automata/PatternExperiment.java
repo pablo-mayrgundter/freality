@@ -50,7 +50,8 @@ class PatternExperiment {
       rules[i] = (byte) atoi(ruleStrs[i]);
 
     final Drawer d = new Drawer(mem);
-    d.clear();
+    //d.clear();
+    /*
     System.out.printf("% 5d: %s\n", 0, d.drawBitsWithRules(mem.get(0), new byte[rules.length], " "));
     for (int itr = 0; itr < iterations; itr++) {
       Bits src = mem.get(itr);
@@ -58,6 +59,6 @@ class PatternExperiment {
       for (int i = 0; i < width; i++)
         Wolfram.apply(src, i, dst, i, rules[i]);
       System.out.printf("% 5d: %s\n", (itr+1), d.drawBitsWithRules(dst, rules, " "));
-    }
+      }*/
   }
 }

@@ -104,7 +104,7 @@ class BinaryAutomaton {
       }
 
       center = lastBits[i];
-      
+
       if (i == lastBits.length - 1) {
 	right = lastBits[lastBits.length - 1];
       } else {

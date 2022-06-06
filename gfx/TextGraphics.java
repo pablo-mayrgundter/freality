@@ -63,11 +63,11 @@ public final class TextGraphics extends Graphics2D {
   final Map<Color,String> mBGColors;
   int mWidth, mHeight;
 
-  public TextGraphics () {
+  public TextGraphics() {
     this(WIDTH, HEIGHT);
   }
 
-  public TextGraphics (final int width, final int height) {
+  public TextGraphics(final int width, final int height) {
     mWidth = width;
     mHeight = height;
     mFGColors = new HashMap<Color,String>();
@@ -98,7 +98,7 @@ public final class TextGraphics extends Graphics2D {
     g.dispose();
   }
 
-  void p (final String s) {
+  void p(final String s) {
     System.out.print(s);
   }
 
@@ -106,15 +106,15 @@ public final class TextGraphics extends Graphics2D {
     System.out.print(VT100.CLEAR_SCREEN);
   }
 
-  public void drawPixel (final int x, final int y) {
+  public void drawPixel(final int x, final int y) {
     p(VT100.cursorForce(y, x) + " ");
   }
 
-  public void drawLine (final int line, final String s) {
+  public void drawLine(final int line, final String s) {
     p(VT100.cursorForce(line, 0) + s);
   }
 
-  public void scroll () {
+  public void scroll() {
     setBackground(java.awt.Color.BLACK);
     System.out.println();
     setBackground(java.awt.Color.WHITE);

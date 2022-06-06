@@ -52,7 +52,7 @@ public abstract class Check<T extends RuntimeException> {
   }
 
   public void assertEquals(double a, double b) {
-    assertEquals(new Double(a), new Double(b),
+    assertEquals(Double.valueOf(a), Double.valueOf(b),
                  String.format("Expected %f, got %f", a, b));
   }
 
