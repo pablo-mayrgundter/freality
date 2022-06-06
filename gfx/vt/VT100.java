@@ -61,6 +61,7 @@ public final class VT100 {
         return "\033["+count+"D";
     }
 
+    /** @param row Begins at 1. */
     public static String cursorForce(final int row, final int col) {
         return "\033["+row+";"+col+"f";
     }

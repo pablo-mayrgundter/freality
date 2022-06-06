@@ -62,14 +62,20 @@ public final class TextGraphics extends Graphics2D {
   final Map<Color,String> mFGColors;
   final Map<Color,String> mBGColors;
   int mWidth, mHeight;
+  boolean mHomeOnDispose = false;
 
   public TextGraphics() {
-    this(WIDTH, HEIGHT);
+    this(WIDTH, HEIGHT, false);
   }
 
   public TextGraphics(final int width, final int height) {
+    this(width, height, false);
+  }
+
+  public TextGraphics(final int width, final int height, boolean homeOnDispose) {
     mWidth = width;
     mHeight = height;
+    mHomeOnDispose = homeOnDispose;
     mFGColors = new HashMap<Color,String>();
     mBGColors = new HashMap<Color,String>();
     int x = 0;
@@ -78,7 +84,6 @@ public final class TextGraphics extends Graphics2D {
       mBGColors.put(c, "\033[0;"+(40 + x)+"m");
       x++;
     }
-    System.out.print(VT100.CLEAR_SCREEN);
     final TextGraphics tg = this;
     Runtime.getRuntime().addShutdownHook(new Thread(){
         public void run() {
@@ -144,10 +149,11 @@ public final class TextGraphics extends Graphics2D {
   public void dispose() {
     setColor(Color.WHITE);
     setBackground(Color.BLACK);
-    p(VT100.CURSOR_HOME);
+    if (mHomeOnDispose)
+      p(VT100.CURSOR_HOME);
   }
 
-  public void finalize () {
+  public void finalize() {
     dispose();
   }
 

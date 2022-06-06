@@ -15,20 +15,24 @@ public final class Drawer {
     mGraphics = new TextGraphics(bufs.get(0).getLength(), bufs.size());
   }
 
-  public void draw(final int depth) {
+  public void clear() {
     mGraphics.clear();
-    mGraphics.setBackground(java.awt.Color.BLUE);
-    for (int i = 0; i < depth; i++)
-      drawBits(i, mBufs.get(i));
-    mGraphics.setBackground(java.awt.Color.WHITE);
   }
 
-  public String drawBits(final int row, final Bits b) {
+  public void draw(final int depth) {
+    mGraphics.setBackground(java.awt.Color.BLUE);
+    for (int i = 0; i < depth + 1; i++)
+      drawBits(mBufs.get(i), i);
+    mGraphics.setBackground(java.awt.Color.WHITE);
+    System.out.println();
+  }
+
+  public String drawBits(final Bits b, final int rowNum) {
     String s = "";
     for (int j = 0, n = b.getLength(); j < n; j++) {
       final int bit = b.get(j);
       if (bit != 0) {
-        mGraphics.drawPixel(j, row);
+        mGraphics.drawPixel(j, 1 + rowNum);
       }
     }
     return s;

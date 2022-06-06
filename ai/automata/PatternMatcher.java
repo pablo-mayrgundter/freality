@@ -10,19 +10,19 @@ public abstract class PatternMatcher {
   public final List<Bits> mMem;
   final int mWidth;
   final List<byte []> mOps;
-  int mCapacity;
   int mDepth;
 
   PatternMatcher(final int width, final int depth) {
     mMem = new ArrayList<Bits>();
     mOps = new ArrayList<byte []>();
     mWidth = width;
-    mCapacity = mDepth = depth;
-    // Always need one more mem row than ops rows.
-    for (int i = 0; i < depth + 1; i++) {
+    mDepth = depth;
+    for (int i = 0; i < depth; i++) {
       mMem.add(new Bits(mWidth));
-      grow();
+      mOps.add(new byte[mWidth]);
     }
+    // Always need one more mem row than ops rows.
+    mMem.add(new Bits(mWidth));
   }
 
   public List<Bits> getMemory() {
@@ -41,12 +41,6 @@ public abstract class PatternMatcher {
 
   public abstract boolean testOutput(final int outRow);
 
-  void grow() {
-    mMem.add(new Bits(mWidth));
-    mOps.add(new byte[mWidth]);
-    mCapacity++;
-  }
-
   public void run() {
 
     // Feed forwards.
@@ -55,7 +49,7 @@ public abstract class PatternMatcher {
       // Apply current ops to cur mem row, output to next mem row.
       final Bits src = mMem.get(row), dst = mMem.get(row + 1);
       for (int col = 1, len = src.getLength() - 1; col < len; col++) {
-        Wolfram.apply(src, col, dst, col, mOps.get(row)[col]);
+        Wolfram.apply(src, col, dst, col, getRule(row, col));
       }
 
       // Wrap edges.
