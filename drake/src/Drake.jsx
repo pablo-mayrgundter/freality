@@ -114,9 +114,12 @@ export default function Drake() {
       <h1>Drake Equation Calculator</h1>
 
       <p>The Drake Equation is defined
-        &nbsp;<a href="https://en.wikipedia.org/wiki/Drake_equation">Wikipedia/Drake_equation</a>&nbsp;
-        and reproduced here for convenience. Use the calculator below to play with it.
-      </p>
+        &nbsp;<a href="https://en.wikipedia.org/wiki/Drake_equation">Wikipedia/Drake_equation</a></p>
+        <br/>
+
+      <p>Use the calculator below to play with it. This will update the URL to include your parameter
+        choices.  Then you can share your link to give a working reference and the receiver will see
+        the same parameters as you.</p>
 
       <MathJaxContext>
         <table border="0">
