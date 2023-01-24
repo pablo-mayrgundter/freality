@@ -4,7 +4,7 @@
   "description": "Drake Equation Calculator",
   "main": "src/index.jsx",
   "scripts": {
-    "build": "rm -rf docs ; cp -r public docs; esbuild --bundle=true --minify src/index.jsx > docs/bundle.js"
+    "build": "cp -r public/* .; esbuild --bundle=true --minify src/index.jsx > bundle.js"
   },
   "homepage": "https://pablo-mayrgundter.github.com/drake",
   "dependencies": {
