@@ -14,32 +14,33 @@ export default function Drake() {
     },
     eq: {a: '=', symbol: true},
     starFormRate: {
-      a: 'Rs', v: 12345678900, l: '\\(R_{*}\\)',
-      s: 'the average rate of star formation in our galaxy'
+      a: 'Rs', v: 7, l: '\\(R_{*}\\)',
+      s: 'the average rate of star formation in our galaxy per year',
+      c: 'https://www.google.com/search?q=how+many+stars+form+per+year+milky+way'
     },
     m0: {a: '\\(\\cdot\\)', symbol: true},
     fracWithPlanet: {
-      a: 'Fp', v: 0.1, l: '\\(f_p\\)',
-      s: 'the fraction of those stars that have planets',
+      a: 'Fp', v: 1, l: '\\(f_p\\)',
+      s: 'the fraction of those stars that have planets'
     },
     m1: {a: '\\(\\cdot\\)', symbol: true},
     rateSupportLife: {
-      a: 'Ne', v: 0.1, l: '\\(n_e\\)',
+      a: 'Ne', v: 4, l: '\\(n_e\\)',
       s: 'the average number of planets that can potentially support life per star that has planets',
     },
     m2: {a: '\\(\\cdot\\)', symbol: true},
     fracLife: {
-      a: 'Fl', v: 0.1, l: '\\(f_l\\)',
+      a: 'Fl', v: 1, l: '\\(f_l\\)',
       s: 'the fraction of planets that could support life that actually develop life at some point',
     },
     m3: {a: '\\(\\cdot\\)', symbol: true},
     fracIntel: {
-      a: 'Fi', v: 0.001, l: '\\(f_i\\)',
+      a: 'Fi', v: 0.0002, l: '\\(f_i\\)',
       s: 'the fraction of planets with life that actually go on to develop intelligent life (civilizations)',
     },
     m4: {a: '\\(\\cdot\\)', symbol: true},
     fracCiv: {
-      a: 'Fc', v: 0.1, l: '\\(f_c\\)',
+      a: 'Fc', v: 0.5, l: '\\(f_c\\)',
       s: 'the fraction of civilizations that develop a technology that releases detectable signs of their existence into space',
     },
     m5: {a: '\\(\\cdot\\)', symbol: true},
@@ -71,6 +72,7 @@ export default function Drake() {
         m.fracLife.v * m.fracIntel.v * m.fracCiv.v *
         m.civDuration.v)
     setModel(m)
+    setHash()
   }
 
 
@@ -119,7 +121,9 @@ export default function Drake() {
 
       <p>Use the calculator below to play with it. This will update the URL to include your parameter
         choices.  Then you can share your link to give a working reference and the receiver will see
-        the same parameters as you.</p>
+      the same parameters as you.</p>
+
+      <p>Default values are from Wikipedia unless otherwise noted</p>
 
       <MathJaxContext>
         <table border="0">
@@ -156,7 +160,12 @@ export default function Drake() {
           {
             Object.entries(model).map(
               ([k,config]) =>
-              <li key={k}>{config.l} {config.s}</li>
+              <li key={k}>
+                {config.l}&nbsp;&nbsp;{config.s} {
+                  config.c ?
+                    <cite>Default: {config.v} [<a href={config.c} target="new">ref</a>]</cite>
+                  : config.c}
+              </li>
             )
           }
         </ol>
