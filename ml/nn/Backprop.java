@@ -19,15 +19,39 @@ public class Backprop {
   double [] hiddenErrors;
   double [] guessErrors;
 
-  // Guesses are kept for all training samples.
-  double [] guessOutputs;
-
   double learningRate;
 
-  static long randSeed = (new java.util.Date()).getTime();
+  static long randSeed = Long.getLong("seed") == null ? (new java.util.Date()).getTime() : Long.getLong("seed");
+  static {
+    System.out.println("Seed: " + randSeed);
+  }
   static java.util.Random r = new java.util.Random(randSeed);
 
-  Backprop(int numInputs, int numOutputs, int numHidden, double learningRate){
+
+  static String dArrToS(double [] dArr) {
+    String s = "[";
+    for (int i = 0, n = dArr.length; i < n; i++) {
+      s += dRound(dArr[i]);
+      if (i < n - 1) {
+        s += ", ";
+      }
+    }
+    return s + "]";
+  }
+
+
+  static double dRound(double d) {
+    if (d < 0.05) {
+      return 0.0;
+    }
+    if (d > 0.95) {
+      return 1.0;
+    }
+    return d;
+  }
+
+
+  Backprop(int numInputs, int numOutputs, int numHidden, double learningRate) {
     this.numInputs = numInputs;
     this.numHidden = numHidden;
     this.numOutputs = numOutputs;
@@ -40,86 +64,121 @@ public class Backprop {
     layer1 = new double[numInputs][numHidden];
     layer2 = new double[numHidden][numOutputs];
 
-    for(int i = 0; i < numInputs; i++) {
-      for(int j = 0; j < numHidden; j++) {
-	layer1[i][j] = r.nextDouble() * 0.05 * (r.nextBoolean() ? 1 : -1);
+    for (int i = 0; i < numInputs; i++) {
+      for (int h = 0; h < numHidden; h++) {
+	layer1[i][h] = r.nextDouble() * 2.0 - 1.0;
       }
     }
 
-    for(int i = 0; i < numHidden; i++) {
-      for(int j = 0; j < numOutputs; j++) {
-	layer2[i][j] = r.nextDouble() * 0.05 * (r.nextBoolean() ? 1 : -1);
+    for (int h = 0; h < numHidden; h++) {
+      for (int o = 0; o < numOutputs; o++) {
+	layer2[h][o] = r.nextDouble() * 2.0 - 1.0;
       }
     }
   }
 
-  double backpropagate(double [] trainingInputs, double [] trainingOutputs, boolean training){
-    
-    guessOutputs = new double[numOutputs];
 
-    double squaredErrorSum = 0;
+  public String toString() {
+    String s = "";
+    for (int i = 0; i < numInputs; i++) {
+      s += java.util.Arrays.toString(layer1[i]) + "\n";
+    }
+
+    for (int o = 0; o < numOutputs; o++) {
+      s += "[";
+      for (int h = 0; h < numHidden; h++) {
+        s += layer2[h][o] + (h < numHidden - 1 ? ", " : "");
+      }
+      s += "]\n";
+    }
+
+    return s;
+  }
+
+
+  double [] predict(double [] inputs) {
+    final double [] outputs = new double[numOutputs];
 
     // Feed forward through Layer 1
-    for(int j = 0; j < numHidden; j++) { // Compute each hidden value (Notice this is j, not i).
-      hiddenValues[j] = 0;
-      for(int i = 0; i < numInputs; i++) {// By multiplying inputs by layer 1 weights.
-	hiddenValues[j] += trainingInputs[i] * layer1[i][j];
+    for (int h = 0; h < numHidden; h++) { // Compute each hidden value (Notice this is j, not i).
+      hiddenValues[h] = 0;
+      for (int i = 0; i < numInputs; i++) {// By multiplying inputs by layer 1 weights.
+	hiddenValues[h] += inputs[i] * layer1[i][h];
       }
-      hiddenValues[j] = squash(hiddenValues[j]);
+      hiddenValues[h] = squash(hiddenValues[h]);
     }
 
     // Feed forward through Layer 2
-    for(int k = 0; k < numOutputs; k++) { // Compute each hidden value (Notice this is k, not j).
-      guessOutputs[k] = 0;
-      for(int j = 0; j < numHidden; j++) {// By multiplying inputs by layer 1 weights.
-	guessOutputs[k] += hiddenValues[j] * layer2[j][k];
+    for (int o = 0; o < numOutputs; o++) { // Compute each hidden value (Notice this is k, not j).
+      outputs[o] = 0;
+      for (int h = 0; h < numHidden; h++) {// By multiplying inputs by layer 1 weights.
+	outputs[o] += hiddenValues[h] * layer2[h][o];
       }
-      guessOutputs[k] = squash(guessOutputs[k]);
+      outputs[o] = squash(outputs[o]);
     }
+
+    return outputs;
+  }
+
+
+  double learn(double [] inputs, double [] trainingOutputs) {
+
+    final double [] guessOutputs = predict(inputs);
+
+    double squaredErrorSum = 0;
 
     // Measure output errors.
     double guessOutput;
-    for(int k = 0; k < numOutputs; k++) {
-      guessOutput = guessOutputs[k];
-      guessErrors[k] = guessOutput * (1.0 - guessOutput) * (trainingOutputs[k] - guessOutput);
-      squaredErrorSum += Math.pow(guessErrors[k], 2.0);
+    for (int o = 0; o < numOutputs; o++) {
+      guessErrors[o] = trainingOutputs[o] - guessOutputs[o];
+      squaredErrorSum += Math.pow(guessErrors[o], 2.0);
+    }
+
+    // Update the layer 2 weights.
+    for (int h = 0; h < numHidden; h++) {
+      for (int o = 0; o < numOutputs; o++) {
+        final double gradient = guessErrors[o] * dsquash(guessOutputs[o]);
+        layer2[h][o] += learningRate * gradient * hiddenValues[h];
+      }
     }
 
     // Measure hidden errors.
-    for(int j = 0; j < numHidden; j++) {
-      hiddenErrors[j] = 0;
-      for(int k = 0; k < numOutputs; k++) {
-	hiddenErrors[j] += layer2[j][k] * guessErrors[k];
-      }
-      hiddenErrors[j] = hiddenValues[j] * (1.0 - hiddenValues[j]) * hiddenErrors[j];
-    }
-
-    if(training) {
-      // Update the layer 2 weights.
-      for(int j = 0; j < numHidden; j++){
-	for(int k = 0; k < numOutputs; k++){
-	  layer2[j][k] += learningRate * guessErrors[k] * layer2[j][k];
-	}
-      }
-
-      // Update the layer 1 weights.
-      for(int i = 0; i < numInputs; i++){
-	for(int j = 0; j < numHidden; j++){
-	  layer1[i][j] += learningRate * hiddenErrors[j] * layer1[i][j];
-	}
+    for (int h = 0; h < numHidden; h++) {
+      hiddenErrors[h] = 0;
+      for (int o = 0; o < numOutputs; o++) {
+	hiddenErrors[h] += layer2[h][o] * guessErrors[o];
       }
     }
+
+    // Update the layer 1 weights.
+    for (int i = 0; i < numInputs; i++) {
+      for (int h = 0; h < numHidden; h++) {
+        final double gradient = hiddenErrors[h] * dsquash(hiddenValues[h]);
+        layer1[i][h] += learningRate * gradient * inputs[i];
+      }
+    }
+
     return squaredErrorSum;
   }
+
 
   /**
    * Squash a real into the range (0,1).  The Sigmoid function.
    */
-  double squash(double val){
-    final double ret = 1.0 / (1.0 + Math.pow(Math.E, -1.0 * val));
-    if(ret >= 1.0) throw new IllegalStateException("sigmoid hit 1.0 on input: "+ val +", started with seed: "+ randSeed);
+  double squash(double val) {
+    final double ret = 1.0 / (1.0 + Math.exp(-val));
+    if (ret > 1.0) {
+      throw new IllegalStateException(String.format("sigmoid(%s): %s > 1", val, ret));
+    }
     return ret;
   }
+
+
+  double dsquash(double y) {
+    // derivative of sigmoid function
+    return y * (1 - y);
+  }
+
 
   /**
    * Build an NeuralNetwork to learn the identity function.  The training
@@ -127,61 +186,67 @@ public class Backprop {
    * on.  So, given:
    *
    *   1 0 0 0 0 0 0 0
-   * 
+   *
    * the NeuralNetwork must produce this on the outputs:
-   * 
+   *
    *   1 0 0 0 0 0 0 0
-   * 
+   *
    * Given:
    *
    *   0 1 0 0 0 0 0 0
-   * 
+   *
    * the NeuralNetwork must produce this on the outputs:
-   * 
+   *
    *   0 1 0 0 0 0 0 0
-   * 
+   *
    * and so on.  This is exactly what is done below.  Because the
    * squashing function can't yield 0 or 1 as outputs exactly, 0 is
    * represented by 0.1 and 1 is represented by 0.9.
-   * 
+   *
    * The program outputs the error rates for successive training runs.
    * This should decrease with each run.
    */
-  public static void main(String [] args){
+  public static void main(String [] args) {
 
-    int numInputs = 8, numHidden = 3, numOuputs = 8, numIterations = 5000;
+    int numInputs = 8, numHidden = 5, numOuputs = 8, numIterations = 50000;
     double learningRate = 0.05;
 
     Backprop nn = new Backprop(numInputs, numOuputs, numHidden, learningRate);
+    System.out.println("Initial network (random):\n" + nn);
 
-    // Make 2 training instances.
     double [] inputs = new double[numInputs];
     double [] outputs = new double[numOuputs];
 
-    // Set up the identity function.
-    for(int i = 0; i < numInputs; i++) {
-      inputs[i] = 0.1;
-      outputs[i] = 0.1;
-    }
+
+    System.out.printf("Initial prediction:\n%s -> %s\n\n",
+                      dArrToS(inputs),
+                      dArrToS(nn.predict(inputs)));
 
     // This makes numInputs training samples, one each for a single-bit flip.
-    for(int n = 0; n < numIterations; n++) {
-      for(int i = 0; i < numInputs; i++) {
+    double error;
+    do {
+      error = 0;
+      for (int i = 0; i < numInputs; i++) {
+        // Setup identity
+        inputs[i] = outputs[i] = 1;
 
-	if(i != 0) {
-	  inputs[i - 1] = 0.1;
-	  outputs[i - 1] = 0.1;
-	}
-	inputs[i] = 0.9;
-	outputs[i] = 0.9;
-	final double error = nn.backpropagate(inputs, outputs, true);
-	if(n % 200 == 0) {
-	  System.out.print("Error: ");
-	  System.out.print(error);
-	  System.out.print('\r');
-	}
+	error += nn.learn(inputs, outputs);
+
+        // Clean up
+        inputs[i] = outputs[i] = 0;
+        System.out.printf("Error %s\r", error);
       }
+    } while (error > 0.01);
+    System.out.println("\n\nTrained network:\n" + nn);
+
+
+    // Predict
+    for (int i = 0; i < numInputs; i++) {
+      inputs[i] = 1;
+      System.out.printf("Trained prediction:\n%s -> %s\n",
+                        dArrToS(inputs),
+                        dArrToS(nn.predict(inputs)));
+      inputs[i] = 0;
     }
-    System.out.println();
   }
 }

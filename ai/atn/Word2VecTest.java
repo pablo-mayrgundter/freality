@@ -1,6 +1,9 @@
 package ai.atn;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collection;
 import org.deeplearning4j.models.word2vec.Word2Vec;
 import org.deeplearning4j.text.sentenceiterator.BasicLineIterator;
@@ -21,7 +24,7 @@ public  class Word2VecTest {
     Word2Vec vec = new Word2Vec.Builder()
                 .minWordFrequency(5)
                 .iterations(1)
-                .layerSize(100)
+                .layerSize(10)
                 .seed(42)
                 .windowSize(5)
                 .iterate(iter)
@@ -29,7 +32,13 @@ public  class Word2VecTest {
                 .build();
 
     vec.fit();
-    Collection<String> lst = vec.wordsNearestSum("day", 10);
-    System.out.println(lst);
+    BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
+    System.out.println("A word?  I'll give more: ");
+    String line;
+    while ((line = r.readLine()) != null) {
+      final double [] wordVec = vec.getWordVector(line);
+      System.out.printf("Vector(len=%d): %s\n", wordVec.length, Arrays.toString(wordVec));
+      System.out.println("Nearest: " + vec.wordsNearestSum(line, 10));
+    }
   }
 }
