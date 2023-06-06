@@ -45,13 +45,13 @@ the NeuralNetwork must produce this on the outputs:
 
 `0 1 0 0 0 0 0 0`
 
-and so on.  This is exactly what is done below.  Because the
-squashing function can't yield 0 or 1 as outputs exactly, 0 is
-represented by 0.1 and 1 is represented by 0.9.
+and so on.  This is exactly what is done below.  Because the squashing
+function can't yield 0 or 1 as outputs exactly, 0 is represented by
+values less than 0.05 and 1 is represented by 0.95.  This threshold is
+controlled by `clamp`.
 
 The program outputs the error rates for successive training runs.
 This should decrease with each run.
-```
 
 ```
 > java Backprop
