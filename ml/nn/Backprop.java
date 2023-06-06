@@ -153,30 +153,7 @@ public class Backprop {
 
 
   /**
-   * Build an NeuralNetwork to learn the identity function.  The training
-   * samples are 8 bit fields, each with 8 bits, with one bit turned
-   * on.  So, given:
-   *
-   *   1 0 0 0 0 0 0 0
-   *
-   * the NeuralNetwork must produce this on the outputs:
-   *
-   *   1 0 0 0 0 0 0 0
-   *
-   * Given:
-   *
-   *   0 1 0 0 0 0 0 0
-   *
-   * the NeuralNetwork must produce this on the outputs:
-   *
-   *   0 1 0 0 0 0 0 0
-   *
-   * and so on.  This is exactly what is done below.  Because the
-   * squashing function can't yield 0 or 1 as outputs exactly, 0 is
-   * represented by 0.1 and 1 is represented by 0.9.
-   *
-   * The program outputs the error rates for successive training runs.
-   * This should decrease with each run.
+   * Build an NeuralNetwork to learn the identity function.  See README.md.
    */
   public static void main(String [] args) {
 
