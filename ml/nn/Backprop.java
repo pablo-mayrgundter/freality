@@ -11,75 +11,47 @@ public class Backprop {
   int numInputs, numHidden, numOutputs, numSamples;
 
   // The network.
-  double [][] layer1;
-  double [][] layer2;
+  float [][] layer1;
+  float [][] layer2;
 
   // Temporary values in the network.
-  double [] hiddenValues;
-  double [] hiddenErrors;
-  double [] guessErrors;
+  float [] hiddenValues;
+  float [] hiddenErrors;
+  float [] guessErrors;
 
-  double learningRate;
+  float learningRate;
 
-  static long randSeed = Long.getLong("seed") == null ? (new java.util.Date()).getTime() : Long.getLong("seed");
-  static {
-    System.out.println("Seed: " + randSeed);
-  }
-  static java.util.Random r = new java.util.Random(randSeed);
-
-
-  static String dArrToS(double [] dArr) {
-    String s = "[";
-    for (int i = 0, n = dArr.length; i < n; i++) {
-      s += dRound(dArr[i]);
-      if (i < n - 1) {
-        s += ", ";
-      }
-    }
-    return s + "]";
-  }
-
-
-  static double dRound(double d) {
-    if (d < 0.05) {
-      return 0.0;
-    }
-    if (d > 0.95) {
-      return 1.0;
-    }
-    return d;
-  }
-
-
-  Backprop(int numInputs, int numOutputs, int numHidden, double learningRate) {
+  Backprop(int numInputs, int numOutputs, int numHidden, float learningRate) {
     this.numInputs = numInputs;
     this.numHidden = numHidden;
     this.numOutputs = numOutputs;
     this.learningRate = learningRate;
 
-    hiddenValues = new double[numHidden];
-    hiddenErrors = new double[numHidden];
-    guessErrors = new double[numOutputs];
+    hiddenValues = new float[numHidden];
+    hiddenErrors = new float[numHidden];
+    guessErrors = new float[numOutputs];
 
-    layer1 = new double[numInputs][numHidden];
-    layer2 = new double[numHidden][numOutputs];
+    layer1 = new float[numInputs][numHidden];
+    layer2 = new float[numHidden][numOutputs];
 
     for (int i = 0; i < numInputs; i++) {
       for (int h = 0; h < numHidden; h++) {
-	layer1[i][h] = r.nextDouble() * 2.0 - 1.0;
+	layer1[i][h] = (float) (r.nextDouble() * 2.0 - 1.0);
       }
     }
 
     for (int h = 0; h < numHidden; h++) {
       for (int o = 0; o < numOutputs; o++) {
-	layer2[h][o] = r.nextDouble() * 2.0 - 1.0;
+	layer2[h][o] = (float) (r.nextDouble() * 2.0 - 1.0);
       }
     }
   }
 
 
   public String toString() {
-    String s = "";
+    String s = "Network:\n";
+    s += String.format("numInputs: %s\nnumHidden: %s\nnumOutputs: %s\n", numInputs, numHidden, numOutputs);
+    s += "Seed: " + SEED + "\n";
     for (int i = 0; i < numInputs; i++) {
       s += java.util.Arrays.toString(layer1[i]) + "\n";
     }
@@ -96,8 +68,8 @@ public class Backprop {
   }
 
 
-  double [] predict(double [] inputs) {
-    final double [] outputs = new double[numOutputs];
+  float [] predict(float [] inputs) {
+    final float [] outputs = new float[numOutputs];
 
     // Feed forward through Layer 1
     for (int h = 0; h < numHidden; h++) { // Compute each hidden value (Notice this is j, not i).
@@ -121,14 +93,14 @@ public class Backprop {
   }
 
 
-  double learn(double [] inputs, double [] trainingOutputs) {
+  float learn(float [] inputs, float [] trainingOutputs) {
 
-    final double [] guessOutputs = predict(inputs);
+    final float [] guessOutputs = predict(inputs);
 
-    double squaredErrorSum = 0;
+    float squaredErrorSum = 0;
 
     // Measure output errors.
-    double guessOutput;
+    float guessOutput;
     for (int o = 0; o < numOutputs; o++) {
       guessErrors[o] = trainingOutputs[o] - guessOutputs[o];
       squaredErrorSum += Math.pow(guessErrors[o], 2.0);
@@ -137,7 +109,7 @@ public class Backprop {
     // Update the layer 2 weights.
     for (int h = 0; h < numHidden; h++) {
       for (int o = 0; o < numOutputs; o++) {
-        final double gradient = guessErrors[o] * dsquash(guessOutputs[o]);
+        final float gradient = guessErrors[o] * dsquash(guessOutputs[o]);
         layer2[h][o] += learningRate * gradient * hiddenValues[h];
       }
     }
@@ -153,7 +125,7 @@ public class Backprop {
     // Update the layer 1 weights.
     for (int i = 0; i < numInputs; i++) {
       for (int h = 0; h < numHidden; h++) {
-        final double gradient = hiddenErrors[h] * dsquash(hiddenValues[h]);
+        final float gradient = hiddenErrors[h] * dsquash(hiddenValues[h]);
         layer1[i][h] += learningRate * gradient * inputs[i];
       }
     }
@@ -165,8 +137,8 @@ public class Backprop {
   /**
    * Squash a real into the range (0,1).  The Sigmoid function.
    */
-  double squash(double val) {
-    final double ret = 1.0 / (1.0 + Math.exp(-val));
+  float squash(float val) {
+    final float ret = (float) (1.0 / (1.0 + Math.exp(-val)));
     if (ret > 1.0) {
       throw new IllegalStateException(String.format("sigmoid(%s): %s > 1", val, ret));
     }
@@ -174,7 +146,7 @@ public class Backprop {
   }
 
 
-  double dsquash(double y) {
+  float dsquash(float y) {
     // derivative of sigmoid function
     return y * (1 - y);
   }
@@ -208,14 +180,32 @@ public class Backprop {
    */
   public static void main(String [] args) {
 
-    int numInputs = 8, numHidden = 5, numOuputs = 8, numIterations = 50000;
-    double learningRate = 0.05;
+    if (Boolean.getBoolean("usage")) {
+      System.out.println(
+        "java <properties> Backprop\n\n" +
+        "Properties:\n" +
+        "  -Dusage=(true|false)\tPrint this message and exit.\n" +
+        "  -DnumInputs=8\n" +
+        "  -DnumHidden=4\n" +
+        "  -DnumOutputs=8\n" +
+        "  -DtargetError=0.05\n" +
+        "  -Drate=0.05\n" +
+        "  -Dseed=42\n" +
+        "  -Dclamp=0.05\t\tClamp distance for rounding to 0 or 1 in outputs");
+      return;
+    }
+
+    final int
+      numInputs = Integer.getInteger("numInputs", 8),
+      numHidden = Integer.getInteger("numHidden", 4),
+      numOuputs = Integer.getInteger("numOutputs", 8);
+    final float learningRate = Float.parseFloat(System.getProperty("rate", "0.05"));
 
     Backprop nn = new Backprop(numInputs, numOuputs, numHidden, learningRate);
     System.out.println("Initial network (random):\n" + nn);
 
-    double [] inputs = new double[numInputs];
-    double [] outputs = new double[numOuputs];
+    float [] inputs = new float[numInputs];
+    float [] outputs = new float[numOuputs];
 
 
     System.out.printf("Initial prediction:\n%s -> %s\n\n",
@@ -223,7 +213,9 @@ public class Backprop {
                       dArrToS(nn.predict(inputs)));
 
     // This makes numInputs training samples, one each for a single-bit flip.
-    double error;
+    float error;
+    int numIterations = 0;
+    final float targetError = Float.parseFloat(System.getProperty("targetError", "0.05"));
     do {
       error = 0;
       for (int i = 0; i < numInputs; i++) {
@@ -234,10 +226,13 @@ public class Backprop {
 
         // Clean up
         inputs[i] = outputs[i] = 0;
-        System.out.printf("Error %s\r", error);
       }
-    } while (error > 0.01);
-    System.out.println("\n\nTrained network:\n" + nn);
+      if (numIterations++ % 100000 == 0) {
+        System.out.printf("numIterations: %d, error %s\r", numIterations, error / numInputs);
+      }
+    } while (error > targetError);
+    System.out.printf("\n\nTrained network in %d iterations with final error %s:\n\n%s\n",
+                      numIterations, error, nn);
 
 
     // Predict
@@ -248,5 +243,32 @@ public class Backprop {
                         dArrToS(nn.predict(inputs)));
       inputs[i] = 0;
     }
+  }
+
+
+  static long SEED = Long.getLong("seed") == null ? (new java.util.Date()).getTime() : Long.getLong("seed");
+  static java.util.Random r = new java.util.Random(SEED);
+  static float CLAMP = Float.parseFloat(System.getProperty("clamp", "0.05"));
+
+  static String dArrToS(float [] dArr) {
+    String s = "[";
+    for (int i = 0, n = dArr.length; i < n; i++) {
+      s += dRound(dArr[i]);
+      if (i < n - 1) {
+        s += ", ";
+      }
+    }
+    return s + "]";
+  }
+
+
+  static float dRound(float d) {
+    if (d < CLAMP) {
+      return 0.0f;
+    }
+    if (d > CLAMP) {
+      return 1.0f;
+    }
+    return d;
   }
 }
