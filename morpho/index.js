@@ -23475,23 +23475,69 @@ var require_jsx_dev_runtime = __commonJS((exports, module) => {
 var import_react = __toESM(require_react(), 1);
 var client = __toESM(require_client(), 1);
 var jsx_dev_runtime = __toESM(require_jsx_dev_runtime(), 1);
+var genRandArr = function(length = 10, max = 100) {
+  return Array.from({ length }, () => Math.floor(Math.random() * max));
+};
+var applySort = function(array, sort) {
+  let anySwaps;
+  do {
+    anySwaps = false;
+    array = array.map((cur, index, arr) => {
+      const { newVal, swapped } = sort(cur, index, arr);
+      anySwaps |= swapped;
+      return newVal;
+    });
+  } while (anySwaps);
+  return array;
+};
+var upsort1 = function(cur, index, arr) {
+  let newVal = cur;
+  let swapped = false;
+  if (index < arr.length - 1 && cur > arr[index + 1]) {
+    newVal = arr[index + 1];
+    swapped = true;
+  } else if (index > 0 && cur < arr[index - 1]) {
+    newVal = arr[index - 1];
+    swapped = true;
+  }
+  return { newVal, swapped };
+};
+var areArraysEqual = function(arr1, arr2) {
+  return arr1.length === arr2.length && arr1.reduce((equal, curr, index) => equal && curr === arr2[index], true);
+};
+var Page = function() {
+  const [arr] = import_react.useState(genRandArr(5, 100));
+  const sorted = Array.from(arr).sort((a, b) => a - b);
+  const result1 = applySort(arr, upsort1);
+  return jsx_dev_runtime.jsxDEV("div", {
+    children: [
+      jsx_dev_runtime.jsxDEV("div", {
+        children: [
+          "Random array: ",
+          arr.join(", ")
+        ]
+      }, undefined, true, undefined, this),
+      jsx_dev_runtime.jsxDEV("div", {
+        children: [
+          "Sorted: ",
+          sorted.join(", ")
+        ]
+      }, undefined, true, undefined, this),
+      jsx_dev_runtime.jsxDEV("div", {
+        children: [
+          "upsort1: ",
+          result1.join(", ")
+        ]
+      }, undefined, true, undefined, this),
+      jsx_dev_runtime.jsxDEV("div", {
+        children: [
+          "valid: ",
+          new Boolean(areArraysEqual(sorted, result1)).toString()
+        ]
+      }, undefined, true, undefined, this)
+    ]
+  }, undefined, true, undefined, this);
+};
 var container = document.getElementById("app");
 var root = client.createRoot(container);
-var arr = Array.from({ length: 10 }, () => Math.floor(Math.random() * 100));
-var Page = () => jsx_dev_runtime.jsxDEV("div", {
-  children: [
-    jsx_dev_runtime.jsxDEV("div", {
-      children: [
-        "Random array: ",
-        arr.join(", ")
-      ]
-    }, undefined, true, undefined, this),
-    jsx_dev_runtime.jsxDEV("div", {
-      children: [
-        "Sorted: ",
-        arr.sort((a, b) => a - b).join(", ")
-      ]
-    }, undefined, true, undefined, this)
-  ]
-}, undefined, true, undefined, this);
 root.render(jsx_dev_runtime.jsxDEV(Page, {}, undefined, false, undefined, this));
