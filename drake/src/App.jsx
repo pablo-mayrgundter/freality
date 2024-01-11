@@ -1,23 +1,22 @@
-import React, {Suspense, useEffect, useState} from 'react'
-import {useLocation} from 'react-router-dom'
+import React, {useState} from 'react'
+import Awards from './Awards'
 import Drake from './Drake'
 
 
-function App() {
-  const location = useLocation()
-  const [path, setPath] = useState('')
-
-  useEffect(() => {
-    setPath(location.pathname)
-  }, [location])
-
+export default function App() {
+  const [isAwardsShowing, setIsAwardsShowing] = useState(false)
+  const [isDrakeShowing, setIsDrakeShowing] = useState(false)
+  function handleClick(showAwards = false, showDrake = false) {
+    setIsAwardsShowing(showAwards)
+    setIsDrakeShowing(showDrake)
+  }
   return (
-    <div>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Drake/>
-      </Suspense>
-    </div>
+    <>
+      <button onClick={() => handleClick(true, false)}>Awards</button>
+      <button onClick={() => handleClick(false, true)}>Drake</button>
+      <hr/>
+      {isAwardsShowing && <Awards/>}
+      {isDrakeShowing && <Drake/>}
+    </>
   )
 }
-
-export default App
