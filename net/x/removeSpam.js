@@ -60,7 +60,9 @@ function blockDoneBack() {
   log('blockDoneBack')
   getElementByTextContent('span', 'Block', 2).click()
   getFirstElementByTextContent('span', 'Done').click()
-  document.querySelector('[aria-label="Back"]').click()
+  setTimeout(clickBack, pauseTime)
 }
 
-
+function clickBack() {
+  document.querySelector('[aria-label="Back"]').click()
+}
