@@ -31,13 +31,13 @@ function getFollow() {
 const log = (msg) => console.log(msg)
 
 const pauseTime = 1000
-function removeFollow() {
-  log('removeFollow')
+function reportSpamAndBlockFirst() {
+  log('reportSpamAndBlockFirst')
   getFollow().click()
-  setTimeout(clickMore, pauseTime)
+  setTimeout(reportSpamAndBlock, pauseTime)
 }
 
-function clickMore() {
+function reportSpamAndBlock() {
   log('clickMore')
   document.querySelector('[aria-label="More"]').click()
   setTimeout(clickReport, pauseTime)
