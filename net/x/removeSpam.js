@@ -3,7 +3,7 @@
  *
  * Paste this into console on your x.com/notifications page
  *
- * Then call removeFollow() once to remove the top follow notification
+ * Then call reportSpamAndBlockFirst() once to remove the top follow notification
  */
 
 function getElementByTextContent(selector, text, index = 0) {
