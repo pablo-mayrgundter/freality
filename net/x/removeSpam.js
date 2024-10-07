@@ -4,6 +4,8 @@
  * Paste this into console on your x.com/notifications page
  *
  * Then call reportSpamAndBlockFirst() once to remove the top follow notification
+ *
+ * Then call reportSpamAndBlockN(n) to remove n most recent followers
  */
 
 function getElementByTextContent(selector, text, index = 0) {
@@ -35,6 +37,17 @@ function reportSpamAndBlockFirst() {
   log('reportSpamAndBlockFirst')
   getFollow().click()
   setTimeout(reportSpamAndBlock, pauseTime)
+}
+
+function reportSpamAndBlockN(n) {
+  log('reportSpamAndBlockN', n)
+  setTimeout(reportSpamAndBlockFirst, pauseTime)
+  const reportSpamAndBlockNMinusOne = () => {
+    if (n > 0) {
+      reportSpamAndBlockN(n - 1)
+    }
+  }
+  setTimeout(reportSpamAndBlockNMinusOne, 2 * pauseTime)
 }
 
 function reportSpamAndBlock() {
