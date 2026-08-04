@@ -38,7 +38,11 @@ const el = {
 
 let TWEETS = [];        // normalized tweet records
 let INDEX = new Map();  // token -> Set(tweetIndex)
-let HANDLE = localStorage.getItem('x.handle') || '';
+
+// A handle is only ever [A-Za-z0-9_]; sanitize so it can't break the href it's
+// interpolated into (and so a stray '@' or url doesn't produce a bad link).
+const cleanHandle = (h) => (h || '').replace(/^@/, '').replace(/[^A-Za-z0-9_]/g, '');
+let HANDLE = cleanHandle(localStorage.getItem('x.handle'));
 
 
 //////////////////// Persistence (IndexedDB) ////////////////////
@@ -177,8 +181,7 @@ async function importFiles(files) {
       const lower = f.name.toLowerCase();
       if (lower.endsWith('.zip')) {
         showLoading('Unzipping (large archives take a few seconds)…');
-        const entries = await readZip(await f.arrayBuffer(),
-          (n) => looksLikeTweets(n) || looksLikeAccount(n));
+        const entries = await readZip(f, (n) => looksLikeTweets(n) || looksLikeAccount(n));
         const dec = new TextDecoder();
         for (const [name, bytes] of entries) {
           const text = dec.decode(bytes);
@@ -198,6 +201,7 @@ async function importFiles(files) {
 
     showLoading(`Indexing ${raw.length.toLocaleString()} tweets…`);
     const tweets = dedupe(raw.map(normalize));
+    handle = cleanHandle(handle);
     if (handle) { HANDLE = handle; localStorage.setItem('x.handle', handle); }
 
     await dbSet('tweets', tweets);
@@ -225,9 +229,9 @@ function activate(tweets) {
 // ask once so tweet links resolve to the right profile.
 function promptHandle() {
   localStorage.setItem('x.handleAsked', '1');
-  const h = prompt('What is your @handle? (used to build links to each tweet; leave blank to skip)');
+  const h = cleanHandle(prompt('What is your @handle? (used to build links to each tweet; leave blank to skip)'));
   if (h) {
-    HANDLE = h.replace(/^@/, '').trim();
+    HANDLE = h;
     localStorage.setItem('x.handle', HANDLE);
     dbGet('meta').then((m) => dbSet('meta', { ...(m || {}), handle: HANDLE }));
   }

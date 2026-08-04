@@ -31,6 +31,8 @@ const accountJs = `window.YTD.account.part0 = ` + JSON.stringify([
 const raw = parseYTD(tweetsJs);
 eq(raw.length, 4, 'parseYTD count');
 eq(parseHandle(accountJs), 'pmayrgundter', 'parseHandle');
+eq(parseYTD(tweetsJs + ' ;').length, 4, 'parseYTD tolerates trailing ;');
+eq(parseYTD('[] ;').length, 0, 'parseYTD bare array + ;');
 
 const tweets = dedupe(raw.map(normalize));
 eq(tweets.length, 4, 'normalize+dedupe count');
@@ -128,15 +130,28 @@ const zipBuf = makeZip([
   { name: 'data/other.js', data: Buffer.from('ignore me'), deflate: true },
 ]);
 
-const ab = zipBuf.buffer.slice(zipBuf.byteOffset, zipBuf.byteOffset + zipBuf.byteLength);
 const want = (n) => /tweets?\.js$/.test(n) || /account\.js$/.test(n);
-const entries = await readZip(ab, want);
+const entries = await readZip(new Blob([zipBuf]), want);
 const dec = new TextDecoder();
 ok(entries.has('data/tweets.js'), 'zip has tweets.js');
 ok(entries.has('data/account.js'), 'zip has account.js');
 ok(!entries.has('data/other.js'), 'zip skipped unwanted');
 eq(parseYTD(dec.decode(entries.get('data/tweets.js'))).length, 4, 'zip deflate roundtrip');
 eq(parseHandle(dec.decode(entries.get('data/account.js'))), 'pmayrgundter', 'zip stored roundtrip');
+
+// ZIP64 (cd offset = 0xffffffff) -> actionable error, not silent empty.
+const z64 = Buffer.alloc(22);
+z64.writeUInt32LE(0x06054b50, 0);
+z64.writeUInt16LE(1, 8); z64.writeUInt16LE(1, 10);
+z64.writeUInt32LE(0xffffffff, 16);
+let threw = '';
+try { await readZip(new Blob([z64]), () => true); } catch (e) { threw = e.message; }
+ok(/ZIP64/.test(threw), 'zip64 detected with actionable error');
+
+// Non-zip input -> clear error.
+threw = '';
+try { await readZip(new Blob([Buffer.from('not a zip')]), () => true); } catch (e) { threw = e.message; }
+ok(/ZIP/i.test(threw), 'non-zip rejected');
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

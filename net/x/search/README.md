@@ -42,7 +42,11 @@ robust path.
 ## How it works
 
 - **No dependencies.** ZIP entries are located by parsing the central directory
-  and inflated with the browser-native `DecompressionStream('deflate-raw')`.
+  and inflated with the browser-native `DecompressionStream('deflate-raw')`. The
+  archive is read by *slicing* the file (only the few MB we need — the tweet
+  files, not the media), so a large archive is never loaded whole into memory.
+  Archives over 4GB (ZIP64) aren't supported — extract `data/tweets.js` and drop
+  that instead.
 - **Index.** Tweets are tokenized into an in-memory inverted index (token →
   tweet ids) for fast AND queries; phrases fall back to substring matching.
 - **Storage.** Normalized tweets live in IndexedDB, so reloads are instant.

@@ -13,43 +13,64 @@ export async function inflateRaw(bytes) {
 
 // Minimal reader for standard (non-zip64) ZIP archives. Only entries whose
 // name passes `want` are decompressed. Returns Map(filename -> Uint8Array).
-export async function readZip(buf, want) {
-  const dv = new DataView(buf);
-  const u8 = new Uint8Array(buf);
-  const n = buf.byteLength;
+//
+// Reads by slicing the Blob (EOCD tail -> central directory -> just the wanted
+// local entries), so a multi-GB archive-with-media is never loaded into memory:
+// we only touch the few MB we actually need.
+export async function readZip(blob, want) {
+  const size = blob.size;
+  const dec = new TextDecoder();
+  const slice = async (start, end) => new DataView(await blob.slice(start, end).arrayBuffer());
 
-  // Locate End Of Central Directory record (scan back; comment <= 64KB).
-  let eocd = -1;
-  for (let i = n - 22; i >= Math.max(0, n - 22 - 65536); i--) {
-    if (dv.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+  // Locate End Of Central Directory record: it lies within the last
+  // 22 + 65535 bytes (fixed record + max comment).
+  const tailLen = Math.min(size, 22 + 0xffff);
+  const tail = await slice(size - tailLen, size);
+  let eo = -1;
+  for (let i = tail.byteLength - 22; i >= 0; i--) {
+    if (tail.getUint32(i, true) === 0x06054b50) { eo = i; break; }
   }
-  if (eocd < 0) throw new Error('Not a ZIP file (no end-of-central-directory record).');
+  if (eo < 0) throw new Error('Not a ZIP file (no end-of-central-directory record).');
 
-  const count = dv.getUint16(eocd + 10, true);
-  let p = dv.getUint32(eocd + 16, true); // central directory offset
+  const count  = tail.getUint16(eo + 10, true);
+  const cdSize = tail.getUint32(eo + 12, true);
+  const cdOff  = tail.getUint32(eo + 16, true);
+  if (cdOff === 0xffffffff || count === 0xffff) {
+    throw new Error('This archive is 4GB+ (ZIP64), which this reader does not support. '
+      + 'Extract data/tweets.js from the ZIP and drop just that file instead.');
+  }
+
+  // Read the whole central directory (small: one record per file, no data).
+  const cdBuf = await blob.slice(cdOff, cdOff + cdSize).arrayBuffer();
+  const cd = new DataView(cdBuf);
+  const cdu8 = new Uint8Array(cdBuf);
+  if (cd.byteLength < 4 || cd.getUint32(0, true) !== 0x02014b50) {
+    throw new Error('Could not read this ZIP. Extract data/tweets.js and drop just that file.');
+  }
+
+  const wanted = [];
+  let p = 0;
+  for (let i = 0; i < count && p + 46 <= cd.byteLength; i++) {
+    if (cd.getUint32(p, true) !== 0x02014b50) break;
+    const method   = cd.getUint16(p + 10, true);
+    const compSize = cd.getUint32(p + 20, true);
+    const nameLen  = cd.getUint16(p + 28, true);
+    const extraLen = cd.getUint16(p + 30, true);
+    const cmtLen   = cd.getUint16(p + 32, true);
+    const localOff = cd.getUint32(p + 42, true);
+    const name     = dec.decode(cdu8.subarray(p + 46, p + 46 + nameLen));
+    p += 46 + nameLen + extraLen + cmtLen;
+    if (want(name)) wanted.push({ name, method, compSize, localOff });
+  }
 
   const out = new Map();
-  const dec = new TextDecoder();
-  for (let i = 0; i < count; i++) {
-    if (dv.getUint32(p, true) !== 0x02014b50) break;
-    const method   = dv.getUint16(p + 10, true);
-    const compSize = dv.getUint32(p + 20, true);
-    const nameLen  = dv.getUint16(p + 28, true);
-    const extraLen = dv.getUint16(p + 30, true);
-    const cmtLen   = dv.getUint16(p + 32, true);
-    const localOff = dv.getUint32(p + 42, true);
-    const name     = dec.decode(u8.subarray(p + 46, p + 46 + nameLen));
-    p += 46 + nameLen + extraLen + cmtLen;
-
-    if (!want(name)) continue;
-
-    // Local header tells us where the data actually starts.
-    const lNameLen  = dv.getUint16(localOff + 26, true);
-    const lExtraLen = dv.getUint16(localOff + 28, true);
-    const dataStart = localOff + 30 + lNameLen + lExtraLen;
-    const raw = u8.subarray(dataStart, dataStart + compSize);
-    const bytes = method === 0 ? raw : await inflateRaw(raw);
-    out.set(name, bytes);
+  for (const e of wanted) {
+    // The local header's own name/extra lengths tell us where data starts
+    // (they can differ from the central directory's).
+    const lh = await slice(e.localOff, e.localOff + 30);
+    const dataStart = e.localOff + 30 + lh.getUint16(26, true) + lh.getUint16(28, true);
+    const raw = new Uint8Array(await blob.slice(dataStart, dataStart + e.compSize).arrayBuffer());
+    out.set(e.name, e.method === 0 ? raw : await inflateRaw(raw));
   }
   return out;
 }
@@ -61,9 +82,9 @@ export async function readZip(buf, want) {
 // Strip the JS assignment and parse the JSON array. Also tolerates a bare
 // JSON array (e.g. output of scrape.js).
 export function parseYTD(text) {
-  const t = text.trimStart();
+  const t = text.trim();
   const json = (t[0] === '[') ? t : t.slice(t.indexOf('=') + 1);
-  return JSON.parse(json);
+  return JSON.parse(json.trim().replace(/;$/, '')); // tolerate a trailing ';'
 }
 
 export function decodeEntities(s) {
