@@ -11,32 +11,51 @@ export async function inflateRaw(bytes) {
   return new Uint8Array(await new Response(stream).arrayBuffer());
 }
 
-// Minimal reader for standard (non-zip64) ZIP archives. Only entries whose
-// name passes `want` are decompressed. Returns Map(filename -> Uint8Array).
+// Reader for ZIP archives, including ZIP64. Only entries whose name passes
+// `want` are decompressed. Returns Map(filename -> Uint8Array).
 //
 // Reads by slicing the Blob (EOCD tail -> central directory -> just the wanted
 // local entries), so a multi-GB archive-with-media is never loaded into memory:
 // we only touch the few MB we actually need.
+//
+// ZIP64 matters here because X generates archives by *streaming*, and streaming
+// zip writers force ZIP64: entry sizes/offsets are stored as 0xFFFFFFFF
+// sentinels with the real 64-bit values in a ZIP64 extra field, and the central
+// directory is located via a ZIP64 end-of-directory record. We resolve both.
 export async function readZip(blob, want) {
   const size = blob.size;
   const dec = new TextDecoder();
-  const slice = async (start, end) => new DataView(await blob.slice(start, end).arrayBuffer());
+  const SENT = 0xffffffff;
+  const view = async (start, end) =>
+    new DataView(await blob.slice(Math.max(0, start), Math.min(end, size)).arrayBuffer());
 
   // Locate End Of Central Directory record: it lies within the last
   // 22 + 65535 bytes (fixed record + max comment).
   const tailLen = Math.min(size, 22 + 0xffff);
-  const tail = await slice(size - tailLen, size);
+  const tail = await view(size - tailLen, size);
   let eo = -1;
   for (let i = tail.byteLength - 22; i >= 0; i--) {
     if (tail.getUint32(i, true) === 0x06054b50) { eo = i; break; }
   }
   if (eo < 0) throw new Error('Not a ZIP file (no end-of-central-directory record).');
 
-  const count  = tail.getUint16(eo + 10, true);
-  const cdSize = tail.getUint32(eo + 12, true);
-  const cdOff  = tail.getUint32(eo + 16, true);
-  if (cdOff === 0xffffffff || count === 0xffff) {
-    throw new Error('This archive is 4GB+ (ZIP64), which this reader does not support. '
+  let count  = tail.getUint16(eo + 10, true);
+  let cdSize = tail.getUint32(eo + 12, true);
+  let cdOff  = tail.getUint32(eo + 16, true);
+
+  // ZIP64: a locator (0x07064b50) sits immediately before the classic EOCD and
+  // points at the ZIP64 EOCD record (0x06064b50), which holds 64-bit count/offset.
+  if (eo >= 20 && tail.getUint32(eo - 20, true) === 0x07064b50) {
+    const z64Off = Number(tail.getBigUint64(eo - 20 + 8, true));
+    const z = await view(z64Off, z64Off + 56);
+    if (z.byteLength >= 56 && z.getUint32(0, true) === 0x06064b50) {
+      count  = Number(z.getBigUint64(32, true));
+      cdSize = Number(z.getBigUint64(40, true));
+      cdOff  = Number(z.getBigUint64(48, true));
+    }
+  }
+  if (cdOff === SENT || cdSize === SENT || cdOff + cdSize > size) {
+    throw new Error('Could not read this ZIP (unresolved ZIP64 directory). '
       + 'Extract data/tweets.js from the ZIP and drop just that file instead.');
   }
 
@@ -53,21 +72,46 @@ export async function readZip(blob, want) {
   for (let i = 0; i < count && p + 46 <= cd.byteLength; i++) {
     if (cd.getUint32(p, true) !== 0x02014b50) break;
     const method   = cd.getUint16(p + 10, true);
-    const compSize = cd.getUint32(p + 20, true);
+    const uncSize  = cd.getUint32(p + 24, true);
+    let   compSize = cd.getUint32(p + 20, true);
     const nameLen  = cd.getUint16(p + 28, true);
     const extraLen = cd.getUint16(p + 30, true);
     const cmtLen   = cd.getUint16(p + 32, true);
-    const localOff = cd.getUint32(p + 42, true);
+    let   localOff = cd.getUint32(p + 42, true);
     const name     = dec.decode(cdu8.subarray(p + 46, p + 46 + nameLen));
+
+    // ZIP64 extended-info extra field (id 0x0001): the values that were stored
+    // as the 0xFFFFFFFF sentinel appear here as 8-byte ints, in the fixed order
+    // uncompressed, compressed, localHeaderOffset.
+    if (compSize === SENT || localOff === SENT || uncSize === SENT) {
+      let ep = p + 46 + nameLen;
+      const extraEnd = ep + extraLen;
+      while (ep + 4 <= extraEnd) {
+        const id = cd.getUint16(ep, true), len = cd.getUint16(ep + 2, true);
+        if (id === 0x0001) {
+          let dp = ep + 4;
+          if (uncSize  === SENT) dp += 8;                                       // skip; unused
+          if (compSize === SENT) { compSize = Number(cd.getBigUint64(dp, true)); dp += 8; }
+          if (localOff === SENT) { localOff = Number(cd.getBigUint64(dp, true)); dp += 8; }
+          break;
+        }
+        ep += 4 + len;
+      }
+    }
+
     p += 46 + nameLen + extraLen + cmtLen;
     if (want(name)) wanted.push({ name, method, compSize, localOff });
   }
 
   const out = new Map();
   for (const e of wanted) {
+    if (e.localOff < 0 || e.localOff + 30 > size || e.localOff + 30 + e.compSize > size) {
+      throw new Error('Could not read this ZIP (bad entry offset). '
+        + 'Extract data/tweets.js from the ZIP and drop just that file instead.');
+    }
     // The local header's own name/extra lengths tell us where data starts
     // (they can differ from the central directory's).
-    const lh = await slice(e.localOff, e.localOff + 30);
+    const lh = await view(e.localOff, e.localOff + 30);
     const dataStart = e.localOff + 30 + lh.getUint16(26, true) + lh.getUint16(28, true);
     const raw = new Uint8Array(await blob.slice(dataStart, dataStart + e.compSize).arrayBuffer());
     out.set(e.name, e.method === 0 ? raw : await inflateRaw(raw));

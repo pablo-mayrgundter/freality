@@ -45,8 +45,10 @@ robust path.
   and inflated with the browser-native `DecompressionStream('deflate-raw')`. The
   archive is read by *slicing* the file (only the few MB we need — the tweet
   files, not the media), so a large archive is never loaded whole into memory.
-  Archives over 4GB (ZIP64) aren't supported — extract `data/tweets.js` and drop
-  that instead.
+- **ZIP64.** X streams its archives, which forces ZIP64 (64-bit offsets stored
+  in extra fields, with a ZIP64 end-of-directory record). The reader resolves
+  those, so real multi-GB archives import directly; anything it still can't read
+  gives a clear "extract data/tweets.js" message rather than crashing.
 - **Index.** Tweets are tokenized into an in-memory inverted index (token →
   tweet ids) for fast AND queries; phrases fall back to substring matching.
 - **Storage.** Normalized tweets live in IndexedDB, so reloads are instant.
