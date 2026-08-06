@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Hello PWA</title>
+  </head>
+  <body>
+    <h1>Hello, offline world!</h1>
+    <p>If you're seeing this with the network disabled, it's working</p>
+    <script type="text/javascript">
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js')
+            .catch((err) => console.error('ServiceWorker registration failed', err))
+        })
+      }
+    </script>
+  </body>
+</html>
