@@ -82,17 +82,21 @@ export async function readZip(blob, want) {
 
     // ZIP64 extended-info extra field (id 0x0001): the values that were stored
     // as the 0xFFFFFFFF sentinel appear here as 8-byte ints, in the fixed order
-    // uncompressed, compressed, localHeaderOffset.
+    // uncompressed, compressed, localHeaderOffset. Every read is bounds-checked
+    // against the sub-record so a truncated/malformed field yields the clear
+    // error below instead of an out-of-bounds DataView throw.
     if (compSize === SENT || localOff === SENT || uncSize === SENT) {
       let ep = p + 46 + nameLen;
-      const extraEnd = ep + extraLen;
+      const extraEnd = Math.min(ep + extraLen, cd.byteLength);
       while (ep + 4 <= extraEnd) {
         const id = cd.getUint16(ep, true), len = cd.getUint16(ep + 2, true);
+        const bodyEnd = Math.min(ep + 4 + len, extraEnd);
         if (id === 0x0001) {
           let dp = ep + 4;
-          if (uncSize  === SENT) dp += 8;                                       // skip; unused
-          if (compSize === SENT) { compSize = Number(cd.getBigUint64(dp, true)); dp += 8; }
-          if (localOff === SENT) { localOff = Number(cd.getBigUint64(dp, true)); dp += 8; }
+          const next = () => { if (dp + 8 > bodyEnd) throw badZip(); const v = Number(cd.getBigUint64(dp, true)); dp += 8; return v; };
+          if (uncSize  === SENT) next();                       // present but unused
+          if (compSize === SENT) compSize = next();
+          if (localOff === SENT) localOff = next();
           break;
         }
         ep += 4 + len;
@@ -105,18 +109,25 @@ export async function readZip(blob, want) {
 
   const out = new Map();
   for (const e of wanted) {
-    if (e.localOff < 0 || e.localOff + 30 > size || e.localOff + 30 + e.compSize > size) {
-      throw new Error('Could not read this ZIP (bad entry offset). '
-        + 'Extract data/tweets.js from the ZIP and drop just that file instead.');
-    }
+    // A sentinel that survived means an unresolved ZIP64 offset; the local-file
+    // signature check catches any offset that still lands on the wrong bytes.
+    if (e.localOff === SENT || e.compSize === SENT
+        || e.localOff < 0 || e.localOff + 30 > size) throw badZip();
+    const lh = await view(e.localOff, e.localOff + 30);
+    if (lh.byteLength < 30 || lh.getUint32(0, true) !== 0x04034b50) throw badZip();
     // The local header's own name/extra lengths tell us where data starts
     // (they can differ from the central directory's).
-    const lh = await view(e.localOff, e.localOff + 30);
     const dataStart = e.localOff + 30 + lh.getUint16(26, true) + lh.getUint16(28, true);
+    if (dataStart + e.compSize > size) throw badZip();
     const raw = new Uint8Array(await blob.slice(dataStart, dataStart + e.compSize).arrayBuffer());
     out.set(e.name, e.method === 0 ? raw : await inflateRaw(raw));
   }
   return out;
+}
+
+function badZip() {
+  return new Error('Could not read this ZIP (bad entry offset). '
+    + 'Extract data/tweets.js from the ZIP and drop just that file instead.');
 }
 
 

@@ -142,7 +142,9 @@ eq(parseHandle(dec.decode(entries.get('data/account.js'))), 'pmayrgundter', 'zip
 // --- Real ZIP64 archive (streaming-writer style): per-entry 0xffffffff offset
 // sentinels + ZIP64 extra fields + ZIP64 end-of-directory record/locator.
 // This is the shape X's streamed archives use and what crashed the old reader.
-function makeZip64(entries) {
+// noExtra: mark localOff as a sentinel but write NO resolving extra field, to
+// exercise the "unresolved ZIP64" guard (must error cleanly, not crash).
+function makeZip64(entries, { noExtra = false } = {}) {
   const locals = [], centrals = []; let off = 0;
   for (const e of entries) {
     const nb = Buffer.from(e.name), comp = e.deflate ? zlib.deflateRawSync(e.data) : e.data, method = e.deflate ? 8 : 0;
@@ -153,12 +155,20 @@ function makeZip64(entries) {
 
     const ch = Buffer.alloc(46);
     ch.writeUInt32LE(0x02014b50, 0); ch.writeUInt16LE(method, 10);
-    ch.writeUInt32LE(comp.length, 20); ch.writeUInt32LE(e.data.length, 24);
     ch.writeUInt16LE(nb.length, 28);
-    const extra = Buffer.alloc(12);                 // zip64 extra: real local offset
-    extra.writeUInt16LE(0x0001, 0); extra.writeUInt16LE(8, 2); extra.writeBigUInt64LE(BigInt(off), 4);
+    // Sentinel ALL THREE fields (uncompressed, compressed, local offset) — the
+    // shape streaming zip writers actually emit — and carry the real 64-bit
+    // values in the extra field, in canonical order.
+    ch.writeUInt32LE(0xffffffff, 20); ch.writeUInt32LE(0xffffffff, 24); ch.writeUInt32LE(0xffffffff, 42);
+    let extra = Buffer.alloc(0);
+    if (!noExtra) {
+      extra = Buffer.alloc(28);
+      extra.writeUInt16LE(0x0001, 0); extra.writeUInt16LE(24, 2);
+      extra.writeBigUInt64LE(BigInt(e.data.length), 4);   // uncompressed
+      extra.writeBigUInt64LE(BigInt(comp.length), 12);    // compressed
+      extra.writeBigUInt64LE(BigInt(off), 20);            // local header offset
+    }
     ch.writeUInt16LE(extra.length, 30);
-    ch.writeUInt32LE(0xffffffff, 42);               // local offset = sentinel
     centrals.push(Buffer.concat([ch, nb, extra]));
     locals.push(lr); off += lr.length;
   }
@@ -186,8 +196,15 @@ const zip64 = makeZip64([
   { name: 'data/account.js', data: Buffer.from(accountJs), deflate: false },
 ]);
 const e64 = await readZip(new Blob([zip64]), want);
-eq(parseYTD(dec.decode(e64.get('data/tweets.js'))).length, 4, 'ZIP64 deflate entry read via extra-field offset');
+eq(parseYTD(dec.decode(e64.get('data/tweets.js'))).length, 4, 'ZIP64 (unc+comp+offset sentinels) deflate entry read');
 eq(parseHandle(dec.decode(e64.get('data/account.js'))), 'pmayrgundter', 'ZIP64 stored entry read');
+
+// Sentinel offset with no resolving extra field -> clean actionable error, not
+// a RangeError('Offset is outside the bounds of the DataView').
+const zBadExtra = makeZip64([{ name: 'data/tweets.js', data: Buffer.from(tweetsJs), deflate: true }], { noExtra: true });
+let te = '';
+try { await readZip(new Blob([zBadExtra]), want); } catch (e) { te = e.message; }
+ok(/tweets\.js/.test(te) && !/DataView/.test(te), 'unresolved ZIP64 sentinel errors cleanly');
 
 // Malformed ZIP64 (sentinels but no locator/record) -> actionable error, not a crash.
 const bad = Buffer.alloc(22);
