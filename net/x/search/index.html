@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Tweet Archive Search</title>
+    <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon"/>
+    <link rel="stylesheet" href="style.css"/>
+  </head>
+  <body>
+    <header>
+      <h1>🔎 Tweet Archive Search</h1>
+      <p class="tag">
+        Search your own tweets &mdash; even the old ones X can no longer find.
+        Everything runs in your browser; nothing is uploaded.
+      </p>
+    </header>
+
+    <!-- Import panel: shown until an archive is loaded -->
+    <section id="import" class="panel">
+      <div id="drop" class="drop">
+        <p><strong>Drop your X archive here</strong></p>
+        <p class="hint">
+          a <code>twitter-&hellip;.zip</code>, or the <code>data/tweets.js</code>
+          (and optionally <code>account.js</code>) file(s) from inside it
+        </p>
+        <p><input type="file" id="file" multiple accept=".zip,.js"/></p>
+      </div>
+
+      <details class="how">
+        <summary>How do I get my archive?</summary>
+        <ol>
+          <li>On x.com: <em>Settings &rarr; Your account &rarr; Download an archive of your data</em>.</li>
+          <li>Verify, request, then wait (minutes to ~24h) for the "your archive is ready" mail.</li>
+          <li>Download the ZIP and drop it above. It contains every tweet you've posted.</li>
+        </ol>
+        <p class="hint">
+          Don't want to wait? See <a href="scrape.js">scrape.js</a> for a console
+          snippet that scrapes tweets from a profile/search page live (paste it into
+          your browser console, like the spam tool), then drop the JSON it saves here.
+        </p>
+      </details>
+    </section>
+
+    <!-- Search UI: shown after load -->
+    <section id="search" class="panel hidden">
+      <div class="searchbar">
+        <input type="search" id="q" placeholder="e.g.  climate   (space = AND, &quot;exact phrase&quot; in quotes)" autocomplete="off"/>
+      </div>
+      <div class="controls">
+        <label><input type="checkbox" id="hideRT"/> hide retweets</label>
+        <label><input type="checkbox" id="hideReply"/> hide replies</label>
+        <label>sort
+          <select id="sort">
+            <option value="relevance">relevance</option>
+            <option value="newest">newest</option>
+            <option value="oldest">oldest</option>
+            <option value="likes">most liked</option>
+          </select>
+        </label>
+        <span class="spacer"></span>
+        <span id="stats" class="stats"></span>
+        <button id="reset" class="linkish" title="Forget this archive from the browser">reset</button>
+      </div>
+    </section>
+
+    <main id="results"></main>
+
+    <footer>
+      Part of <a href="/">freality</a>. Source:
+      <a href="https://github.com/pablo-mayrgundter/freality/tree/master/net/x/search">net/x/search</a>.
+      Your data stays on this device (IndexedDB).
+    </footer>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
