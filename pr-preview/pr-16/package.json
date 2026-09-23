@@ -1,9 +1,0 @@
-{
-  "name": "adf-three-loader",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "test": "node scripts/test-parse.mjs",
-    "start": "python3 -m http.server 8765"
-  }
-}
