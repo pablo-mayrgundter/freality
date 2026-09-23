@@ -191,10 +191,15 @@ MetaStream later became Viewpoint's **VET** format (a.k.a. **MTS3**). Okino's [P
 - Geometry is **lossy**, **triangles only**, and **progressive**: a low-res mesh comes first, then "additional vertex information" refines it. That suggests a base mesh followed by vertex-split records. It would also explain a stream that starts structured and turns noise-like.
 - The compressor lives inside the closed **Viewpoint VET SDK**; exporters only pass a quality slider (0–1.6).
 
-Two concrete tests follow from that:
+**Confirmed against a real VET file.** Okino's example [`creature2legs.mts`](https://www.okino.com/conv/mts_examples/creature2legs.mts) (216 KB; its scene file is `creature2legs.mtx`) shares the container and the geometry header with the tooth blobs. The file isn't committed here: it's Okino's content, and it's fetched on demand.
 
-1. **Compare with a real VET file.** Get any real VET `.mts`: Okino's example page [exp_vet2.htm](https://www.okino.com/conv/exp_vet2.htm) links some, and so do archived Viewpoint demos. Check whether it also starts with `"mts` + `$$`/`A` chunks, and whether it has the `Fbits0#…7#` table. If it does, Align used the stock MetaStream/VET codec.
-2. **Reverse the old player.** The Viewpoint Media Player browser plug-in (Windows DLLs, early 2000s) contains a working decoder to disassemble.
+- Same start: `22 6d 74 73 00 00 00 00` + `24 24 00 04 01 00 00 00`. It has no `uint32` size prefix, so every offset is 32 bits earlier than in an ADF blob.
+- Mesh chunks: `44 06 00 06 00 04 "mesh" 00…`, `41 28 01 06 00 04 "mesh" 01…`, `41 35 02 06 00 04 "mesh" 02…`. Compare the tooth blobs' `41 XX 00 06 00 04 "mesh" 00…`. Read it as tag, a size-ish byte, instance index, then a type ref.
+- Type refs are `len · flag · strlen · name`: `05 00 03 "mat"` for materials, `07 01 04 "wvlt"` for wavelet textures, `06 00 04 "mesh"`. The tooth blobs' `05 00 03 "dir"` … `05 "Qedge"` directory uses the same encoding.
+- First mesh header: 29 zero bits, then `v = 7` (3 bits, LSB-first), then the same long constant run seen in the tooth blobs. The float32 bbox sits at file bit 383, i.e. 415 in ADF-blob terms. It reads ±329.7 / −503.5…57.7 / −82.6…294.5 model units, which fits the 0.00284 scale in the `.mtx`.
+- No `Fbits`, `dir` or `Qedge` strings. Those look like Align's own custom attributes (per-face flag bits) and object class name, layered on the stock stream.
+
+So the tooth surfaces are standard MetaStream/VET geometry streams. Decoding them means reimplementing Viewpoint's geometry decoder, which has no public spec or open-source reader. The realistic next step is to **reverse the old player**. The Viewpoint Media Player plug-in (`MtsAxInstaller.exe`, `npViewpoint.dll`, …; Windows, 2000s) contains a working decoder. Disassemble its mesh reader, then validate with the `newvtxData` oracle here. The creature file is a second test case with textured, multi-mesh content.
 
 ### Oracle for a future decoder
 
