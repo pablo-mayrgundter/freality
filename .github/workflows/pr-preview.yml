@@ -1,0 +1,61 @@
+name: PR preview
+
+# Deploys a live preview of every PR touching the dental viewer to
+# https://pablo-mayrgundter.github.io/freality/pr-preview/pr-<N>/
+# Cleaned up automatically on PR close.
+#
+# Pages serves `main` at `/`, so previews land on main under pr-preview/ —
+# sibling to the site itself. Only bio/med/dental is published: the repo's
+# tracked content is ~180 MB and a Pages site is capped at 1 GB, so copying
+# the whole tree per PR would exhaust the budget in a handful of previews.
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - closed
+    paths:
+      - 'bio/med/dental/**'
+
+concurrency:
+  group: pr-preview-${{ github.event.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  deploy:
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # No build step: the viewer is plain ES modules and pulls three from a
+      # CDN import map, so the source tree is already the deployable artifact.
+      - name: Check the parser still reads the sample
+        run: node bio/med/dental/scripts/test-parse.mjs
+
+      - name: Deploy preview
+        uses: rossjrw/pr-preview-action@v1.8.1
+        with:
+          source-dir: bio/med/dental
+          preview-branch: main
+          umbrella-dir: pr-preview
+          action: deploy
+
+  cleanup:
+    if: github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Remove preview
+        uses: rossjrw/pr-preview-action@v1.8.1
+        with:
+          preview-branch: main
+          umbrella-dir: pr-preview
+          action: remove
