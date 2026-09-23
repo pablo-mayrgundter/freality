@@ -182,7 +182,7 @@ Dentist screens that looked like a photo on a 3D model almost certainly came fro
 - Duplicate field names become arrays (`Tooth`, `CVHandler`, `Vector3<float>+>`).
 - `newvtxIndices` max id is a **lower bound** on vertex count (there may be unused ids).
 - Gingiva loft is a filled planar strip; default HUD has it **off**. Lines are still built.
-- Viewer raycast only hits `*_crown` meshes; `userData` on the tooth group holds `compressedMesh`, `hintedVertexCount`, `sampledVertexCount`, `meshBounds`.
+- Viewer raycast only hits `*_crown` meshes; `userData` on the tooth group holds `compressedMesh`, `hintedVertexCount`, `sampledVertexCount`, `meshBounds`, and (with a sidecar) `realMesh` / `vertexCount`.
 - `parseMtsHeader(bytes)` (exported from `adf-parser.js`) returns `{ variant, bbox: {min, max} }` for a `CompressedData` blob.
 - `ADFLoader.parse(buffer, { meshes })` takes a `*.meshes.bin` ArrayBuffer (or parsed entries). Real crowns go in the tooth group as `<Tooth>_crown`, and the group's `userData.realMesh` is set.
 - `scripts/test-parse.mjs` checks every decoded crown against its header bbox and requires a closed genus-0 surface.
