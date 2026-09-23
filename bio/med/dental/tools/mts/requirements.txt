@@ -1,0 +1,4 @@
+numpy
+pefile
+unicorn>=2
+keystone-engine

@@ -439,7 +439,7 @@ function extractTooth(obj, jawName) {
     crownDimensions: crownDim,
     hasCompressedMesh: Boolean(meshInfo.bytes),
     compressedMesh: meshInfo,
-    // Axis-aligned bounds of the real (still compressed) crown mesh, jaw space, metres.
+    // Axis-aligned bounds of the crown mesh, read from its mts header (jaw space, metres).
     meshBounds: meshInfo.bbox,
     sampledVertexCount: ipPoints.reduce((n, p) => n + p.length, 0),
     hintedVertexCount: maxVertexId ? maxVertexId + 1 : 0,
@@ -459,16 +459,16 @@ function readBits(bytes, pos, n) {
 const MTS_MAGIC = [0x22, 0x6d, 0x74, 0x73]; // '"mts'
 
 /**
- * Decode the fixed part of a `CompressedData` ("mts") header.
+ * Read the bounding box from a `CompressedData` blob without decoding it.
  *
- * Everything after byte 30 is one LSB-first bitstream. Offsets below are bit
- * offsets from the start of the blob (including its uint32 size prefix):
+ * The blob is a uint32 size, then a MetaStream ("mts") stream. Its mesh
+ * payload is an LSB-first bitstream (see tools/mts/README.md); the first
+ * attribute plug-in header ends with the bbox. Bit offsets below are from the
+ * start of the blob. They were validated on all 54 blobs in PM.adf, but this is
+ * a shortcut, not a general parser:
  *
- *   285  3 bits  variant `v` (3, 4 or 5); three later fields are v+7 bits wide
- *   441-3*(5-v)  6 x float32  bounding box: minX minY minZ maxX maxY maxZ (metres)
- *   ...          8 x ("Fbits" + 3-bit index + 4-bit value), then a
- *                data-dependent table, byte-aligned "dir"/"mesh"/"QedgeA|B"
- *                tags, then the entropy-coded mesh body (not decoded).
+ *   285  3 bits  v (3, 4 or 5): the preceding fields' width grows by 3 bits per v
+ *   441-3*(5-v)  6 x float32  minX minY minZ maxX maxY maxZ (metres, jaw space)
  *
  * Returns null if the blob does not look like an mts stream.
  */
@@ -490,35 +490,11 @@ export function parseMtsHeader(bytes) {
     if (!Number.isFinite(min[a]) || !Number.isFinite(max[a]) || min[a] > max[a]) return null;
     if (Math.abs(min[a]) > 10 || Math.abs(max[a]) > 10) return null;
   }
-  // Byte-aligned directory: 0x03 "dir" 0x01 0x04 "mesh" 0x01 0x00 0x05 "Qedge" <'A'|'B'>
-  let qedgeClass = null;
-  let bodyOffset = -1;
-  const needle = [0x05, 0x51, 0x65, 0x64, 0x67, 0x65]; // \x05Qedge
-  for (let i = 30; i + needle.length < Math.min(bytes.length, 1024); i++) {
-    let ok = true;
-    for (let k = 0; k < needle.length; k++) {
-      if (bytes[i + k] !== needle[k]) {
-        ok = false;
-        break;
-      }
-    }
-    if (ok) {
-      qedgeClass = `Qedge${String.fromCharCode(bytes[i + 6])}`;
-      bodyOffset = i + 7;
-      break;
-    }
-  }
-  return {
-    variant,
-    bbox: { min, max },
-    qedgeClass,
-    bodyOffset,
-    bodyBytes: bodyOffset > 0 ? bytes.length - bodyOffset : 0,
-  };
+  return { variant, bbox: { min, max } };
 }
 
 function describeCompressedMesh(qedge) {
-  const info = { bytes: 0, codec: null, layers: 0, bbox: null, qedgeClass: null };
+  const info = { bytes: 0, codec: null, layers: 0, bbox: null };
   if (!qedge) return info;
   const nodes = asList(qedge);
   for (const node of nodes) {
@@ -537,7 +513,6 @@ function describeCompressedMesh(qedge) {
     if (header) {
       info.codec = 'mts';
       info.bbox = info.bbox || header.bbox;
-      info.qedgeClass = info.qedgeClass || header.qedgeClass;
     }
   }
   if (!info.codec && info.bytes) info.codec = 'qedge';

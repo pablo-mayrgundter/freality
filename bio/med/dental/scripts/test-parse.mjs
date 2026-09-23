@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { extractDentalScene, parseADF } from '../src/adf-parser.js';
+import { MESH_KIND_CROWN, parseMeshSidecar } from '../src/mesh-sidecar.js';
 
 const buf = await readFile(new URL('../PM.adf', import.meta.url));
 const parsed = parseADF(buf);
@@ -52,4 +53,22 @@ for (const t of scene.teeth) {
     }
   }
 }
+// Decoded crown surfaces (tools/mts/build_meshes.py) must match each tooth's
+// stream-header bbox and form closed genus-0 meshes (V - E + F = 2).
+const meshes = parseMeshSidecar(await readFile(new URL('../PM.meshes.bin', import.meta.url)));
+const crowns = new Map(meshes.filter((m) => m.kind === MESH_KIND_CROWN).map((m) => [m.toothId, m]));
+for (const t of scene.teeth) {
+  const m = crowns.get(t.id);
+  if (!m) throw new Error(`${t.name}: no decoded crown in PM.meshes.bin`);
+  const nv = m.positions.length / 3;
+  const nf = m.indices.length / 3;
+  for (let a = 0; a < 3; a++) {
+    if (Math.abs(m.min[a] - t.meshBounds.min[a]) > 1e-6 || Math.abs(m.max[a] - t.meshBounds.max[a]) > 1e-6) {
+      throw new Error(`${t.name}: decoded crown bounds differ from the stream header`);
+    }
+  }
+  for (const i of m.indices) if (i >= nv) throw new Error(`${t.name}: face index ${i} out of range`);
+  if (nv - (nf * 3) / 2 + nf !== 2) throw new Error(`${t.name}: crown is not a closed genus-0 surface`);
+}
+console.log('decoded crowns', crowns.size, 'verts', meshes.reduce((n, m) => n + m.positions.length / 3, 0));
 console.log('ok');
