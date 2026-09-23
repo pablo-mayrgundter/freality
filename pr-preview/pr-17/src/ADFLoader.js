@@ -20,6 +20,7 @@ import {
 } from 'three';
 
 import { extractDentalScene, parseADF } from './adf-parser.js';
+import { MESH_KIND_CROWN, parseMeshSidecar } from './mesh-sidecar.js';
 
 /** ADF stores metres; the scene is built in millimetres. */
 export const ADF_MM = 1000;
@@ -257,6 +258,18 @@ function pointsGeometry(points) {
   return geo;
 }
 
+/** Real crown surface from a decoded mesh sidecar entry, in jaw space (mm). */
+function crownGeometry(entry) {
+  const src = entry.positions;
+  const positions = new Float32Array(src.length);
+  for (let i = 0; i < src.length; i++) positions[i] = src[i] * ADF_MM;
+  const geo = new BufferGeometry();
+  geo.setAttribute('position', new BufferAttribute(positions, 3));
+  geo.setIndex(new BufferAttribute(entry.indices, 1));
+  geo.computeVertexNormals();
+  return geo;
+}
+
 function enamelMaterial(kind) {
   return new MeshPhysicalMaterial({
     color: new Color(ENAMEL[kind] || ENAMEL.premolar),
@@ -318,16 +331,25 @@ function buildJaw(jaw, options) {
       meshBounds: tooth.meshBounds,
     };
 
-    const w = tooth.width * ADF_MM;
-    const d = tooth.depth * ADF_MM;
-    const h = tooth.height * ADF_MM;
-    const mesh = new Mesh(createToothGeometry(tooth.kind, w, d, h), enamelMaterial(tooth.kind));
+    const real = options.crowns?.get(tooth.id);
+    let mesh;
+    if (real) {
+      // Decoded CompressedQedge surface; already in jaw space.
+      mesh = new Mesh(crownGeometry(real), enamelMaterial(tooth.kind));
+      g.userData.realMesh = true;
+      g.userData.vertexCount = real.positions.length / 3;
+    } else {
+      const w = tooth.width * ADF_MM;
+      const d = tooth.depth * ADF_MM;
+      const h = tooth.height * ADF_MM;
+      mesh = new Mesh(createToothGeometry(tooth.kind, w, d, h), enamelMaterial(tooth.kind));
+      const pose = toothPose(tooth);
+      mesh.position.copy(pose.position);
+      mesh.quaternion.copy(pose.quaternion);
+    }
     mesh.castShadow = true;
     mesh.receiveShadow = true;
     mesh.name = `${tooth.name}_crown`;
-    const pose = toothPose(tooth);
-    mesh.position.copy(pose.position);
-    mesh.quaternion.copy(pose.quaternion);
     g.add(mesh);
     teethGroup.add(g);
 
@@ -419,12 +441,13 @@ function buildJaw(jaw, options) {
  * scene.add(result.group);
  * ```
  *
- * The full-resolution tooth surfaces are stored as proprietary CompressedQedge
- * ("mts") bitstreams. Only their headers are decoded so far, which yields each
- * crown mesh's true bounding box (drawn as `meshBounds`). Each tooth itself is
- * still a crown proxy sized from CrownDimensions / FACC widths and posed from
- * the FACC frame. FACC curves, CEJ points, interproximal samples, and gingival
- * splines are the uncompressed scan data.
+ * The full-resolution tooth surfaces are MetaStream ("mts") progressive-mesh
+ * streams. The browser can't decode them yet; tools/mts/build_meshes.py
+ * decodes them offline into a `*.meshes.bin` sidecar. Pass it as
+ * `parse(buffer, { meshes })` to render the real crowns; otherwise each tooth
+ * is a crown proxy sized from CrownDimensions / FACC widths and posed from the
+ * FACC frame. Each crown's true bounding box (from the stream header) is drawn
+ * as `meshBounds` either way.
  */
 export class ADFLoader extends Loader {
   load(url, onLoad, onProgress, onError) {
@@ -449,8 +472,19 @@ export class ADFLoader extends Loader {
     );
   }
 
+  /**
+   * @param {ArrayBuffer} buffer the .adf file
+   * @param {{meshes?: ArrayBuffer|Array}} options `meshes`: a *.meshes.bin
+   *   sidecar (or its parsed entries) with decoded crown surfaces
+   */
   parse(buffer, options = {}) {
     const parsed = parseADF(buffer);
+    let meshes = options.meshes;
+    if (meshes && !Array.isArray(meshes)) meshes = parseMeshSidecar(meshes);
+    if (meshes) {
+      options = { ...options, crowns: new Map() };
+      for (const m of meshes) if (m.kind === MESH_KIND_CROWN) options.crowns.set(m.toothId, m);
+    }
     const scene = extractDentalScene(parsed);
     const group = new Group();
     group.name = 'ADF';
@@ -478,4 +512,4 @@ export class ADFLoader extends Loader {
   }
 }
 
-export { parseADF, extractDentalScene };
+export { parseADF, extractDentalScene, parseMeshSidecar };
