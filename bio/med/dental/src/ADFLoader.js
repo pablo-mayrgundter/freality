@@ -1,4 +1,6 @@
 import {
+  Box3,
+  Box3Helper,
   BufferAttribute,
   BufferGeometry,
   Color,
@@ -299,6 +301,8 @@ function buildJaw(jaw, options) {
   faccGroup.name = 'facc';
   const scanGroup = new Group();
   scanGroup.name = 'scanPoints';
+  const boundsGroup = new Group();
+  boundsGroup.name = 'meshBounds';
 
   const records = [];
   for (const tooth of jaw.teeth) {
@@ -311,6 +315,7 @@ function buildJaw(jaw, options) {
       compressedMesh: tooth.compressedMesh,
       hintedVertexCount: tooth.hintedVertexCount,
       sampledVertexCount: tooth.sampledVertexCount,
+      meshBounds: tooth.meshBounds,
     };
 
     const w = tooth.width * ADF_MM;
@@ -364,12 +369,21 @@ function buildJaw(jaw, options) {
       scanGroup.add(pts);
     }
 
+    if (tooth.meshBounds) {
+      // Decoded from the CompressedQedge header: the real crown mesh's extent.
+      const box = new Box3(v3(mm(tooth.meshBounds.min)), v3(mm(tooth.meshBounds.max)));
+      const helper = new Box3Helper(box, 0x8fd18f);
+      helper.name = `${tooth.name}_bounds`;
+      boundsGroup.add(helper);
+    }
+
     records.push({ ...tooth, group: g, mesh });
   }
 
   group.add(teethGroup);
   group.add(faccGroup);
   group.add(scanGroup);
+  group.add(boundsGroup);
 
   const gingivaGroup = new Group();
   gingivaGroup.name = 'gingiva';
@@ -391,6 +405,7 @@ function buildJaw(jaw, options) {
   group.userData.teeth = records;
   group.userData.facc = faccGroup;
   group.userData.scanPoints = scanGroup;
+  group.userData.meshBounds = boundsGroup;
   group.userData.gingiva = gingivaGroup;
   return group;
 }
@@ -405,10 +420,11 @@ function buildJaw(jaw, options) {
  * ```
  *
  * The full-resolution tooth surfaces are stored as proprietary CompressedQedge
- * ("mts" / Fbits) bitstreams. Until that codec is decoded, each tooth is
- * represented by a crown proxy sized from CrownDimensions / FACC widths and
- * placed with the file's translation + quaternion. FACC curves, CEJ points,
- * interproximal samples, and gingival splines are the uncompressed scan data.
+ * ("mts") bitstreams. Only their headers are decoded so far, which yields each
+ * crown mesh's true bounding box (drawn as `meshBounds`). Each tooth itself is
+ * still a crown proxy sized from CrownDimensions / FACC widths and posed from
+ * the FACC frame. FACC curves, CEJ points, interproximal samples, and gingival
+ * splines are the uncompressed scan data.
  */
 export class ADFLoader extends Loader {
   load(url, onLoad, onProgress, onError) {

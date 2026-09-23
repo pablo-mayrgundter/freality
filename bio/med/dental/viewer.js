@@ -91,9 +91,13 @@ canvas.addEventListener('pointerdown', (event) => {
       ? `${(ud.compressedMesh.bytes / 1024).toFixed(0)} KB ${ud.compressedMesh.codec || 'qedge'}`
       : 'no mesh blob';
     const verts = ud.hintedVertexCount
-      ? `~${ud.hintedVertexCount} verts`
+      ? `≥${ud.hintedVertexCount} verts`
       : `${ud.sampledVertexCount || 0} sample pts`;
-    statusEl.textContent = `Selected ${selected.parent?.name || ''} (#${ud.toothId}, ${ud.kind}) — real mesh ${kb}, ${verts} (codec not decoded yet)`;
+    const b = ud.meshBounds;
+    const size = b
+      ? `, bounds ${b.max.map((v, i) => ((v - b.min[i]) * 1000).toFixed(1)).join(' × ')} mm`
+      : '';
+    statusEl.textContent = `Selected ${selected.parent?.name || ''} (#${ud.toothId}, ${ud.kind}) — real mesh ${kb}, ${verts}${size} (surface not decoded yet)`;
   }
 });
 
@@ -104,6 +108,7 @@ function bindToggles() {
     ['tog-facc', (m) => [m.jaws.upper?.userData.facc, m.jaws.lower?.userData.facc]],
     ['tog-gingiva', (m) => [m.jaws.upper?.userData.gingiva, m.jaws.lower?.userData.gingiva]],
     ['tog-scan', (m) => [m.jaws.upper?.userData.scanPoints, m.jaws.lower?.userData.scanPoints]],
+    ['tog-bounds', (m) => [m.jaws.upper?.userData.meshBounds, m.jaws.lower?.userData.meshBounds]],
   ];
   for (const [id, pick] of map) {
     const el = document.getElementById(id);
@@ -121,6 +126,7 @@ function applyToggles() {
   document.getElementById('tog-facc').dispatchEvent(new Event('change'));
   document.getElementById('tog-gingiva').dispatchEvent(new Event('change'));
   document.getElementById('tog-scan').dispatchEvent(new Event('change'));
+  document.getElementById('tog-bounds').dispatchEvent(new Event('change'));
 }
 
 function showModel(result, label) {
