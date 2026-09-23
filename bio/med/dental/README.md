@@ -8,6 +8,13 @@ Work log and handoff for `PM.adf`, a dentist 3D scan in Align Technology’s pro
 
 This repo has a working **binary parser**, a **Three.js loader**, and a **viewer**. The full-resolution tooth surfaces are present in the file but still compressed with an undocumented codec, so the viewer shows posed crown *proxies* plus real scan overlays (FACC curves, feature polylines, interproximal sample points).
 
+## Live demo
+
+<https://pablo-mayrgundter.github.io/freality/bio/med/dental/>
+
+Served straight off `main` by GitHub Pages. PRs that touch this directory get their own
+preview at `…/freality/pr-preview/pr-<N>/` (see `.github/workflows/pr-preview.yml`).
+
 ## Quick start
 
 ```bash
@@ -16,7 +23,9 @@ python3 -m http.server 8765          # or: npm start
 # open http://127.0.0.1:8765/
 ```
 
-Needs a local HTTP server (ES modules + fetch of `PM.adf`). Drag-drop another `.adf` in the HUD if needed.
+Needs a local HTTP server (ES modules + fetch of `PM.adf`). The viewer starts empty: hit
+**Load sample scan** in the HUD to pull `PM.adf`, or open / drag-drop an `.adf` of your own.
+Nothing is uploaded — parsing happens entirely in the page.
 
 ```js
 import { ADFLoader } from './src/ADFLoader.js';

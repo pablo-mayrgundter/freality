@@ -160,6 +160,18 @@ async function loadUrl(url) {
 
 bindToggles();
 
+const sampleEl = document.getElementById('sample');
+sampleEl.addEventListener('click', async () => {
+  sampleEl.disabled = true;
+  try {
+    await loadUrl('./PM.adf');
+  } catch (err) {
+    console.error(err);
+    statusEl.textContent = `Could not load PM.adf (${err.message}). Use the file picker.`;
+    sampleEl.disabled = false;
+  }
+});
+
 document.getElementById('file').addEventListener('change', async (e) => {
   const file = e.target.files?.[0];
   if (!file) return;
@@ -188,8 +200,3 @@ function tick() {
   requestAnimationFrame(tick);
 }
 tick();
-
-loadUrl('./PM.adf').catch((err) => {
-  console.error(err);
-  statusEl.textContent = `Could not auto-load PM.adf (${err.message}). Use the file picker.`;
-});
