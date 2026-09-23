@@ -439,13 +439,62 @@ function extractTooth(obj, jawName) {
     crownDimensions: crownDim,
     hasCompressedMesh: Boolean(meshInfo.bytes),
     compressedMesh: meshInfo,
+    // Axis-aligned bounds of the crown mesh, read from its mts header (jaw space, metres).
+    meshBounds: meshInfo.bbox,
     sampledVertexCount: ipPoints.reduce((n, p) => n + p.length, 0),
     hintedVertexCount: maxVertexId ? maxVertexId + 1 : 0,
   };
 }
 
+/** Read `n` bits (n <= 32) LSB-first starting at absolute bit `pos`. */
+function readBits(bytes, pos, n) {
+  let v = 0;
+  for (let i = 0; i < n; i++) {
+    const p = pos + i;
+    v += ((bytes[p >> 3] >> (p & 7)) & 1) * 2 ** i;
+  }
+  return v;
+}
+
+const MTS_MAGIC = [0x22, 0x6d, 0x74, 0x73]; // '"mts'
+
+/**
+ * Read the bounding box from a `CompressedData` blob without decoding it.
+ *
+ * The blob is a uint32 size, then a MetaStream ("mts") stream. Its mesh
+ * payload is an LSB-first bitstream (see tools/mts/README.md); the first
+ * attribute plug-in header ends with the bbox. Bit offsets below are from the
+ * start of the blob. They were validated on all 54 blobs in PM.adf, but this is
+ * a shortcut, not a general parser:
+ *
+ *   285  3 bits  v (3, 4 or 5): the preceding fields' width grows by 3 bits per v
+ *   441-3*(5-v)  6 x float32  minX minY minZ maxX maxY maxZ (metres, jaw space)
+ *
+ * Returns null if the blob does not look like an mts stream.
+ */
+export function parseMtsHeader(bytes) {
+  if (!(bytes instanceof Uint8Array) || bytes.length < 80) return null;
+  for (let i = 0; i < 4; i++) if (bytes[4 + i] !== MTS_MAGIC[i]) return null;
+  const variant = readBits(bytes, 285, 3);
+  if (variant < 3 || variant > 5) return null;
+  const bboxBit = 441 - 3 * (5 - variant);
+  const dv = new DataView(new ArrayBuffer(4));
+  const f = [];
+  for (let i = 0; i < 6; i++) {
+    dv.setUint32(0, readBits(bytes, bboxBit + 32 * i, 32), true);
+    f.push(dv.getFloat32(0, true));
+  }
+  const min = f.slice(0, 3);
+  const max = f.slice(3, 6);
+  for (let a = 0; a < 3; a++) {
+    if (!Number.isFinite(min[a]) || !Number.isFinite(max[a]) || min[a] > max[a]) return null;
+    if (Math.abs(min[a]) > 10 || Math.abs(max[a]) > 10) return null;
+  }
+  return { variant, bbox: { min, max } };
+}
+
 function describeCompressedMesh(qedge) {
-  const info = { bytes: 0, codec: null, layers: 0 };
+  const info = { bytes: 0, codec: null, layers: 0, bbox: null };
   if (!qedge) return info;
   const nodes = asList(qedge);
   for (const node of nodes) {
@@ -460,11 +509,10 @@ function describeCompressedMesh(qedge) {
     }
     info.bytes += bytes;
     info.layers += 1;
-    if (buf) {
-      const text = new TextDecoder('latin1').decode(buf.subarray(0, Math.min(buf.length, 200)));
-      const m = text.match(/Fbits([035])#/);
-      if (m) info.codec = `Fbits${m[1]}`;
-      else if (text.includes('"mts')) info.codec = 'mts';
+    const header = buf ? parseMtsHeader(buf) : null;
+    if (header) {
+      info.codec = 'mts';
+      info.bbox = info.bbox || header.bbox;
     }
   }
   if (!info.codec && info.bytes) info.codec = 'qedge';

@@ -31,14 +31,15 @@
     <div id="hud">
       <h1>Align ADF viewer</h1>
       <p id="status">Load the sample scan, or open one of your own.</p>
-      <p><button id="sample">Load sample scan (PM.adf, 1.8 MB)</button></p>
+      <p><button id="sample">Load sample scan (PM.adf + decoded crowns, 3.2 MB)</button></p>
       <label><input type="checkbox" id="tog-upper" checked /> Upper jaw</label>
       <label><input type="checkbox" id="tog-lower" checked /> Lower jaw</label>
       <label><input type="checkbox" id="tog-facc" checked /> FACC curves</label>
       <label><input type="checkbox" id="tog-gingiva" /> Gingiva splines</label>
       <label><input type="checkbox" id="tog-scan" /> Scan sample points</label>
+      <label><input type="checkbox" id="tog-bounds" /> Real mesh bounds</label>
       <p style="margin-top:10px">
-        <input type="file" id="file" accept=".adf" /> <span style="color:#888">or drag-drop</span>
+        <input type="file" id="file" accept=".adf,.bin" multiple /> <span style="color:#888">or drag-drop (.adf, + optional .meshes.bin)</span>
       </p>
     </div>
     <div id="drop">Drop a .adf file here</div>

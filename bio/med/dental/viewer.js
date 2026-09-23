@@ -90,10 +90,14 @@ canvas.addEventListener('pointerdown', (event) => {
     const kb = ud.compressedMesh?.bytes
       ? `${(ud.compressedMesh.bytes / 1024).toFixed(0)} KB ${ud.compressedMesh.codec || 'qedge'}`
       : 'no mesh blob';
-    const verts = ud.hintedVertexCount
-      ? `~${ud.hintedVertexCount} verts`
-      : `${ud.sampledVertexCount || 0} sample pts`;
-    statusEl.textContent = `Selected ${selected.parent?.name || ''} (#${ud.toothId}, ${ud.kind}) — real mesh ${kb}, ${verts} (codec not decoded yet)`;
+    const b = ud.meshBounds;
+    const size = b
+      ? `, ${b.max.map((v, i) => ((v - b.min[i]) * 1000).toFixed(1)).join(' × ')} mm`
+      : '';
+    const surface = ud.realMesh
+      ? `decoded surface, ${ud.vertexCount} verts`
+      : 'proxy crown (no decoded surface loaded)';
+    statusEl.textContent = `Selected ${selected.parent?.name || ''} (#${ud.toothId}, ${ud.kind}) — ${surface}${size}, from ${kb}`;
   }
 });
 
@@ -104,6 +108,7 @@ function bindToggles() {
     ['tog-facc', (m) => [m.jaws.upper?.userData.facc, m.jaws.lower?.userData.facc]],
     ['tog-gingiva', (m) => [m.jaws.upper?.userData.gingiva, m.jaws.lower?.userData.gingiva]],
     ['tog-scan', (m) => [m.jaws.upper?.userData.scanPoints, m.jaws.lower?.userData.scanPoints]],
+    ['tog-bounds', (m) => [m.jaws.upper?.userData.meshBounds, m.jaws.lower?.userData.meshBounds]],
   ];
   for (const [id, pick] of map) {
     const el = document.getElementById(id);
@@ -121,6 +126,7 @@ function applyToggles() {
   document.getElementById('tog-facc').dispatchEvent(new Event('change'));
   document.getElementById('tog-gingiva').dispatchEvent(new Event('change'));
   document.getElementById('tog-scan').dispatchEvent(new Event('change'));
+  document.getElementById('tog-bounds').dispatchEvent(new Event('change'));
 }
 
 function showModel(result, label) {
@@ -139,23 +145,52 @@ function showModel(result, label) {
   const n = result.teeth.length;
   const u = result.scene.upper?.teeth.length || 0;
   const l = result.scene.lower?.teeth.length || 0;
-  statusEl.textContent = `${label}: ${n} teeth (${u} upper, ${l} lower). Crowns are sized from the file; full Qedge meshes are still compressed.`;
+  const real = result.group.userData.realCrowns || 0;
+  statusEl.textContent = real
+    ? `${label}: ${n} teeth (${u} upper, ${l} lower), ${real} decoded crown surfaces.`
+    : `${label}: ${n} teeth (${u} upper, ${l} lower). Proxy crowns: add the matching .meshes.bin for real surfaces.`;
   frameObject(result.group);
   applyToggles();
 }
 
-async function loadBuffer(buffer, label) {
+function parseWithMeshes(buffer, meshes) {
+  const result = new ADFLoader().parse(buffer, { meshes });
+  let real = 0;
+  result.group.traverse((o) => {
+    if (o.userData.realMesh) real++;
+  });
+  result.group.userData.realCrowns = real;
+  return result;
+}
+
+async function loadBuffer(buffer, label, meshes) {
   statusEl.textContent = `Parsing ${label}…`;
-  const loader = new ADFLoader();
-  const result = loader.parse(buffer);
-  showModel(result, label);
+  showModel(parseWithMeshes(buffer, meshes), label);
 }
 
 async function loadUrl(url) {
-  const loader = new ADFLoader();
   statusEl.textContent = `Fetching ${url}…`;
-  const result = await loader.loadAsync(url);
-  showModel(result, url);
+  const sidecar = url.replace(/\.adf$/i, '.meshes.bin');
+  const [adf, meshes] = await Promise.all([
+    fetch(url).then((r) => {
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r.arrayBuffer();
+    }),
+    fetch(sidecar).then((r) => (r.ok ? r.arrayBuffer() : undefined), () => undefined),
+  ]);
+  showModel(parseWithMeshes(adf, meshes), url);
+}
+
+/** Accept an .adf plus, optionally, its .meshes.bin sidecar. */
+async function loadFiles(fileList) {
+  const files = [...(fileList || [])];
+  const adf = files.find((f) => /\.adf$/i.test(f.name));
+  if (!adf) {
+    statusEl.textContent = 'Choose an .adf file (optionally with its .meshes.bin).';
+    return;
+  }
+  const side = files.find((f) => /\.meshes\.bin$/i.test(f.name));
+  await loadBuffer(await adf.arrayBuffer(), adf.name, side ? await side.arrayBuffer() : undefined);
 }
 
 bindToggles();
@@ -172,12 +207,7 @@ sampleEl.addEventListener('click', async () => {
   }
 });
 
-document.getElementById('file').addEventListener('change', async (e) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
-  const buf = await file.arrayBuffer();
-  await loadBuffer(buf, file.name);
-});
+document.getElementById('file').addEventListener('change', (e) => loadFiles(e.target.files));
 
 window.addEventListener('dragover', (e) => {
   e.preventDefault();
@@ -187,10 +217,7 @@ window.addEventListener('dragleave', () => dropEl.classList.remove('visible'));
 window.addEventListener('drop', async (e) => {
   e.preventDefault();
   dropEl.classList.remove('visible');
-  const file = e.dataTransfer?.files?.[0];
-  if (!file) return;
-  const buf = await file.arrayBuffer();
-  await loadBuffer(buf, file.name);
+  await loadFiles(e.dataTransfer?.files);
 });
 
 function tick() {

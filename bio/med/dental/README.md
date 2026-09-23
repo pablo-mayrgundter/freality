@@ -6,7 +6,7 @@ Work log and handoff for `PM.adf`, a dentist 3D scan in Align Technology’s pro
 
 `PM.adf` (1.8 MB) is an **AlignDataFile (bin) Version 1.1** treatment-planning file from Invisalign / ClinCheck. It is **not** STL, PLY, OBJ, or JSON. It looks like nested `{braces}` with ASCII keys, but values are length-prefixed binary blobs (floats, ints, strings, nested objects, compressed meshes).
 
-This repo has a working **binary parser**, a **Three.js loader**, and a **viewer**. The full-resolution tooth surfaces are present in the file but still compressed with an undocumented codec, so the viewer shows posed crown *proxies* plus real scan overlays (FACC curves, feature polylines, interproximal sample points).
+This repo has a working **binary parser**, a **Three.js loader**, and a **viewer**. The tooth surfaces are MetaStream progressive meshes. An offline tool (`tools/mts/`) decodes them into `PM.meshes.bin`, and the viewer draws those **real crowns** plus the scan overlays (FACC curves, feature polylines, interproximal sample points). The browser can't decode meshes by itself yet, so an `.adf` opened without its `.meshes.bin` falls back to posed crown *proxies*.
 
 ## Live demo
 
@@ -24,14 +24,17 @@ python3 -m http.server 8765          # or: npm start
 ```
 
 Needs a local HTTP server (ES modules + fetch of `PM.adf`). The viewer starts empty: hit
-**Load sample scan** in the HUD to pull `PM.adf`, or open / drag-drop an `.adf` of your own.
-Nothing is uploaded — parsing happens entirely in the page.
+**Load sample scan** in the HUD to pull `PM.adf` and `PM.meshes.bin`, or open / drag-drop an `.adf`
+of your own (together with its `.meshes.bin`, if you've built one). Nothing is uploaded — parsing
+happens entirely in the page.
 
 ```js
 import { ADFLoader } from './src/ADFLoader.js';
 
-const loader = new ADFLoader();
-const { group, teeth, scene } = await loader.loadAsync('PM.adf');
+const [adf, meshes] = await Promise.all(
+  ['PM.adf', 'PM.meshes.bin'].map((u) => fetch(u).then((r) => r.arrayBuffer())),
+);
+const { group, teeth, scene } = new ADFLoader().parse(adf, { meshes }); // meshes optional
 myScene.add(group);
 ```
 
@@ -42,7 +45,10 @@ myScene.add(group);
 | Path | Role |
 |---|---|
 | `PM.adf` | Source scan / ClinCheck case |
+| `PM.meshes.bin` | Decoded crown surfaces for `PM.adf` (built by `tools/mts/`) |
 | `src/adf-parser.js` | Binary ADF parser + dental scene extract |
+| `src/mesh-sidecar.js` | Reader for `*.meshes.bin` |
+| `tools/mts/` | Offline MetaStream mesh decoder (Python + Unicorn + Viewpoint's DLL) |
 | `src/ADFLoader.js` | `THREE.Loader` → Group with jaws/teeth/overlays |
 | `index.html` / `viewer.js` | Orbit viewer, toggles, click-to-select |
 | `scripts/test-parse.mjs` | Node smoke test against `PM.adf` |
@@ -55,10 +61,10 @@ Parsed cleanly, consumes the whole file.
 - **Upper jaw:** 13 teeth (`Tooth_02`–`Tooth_14`), 15 labial + 15 lingual gingival CVs
 - **Lower jaw:** 14 teeth (`Tooth_18`–`Tooth_31`), 16+16 gingival CVs
 - Missing wisdoms / a couple of 2nd molars (typical Align numbering: 1–16 upper, 17–32 lower)
-- Every tooth has a `CompressedQedge` blob (real mesh, not decoded)
+- Every tooth has two `CompressedQedge` blobs (crown + initial shape), all 54 decoded
 - No photographs, textures, UVs, or vertex colors in this ADF
 
-Click a tooth in the viewer: HUD shows e.g. `real mesh 29 KB Fbits3, ~3727 verts (codec not decoded yet)`.
+Click a tooth in the viewer: the HUD shows e.g. `Tooth_08 (#8, incisor) — decoded surface, 3016 verts, 8.8 × 8.6 × 12.6 mm, from 21 KB mts`.
 
 ## ADF container format (solved)
 
@@ -101,79 +107,55 @@ Each `Tooth` has `id`, `Name`, `animXfm` (translation + rotation + `crownCenter`
 - Feature curves: IncisalRidge, BuccalCusps, LingualCusps, MolarGroove, TipPoint, …
 - Interproximal sample clouds (`newvtxData`, up to a few hundred verts/tooth)
 - Gingival Lab+/Lin+ spline CVs (planar horseshoe; loft is opt-in and looks like a slab from some cameras)
+- **Crown surfaces** from `PM.meshes.bin`, drawn in jaw space with no extra pose
+- **Real mesh bounds** (opt-in): each tooth's axis-aligned bounding box, decoded from its `CompressedQedge` header
 
-**Placeholders (not the scan surface)**
+**Placeholders (only when no `.meshes.bin` is loaded)**
 
-- Parametric crowns (`createToothGeometry`) sized from `CrownDimensions` or FACC widths / `MinToothHeight`
+- Parametric crowns (`createToothGeometry`) sized from `CrownDimensions` or FACC widths / `MinToothHeight`, posed from FACC
 - Kind from Align id (molar / premolar / canine / incisor)
 
 Scene scale: **×1000 → millimetres**. Group is rotated `X = -π/2` so occlusal +Z becomes up.
 
-## Compressed tooth meshes (unsolved — main next job)
+## Compressed tooth meshes (decoded offline)
 
-These **are** the surfaces that should replace the ivory proxies.
+Each tooth has two `CompressedData` blobs, both in jaw space (metres):
 
-### Where
+| Path | Here | Notes |
+|---|---|---|
+| `Tooth.CompressedQedge.CompressedData` | 13–34 KB, 1.9k–4.8k verts | The crown the viewer draws. |
+| `Tooth.QedgeToothDesigner.InitialToothShape.CompressedQedge.CompressedData` | 22–53 KB, 3.2k–7.6k verts | Taller: `minZ` is 2–3 mm lower. Holds the `newvtx*` oracle. |
 
-`Tooth.CompressedQedge.CompressedData` (high-res) and a second blob under `QedgeToothDesigner.InitialToothShape` (often another resolution). **54** `CompressedData` blobs in `PM.adf` (2 per tooth).
+**Format.** These are **MetaStream 3 / Viewpoint VET** streams, the 1998–2000 MetaCreations / Real Time Geometry progressive-mesh format.
+Okino's example [`creature2legs.mts`](https://www.okino.com/conv/mts_examples/creature2legs.mts) has the same container, chunk and header layout.
+The stream is a chunked container (varint-sized chunks with typed ids).
+The `mesh` type's concatenated payload is an LSB-first bitstream for `rtg2`'s progressive "UMF" quad-edge mesh decoder.
+That bitstream holds a header, attribute plug-ins, a range-coded base mesh, then vertex-split records.
+[`tools/mts/README.md`](tools/mts/README.md) has the full map.
 
-`QedgeRes` is `quadEdgeHigh`. This is Align’s **quad-edge** mesh (`Qedge`), not a public triangle format.
+**How it's decoded.** [`tools/mts/`](tools/mts/) runs Viewpoint's own `Mts3Reader.dll` (Media Player 3.0.15.12, not committed) under the Unicorn CPU emulator:
 
-### Typical sizes on this case
-
-| Kind | Codec tag | Packed size | Hinted vertex count (`max(newvtxIndices)+1`) |
-|---|---|---|---|
-| Molars | `Fbits3` | ~29–33 KB | ~3,000–4,300 |
-| Premolars | `Fbits0` | ~16–19 KB | ~2,000–2,600 |
-| Incisors / canines | `Fbits0` or `Fbits5` | ~13–21 KB | ~4,000–6,000 |
-
-Example: `Tooth_02` → 29 KB `Fbits3`, hinted **3727** verts. `newvtxData` holds **354** of those verts in the clear; `newvtxIndices` is `{997,998,999,1107,…,3726}` — IDs into the *full* mesh, not a local 0..353 range.
-
-### `"mts` / Fbits bitstream (partial map)
-
-`CompressedData` payload:
-
-```
-uint32le innerSize          # remaining bytes
-"mts" \0 \0 \0 \0           # magic + version 0  (bytes: 22 6d 74 73 00 00 00 00)
-$$  uint16le 4  uint32le 1  # typed chunk
-A?  uint16le 6  uint16le 4 "mesh"
-5 zero bytes + flag byte:
-  0xA0 → Fbits3#   (26 blobs)
-  0x80 → Fbits0#   (24 blobs)
-  0x60 → Fbits5#   (4 blobs)
-then ~variable header~
-then a long SHARED codec preamble (identical across same Fbits version)
-then entropy-coded body
+```bash
+cd tools/mts && python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+.venv/bin/python build_meshes.py ../../PM.adf /path/to/Mts3Reader.dll   # -> PM.meshes.bin
 ```
 
-Fbits3 shared tail includes ASCII `Fbits3#` then `\xb1 34 ba 39 …`. First byte that differs across Fbits3 blobs is around offset **136**. Inside the body, plaintext names `dir`, `mesh`, `QedgeA` appear (type directory / serializer residue).
+The output `PM.meshes.bin` (1.4 MB, 27 crowns, 80k vertices) is committed. The viewer loads it next to `PM.adf`.
 
-`"mts` matches the 1998 MetaStream carrier mnemonic (`"mts"`), but this is almost certainly Align-specific serialization of a Qedge, not a stock MetaStream reader.
+**Validation.**
+- All 54 blobs decode to within the last byte of their stream.
+- Every surface is closed and genus 0.
+- Decoded bounds equal the stream-header bboxes to within 1 nm.
+- All 354 plain-text `newvtxData` points of tooth 2 have a decoded vertex within 0.12 mm.
+  Align's `newvtxIndices` are a different numbering of the same vertices, not the decoded vertex order.
 
-### Decode attempts that failed
+**Without the DLL.** `parseMtsHeader()` in `src/adf-parser.js` still reads each crown's bounding box straight from the bitstream.
+That's what the **Real mesh bounds** overlay draws for ADFs that have no sidecar.
 
-Tried on first-tooth blob (`CompressedData` inner, 38319 bytes):
-
-- zlib / deflate (all wbits), lz4 frame+block, zstd, brotli, bz2
-- LZMA raw / alone, including 5-byte props at the `\x83 30 26 50 11` “codec sig”
-- Raw float32 / float64 of known `newvtxData` points — **not present** in the packed bytes
-- Naïve uint16 dequantization into several bboxes — no hits
-- OpenCTM / Draco magics — absent
-
-Conclusion: custom **range / arithmetic coder** (`Fbits`) after a shared model init, not a wrapper around a public codec.
-
-### Oracle for a future decoder
-
-Ground truth for `Tooth_02` (and the same pattern on other teeth):
-
-1. Parse `newvtxData`: `uint32 n` + `n` × `float32 x,y,z` (metres, same space as FACC / translation).
-2. Parse `newvtxIndices`: `uint32 n` + `n` × `uint32` full-mesh vertex ids.
-3. After decompress, `vertices[index[i]]` must match `newvtxData[i]` (possibly after the tooth basis transform — try both jaw space and local).
-
-First IP vert on tooth 02: `(-0.023489, -0.014045, -0.002258)` at mesh id **997**.
-
-A decoder that cannot hit those points is wrong.
+**Earlier dead ends.** Byte-level codecs (zlib, LZMA, zstd, …), raw and quantised float searches, and fixed-width field guesses all failed.
+The reason: the stream is bit-packed *and* split into ~510-byte chunks, with range-coded geometry.
+The `Fbits0…7` names turned out to be strings inside plug-in headers, not codec tags.
+`QedgeA` / `QedgeB` wasn't a class variant either: the letter is the first byte of the next chunk's length varint.
 
 ## No image overlay in this ADF
 
@@ -188,9 +170,9 @@ Dentist screens that looked like a photo on a 3D model almost certainly came fro
 
 ## Suggested next work (priority)
 
-1. **Decode Fbits / Qedge** (the actual ask). Treat `"mts` as a small typed header, then implement or reverse the `Fbits3#` range coder. Shared preamble bytes are a dictionary / model init. Validate with the `newvtxData` oracle. If you get vertices, connectivity is likely a quad-edge (`QedgeA`, `dir`, `Onext`-style) — triangulate for Three.js.
-2. **Swap proxies** in `ADFLoader.buildJaw`: if decode succeeds, `BufferGeometry` from verts+faces, keep the same `toothPose` (or apply `animXfm` directly once space is known). Keep FACC/feature lines as debug overlays.
-3. **Confirm coordinate space** of decoded verts vs `animXfm.translation` / `crownCenter`. Proxies currently use an FACC frame, not the raw quaternion, because the quat alone posed molars on their sides.
+1. **Port the decoder to JavaScript** so the viewer can open any ADF without a prebuilt sidecar. The emulator in `tools/mts/` is the reference. Port the bit reader, the range decoder and its models, the base mesh, the vertex splits and the plug-ins one at a time, diffing each against the emulator's memory at the same point.
+2. Optionally show the `InitialToothShape` meshes (`build_meshes.py --initial`), e.g. as a toggle.
+3. Work out how Align's `newvtxIndices` numbering maps onto the decoded vertex order, if the IP data should attach to the surface.
 4. Do **not** spend time on textures unless a second file shows up.
 
 ## Implementation notes for the next agent
@@ -200,11 +182,13 @@ Dentist screens that looked like a photo on a 3D model almost certainly came fro
 - Duplicate field names become arrays (`Tooth`, `CVHandler`, `Vector3<float>+>`).
 - `newvtxIndices` max id is a **lower bound** on vertex count (there may be unused ids).
 - Gingiva loft is a filled planar strip; default HUD has it **off**. Lines are still built.
-- Viewer raycast only hits `*_crown` meshes; `userData` on the tooth group holds `compressedMesh`, `hintedVertexCount`, `sampledVertexCount`.
+- Viewer raycast only hits `*_crown` meshes; `userData` on the tooth group holds `compressedMesh`, `hintedVertexCount`, `sampledVertexCount`, `meshBounds`, and (with a sidecar) `realMesh` / `vertexCount`.
+- `parseMtsHeader(bytes)` (exported from `adf-parser.js`) returns `{ variant, bbox: {min, max} }` for a `CompressedData` blob.
+- `ADFLoader.parse(buffer, { meshes })` takes a `*.meshes.bin` ArrayBuffer (or parsed entries). Real crowns go in the tooth group as `<Tooth>_crown`, and the group's `userData.realMesh` is set.
+- `scripts/test-parse.mjs` checks every decoded crown against its header bbox and requires a closed genus-0 surface.
 
 ## Open questions
 
-- Exact Fbits symbol model (likely Align-internal; patents mention ADF but not this bitstream).
-- Whether `InitialToothShape.CompressedQedge` is a coarser LOD or the unposed rest shape.
-- Whether a ClinCheck / Treat install on disk contains a decoder (DLL/so) worth diffing — only if the user has that software.
+- Whether `InitialToothShape` is the unposed rest shape or just a taller, untrimmed version of the crown. Its x/y extents match the crown's.
+- What the header's `flags` bits and the `Fbits[i] = 6` plug-in values control.
 - Companion iTero color files for this patient, if they exist outside this directory.

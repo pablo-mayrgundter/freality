@@ -1,0 +1,5 @@
+# Viewpoint binaries are not ours to redistribute.
+*.dll
+*.DLL
+__pycache__/
+.venv/
