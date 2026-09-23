@@ -185,6 +185,17 @@ Bit-level (second pass):
 
 The primary sources are Abadjev, del Rosario, Lebedev, Migdal, Paskhaver, "MetaStream", *VRML '99*, pp. 53–62, and the RTG/MetaCreations patents. None of them were reachable from the environment this pass ran in; that's the best next read.
 
+MetaStream later became Viewpoint's **VET** format (a.k.a. **MTS3**). Okino's [PolyTrans VET exporter page](https://www.okino.com/conv/exp_vet.htm) adds a few facts. It has nothing on the bitstream:
+
+- `.mts` is the binary geometry+texture file; `.mtx` / `.mtz` is a separate XML scene file.
+- Geometry is **lossy**, **triangles only**, and **progressive**: a low-res mesh comes first, then "additional vertex information" refines it. That suggests a base mesh followed by vertex-split records. It would also explain a stream that starts structured and turns noise-like.
+- The compressor lives inside the closed **Viewpoint VET SDK**; exporters only pass a quality slider (0–1.6).
+
+Two concrete tests follow from that:
+
+1. **Compare with a real VET file.** Get any real VET `.mts`: Okino's example page [exp_vet2.htm](https://www.okino.com/conv/exp_vet2.htm) links some, and so do archived Viewpoint demos. Check whether it also starts with `"mts` + `$$`/`A` chunks, and whether it has the `Fbits0#…7#` table. If it does, Align used the stock MetaStream/VET codec.
+2. **Reverse the old player.** The Viewpoint Media Player browser plug-in (Windows DLLs, early 2000s) contains a working decoder to disassemble.
+
 ### Oracle for a future decoder
 
 Ground truth for `Tooth_02` (and the same pattern on other teeth), under `InitialToothShape.InitialIPPositions`:
