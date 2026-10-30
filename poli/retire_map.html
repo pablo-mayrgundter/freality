@@ -56,7 +56,7 @@
   <div id="map"></div>
   <div class="info">
     <h1>Best Places to Retire</h1>
-    <p>Hover a state for its name. Click any dot for details. Color intensity reflects score (higher = brighter).</p>
+    <p>Hover a dot for the city. Click it for details. Color intensity reflects score (higher = brighter).</p>
   </div>
   <div class="legend">
     <div class="legend-item"><div class="dot" style="background:#22d3ee"></div> 6.5+</div>
@@ -126,6 +126,13 @@
         opacity: 1,
         fillOpacity: 0.85
       }).addTo(map);
+
+      marker.bindTooltip(`${p.city}, ${p.state}`, {
+        className: 'state-tip',
+        direction: 'top',
+        offset: [0, -2],
+        opacity: 0.95
+      });
 
       marker.bindPopup(`
         <div class="popup-rank">#${p.rank}</div>
