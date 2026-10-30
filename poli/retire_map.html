@@ -22,8 +22,17 @@
       background: rgba(15, 23, 42, 0.92); padding: 12px 16px; border-radius: 10px;
       border: 1px solid #334155; font-size: 13px;
     }
-    .legend-item { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
-    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .legend-scale { display: flex; align-items: stretch; gap: 8px; height: 110px; }
+    .legend-bar {
+      width: 12px; border-radius: 6px;
+      background: linear-gradient(to bottom, hsl(145, 72%, 56%), hsl(217, 72%, 56%));
+    }
+    .legend-labels {
+      display: flex; flex-direction: column; justify-content: space-between;
+      line-height: 1.2;
+    }
+    .legend-labels span { color: #94a3b8; }
+    .legend-labels strong { color: #e2e8f0; font-weight: 600; }
     .leaflet-popup-content-wrapper {
       background: #1e293b; color: #e2e8f0; border-radius: 8px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.5);
@@ -60,13 +69,16 @@
   <div id="map"></div>
   <div class="info">
     <h1>Best Places to Retire</h1>
-    <p>Hover a dot for the city. Click it for details. Color intensity reflects score (higher = brighter).</p>
+    <p>Hover a dot for the city. Click it for details. Color runs from green (higher) to blue (lower).</p>
   </div>
   <div class="legend">
-    <div class="legend-item"><div class="dot" style="background:#22d3ee"></div> 6.5+</div>
-    <div class="legend-item"><div class="dot" style="background:#38bdf8"></div> 6.0 – 6.4</div>
-    <div class="legend-item"><div class="dot" style="background:#60a5fa"></div> 5.7 – 5.9</div>
-    <div class="legend-item"><div class="dot" style="background:#93c5fd"></div> ≤ 5.6</div>
+    <div class="legend-scale">
+      <div class="legend-bar"></div>
+      <div class="legend-labels">
+        <div><strong>6.8</strong><br>higher</div>
+        <div><strong>5.5</strong><br>lower</div>
+      </div>
+    </div>
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -109,10 +121,9 @@
     map.attributionControl.addAttribution('State boundaries: U.S. Census Bureau');
 
     function scoreColor(score) {
-      if (score >= 6.5) return '#22d3ee';
-      if (score >= 6.0) return '#38bdf8';
-      if (score >= 5.7) return '#60a5fa';
-      return '#93c5fd';
+      const t = Math.max(0, Math.min(1, (score - 5.5) / (6.8 - 5.5)));
+      const hue = 217 + (145 - 217) * t;
+      return `hsl(${hue.toFixed(0)}, 72%, 56%)`;
     }
 
     function scoreRadius(score) {
