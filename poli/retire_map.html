@@ -31,7 +31,11 @@
     .leaflet-popup-tip { background: #1e293b; }
     .leaflet-popup-content { margin: 12px 14px; font-size: 14px; line-height: 1.45; }
     .popup-rank { font-weight: 700; color: #38bdf8; font-size: 15px; }
-    .popup-city { font-weight: 600; margin: 2px 0; }
+    a.popup-city {
+      display: inline-block; font-weight: 600; margin: 2px 0;
+      color: #7dd3fc; text-decoration: none;
+    }
+    a.popup-city:hover { text-decoration: underline; }
     .popup-score { color: #94a3b8; }
     .leaflet-container { background: #0f172a; }
     .leaflet-control-attribution {
@@ -116,6 +120,13 @@
       return 6 + (score - 5.5) * 3;
     }
 
+    function openMaps(event) {
+      const opened = window.open(event.currentTarget.href, '_blank');
+      if (!opened) return;
+      try { opened.opener = null; } catch (e) {}
+      event.preventDefault();
+    }
+
     places.forEach(p => {
       if (!p.lat || !p.lon) return;
       const marker = L.circleMarker([p.lat, p.lon], {
@@ -134,9 +145,11 @@
         opacity: 0.95
       });
 
+      const mapsHref = 'https://www.google.com/maps/search/?api=1&query='
+        + encodeURIComponent(`${p.city}, ${p.state}`);
       marker.bindPopup(`
         <div class="popup-rank">#${p.rank}</div>
-        <div class="popup-city">${p.city}, ${p.state}</div>
+        <a class="popup-city" href="${mapsHref}" target="_blank" rel="noopener noreferrer" onclick="openMaps(event)">${p.city}, ${p.state}</a>
         <div class="popup-score">Score: ${p.score}</div>
       `);
     });
